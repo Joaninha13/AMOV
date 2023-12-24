@@ -390,12 +390,13 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
             modifier = Modifier
                 .width(300.dp)
                 .height(60.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically,
         ){
 
 
             OutlinedTextField(
+                modifier = Modifier.width(252.dp),
                 value = coordinates,
                 label = { Text("Coordinates") },
                 leadingIcon = {
@@ -411,6 +412,31 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
                 },
                 onValueChange = { coordinates = it },
             )
+
+            //Icon container
+            Row(
+                modifier = Modifier
+                    .border(width = 2.dp, color = BlueLighter, shape = RoundedCornerShape(size = 50.dp))
+                    .width(28.dp)
+                    .height(28.dp)
+                    .padding(start = 5.dp, top = 5.dp, end = 5.dp, bottom = 5.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                verticalAlignment = Alignment.Top,
+            ) {
+
+                //Icon
+                Image(
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .width(18.dp)
+                        .height(18.dp),
+                    painter = painterResource(id = R.drawable.vector),
+                    contentDescription = "Vector",
+                    contentScale = ContentScale.None
+                )
+
+            }
+
         }
     }
 
