@@ -140,7 +140,7 @@ fun AddAttraction(){
 
                 }
 
-                RoundedSubmitButtonWithText(){}
+                SubmitButton(){} //TODO implement lambda when things work on firebase
 
 
             }
@@ -390,7 +390,7 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
             modifier = Modifier
                 .width(300.dp)
                 .height(60.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ){
 
@@ -414,27 +414,25 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
             )
 
             //Icon container
-            Row(
+            Box(
                 modifier = Modifier
-                    .border(width = 2.dp, color = BlueLighter, shape = RoundedCornerShape(size = 50.dp))
-                    .width(28.dp)
-                    .height(28.dp)
-                    .padding(start = 5.dp, top = 5.dp, end = 5.dp, bottom = 5.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
-                verticalAlignment = Alignment.Top,
+                    .border(
+                        width = 2.dp,
+                        color = BlueLighter,
+                        shape = RoundedCornerShape(size = 50.dp)
+                    )
+                    .size(31.dp)
+                    .padding(5.dp),
+                contentAlignment = Alignment.Center,
             ) {
-
-                //Icon
+                // Icon
                 Image(
                     modifier = Modifier
-                        .padding(1.dp)
-                        .width(18.dp)
-                        .height(18.dp),
+                        .size(18.dp),
                     painter = painterResource(id = R.drawable.vector),
                     contentDescription = "Vector",
                     contentScale = ContentScale.None
                 )
-
             }
 
         }
@@ -524,7 +522,7 @@ fun SecondInputs(){
 }
 
 @Composable
-fun RoundedSubmitButtonWithText(onClick: () -> Unit) {
+fun SubmitButton(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .width(93.dp)
