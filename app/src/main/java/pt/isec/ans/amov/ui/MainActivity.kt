@@ -34,9 +34,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeTheme {
                 //MainScreen()
-                AddAttraction()
+                //AddAttraction()
                 //AddLocation()
-                //AddCategory()
+                AddCategory()
             }
         }
         verifyPermissions()

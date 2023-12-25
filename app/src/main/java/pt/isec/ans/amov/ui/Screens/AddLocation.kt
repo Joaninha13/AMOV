@@ -54,7 +54,7 @@ data class LocationFormState(
 @Composable
 fun AddLocation(){
 
-    var LocationFormState by remember { mutableStateOf(LocationFormState()) }
+    var locationFormState by remember { mutableStateOf(LocationFormState()) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -124,8 +124,8 @@ fun AddLocation(){
                 ) {
 
                     //First inputs
-                    TextInputs(LocationFormState) { updatedState ->
-                        LocationFormState = updatedState
+                    TextInputs(locationFormState) { updatedState ->
+                        locationFormState = updatedState
                     }
 
                     //Upload Images

@@ -26,15 +26,6 @@ fun GradientButton(
         ),
         modifier = Modifier
             .background(_gradient, shape = CircleShape),
-            /*.background(
-                Brush.horizontalGradient(
-                    colors = listOf(
-                        Color(0xFF0B374B),
-                        Color(0xFF00B6DE)
-                    )
-                ),
-                shape = CircleShape
-            ),*/
         onClick = onClick
     ) {
         Text(
