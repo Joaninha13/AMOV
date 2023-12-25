@@ -18,6 +18,7 @@ import pt.isec.ans.amov.ui.Screens.AddAttraction
 import pt.isec.ans.amov.ui.Screens.AddCategory
 import pt.isec.ans.amov.ui.Screens.AddLocation
 import pt.isec.ans.amov.ui.Screens.MainScreen
+import pt.isec.ans.amov.ui.Screens.ViewAttraction
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
@@ -36,7 +37,8 @@ class MainActivity : ComponentActivity() {
                 //MainScreen()
                 //AddAttraction()
                 //AddLocation()
-                AddCategory()
+                //AddCategory()
+                ViewAttraction()
             }
         }
         verifyPermissions()
