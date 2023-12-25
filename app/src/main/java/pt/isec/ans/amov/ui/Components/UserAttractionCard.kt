@@ -31,6 +31,7 @@ import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueLighter
 import pt.isec.ans.amov.ui.theme.BlueSoft
+import pt.isec.ans.amov.ui.theme.WarningsError
 
 @Preview
 @Composable
@@ -118,7 +119,10 @@ fun UserAttractionCard(){
                 }
 
                 //Row with Button GO TO and Delete
-                Row {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.Start),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     OutlinedButton(
                         modifier = Modifier
                             .width(100.dp)
@@ -137,6 +141,29 @@ fun UserAttractionCard(){
                         )
                         Log.d("D", "Go to Page")
                     }
+
+                    Box(
+                        modifier = Modifier
+                            .border(
+                                width = 1.dp,
+                                color = WarningsError,
+                                shape = RoundedCornerShape(50.dp)
+                            )
+                            .padding(1.dp)
+                            .size(26.dp)
+                            .background(
+                                color = Color(0x1AFF0000),
+                                shape = RoundedCornerShape(50.dp)
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ){
+                        Image(
+                            painter = painterResource(id = R.drawable.trash),
+                            contentDescription = "Trash",
+                            contentScale = ContentScale.None
+                        )
+                    }
+
                 }
 
             }
