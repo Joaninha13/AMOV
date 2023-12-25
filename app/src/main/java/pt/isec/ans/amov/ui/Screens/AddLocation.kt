@@ -1,5 +1,6 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.Components.GradientButton
 import pt.isec.ans.amov.ui.Components.OutlinedInput
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueLighter
@@ -129,10 +131,17 @@ fun AddLocation(){
                     //Upload Images
                     Row(
                         modifier = Modifier
-                            .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
+                            .border(
+                                width = 1.dp,
+                                color = BlueLighter,
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
                             .width(300.dp)
                             .height(30.dp)
-                            .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
+                            .background(
+                                color = Color(0xCCFFFFFF),
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
                             .padding(start = 10.dp, end = 10.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                         verticalAlignment = Alignment.CenterVertically,
@@ -151,7 +160,18 @@ fun AddLocation(){
 
                 }
 
-                SubmitButton(){} //TODO implement lambda when things work on firebase
+                //SubmitButton(){} //TODO implement lambda when things work on firebase
+                GradientButton(
+                    _text = "Submit",
+                    _gradient = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF0B374B),
+                            Color(0xFF00B6DE)
+                        )
+                    )
+                ){ //TODO implement lambda when things work on firebase
+                    Log.d("D", "submit")
+                }
             }
 
         }

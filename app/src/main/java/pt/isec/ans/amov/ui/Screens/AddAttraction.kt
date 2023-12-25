@@ -1,5 +1,7 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.telephony.SmsMessage.SubmitPdu
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.Components.GradientButton
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueLighter
 import pt.isec.ans.amov.ui.theme.BlueSoft
@@ -140,8 +144,18 @@ fun AddAttraction(){
 
                 }
 
-                SubmitButton(){} //TODO implement lambda when things work on firebase
-
+                //SubmitButton(){} //TODO implement lambda when things work on firebase
+                GradientButton(
+                    _text = "Submit",
+                    _gradient = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF0B374B),
+                            Color(0xFF00B6DE)
+                        )
+                    ),
+                ){ //TODO implement lambda when things work on firebase
+                    Log.d("D", "submit")
+                }
 
             }
 
@@ -521,12 +535,13 @@ fun SecondInputs(){
 
 }
 
-@Composable
+/*@Composable
 fun SubmitButton(onClick: () -> Unit) {
-    Box(
+    Button(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent
+        ),
         modifier = Modifier
-            .width(93.dp)
-            .height(33.dp)
             .background(
                 Brush.horizontalGradient(
                     colors = listOf(
@@ -534,18 +549,15 @@ fun SubmitButton(onClick: () -> Unit) {
                         Color(0xFF00B6DE)
                     )
                 ),
-                CircleShape
-            )
-            .clickable(
-                onClick = onClick,
-                //indication = rememberRipple(bounded = false)
+                shape = CircleShape
             ),
-        contentAlignment = Alignment.Center
+        onClick = onClick
     ) {
         Text(
+            modifier = Modifier.padding(5.dp),
             text = "Submit",
             color = Color.White,
             fontWeight = FontWeight.Bold
         )
     }
-}
+}*/
