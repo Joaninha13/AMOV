@@ -14,7 +14,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 import pt.isec.ans.amov.Application
+import pt.isec.ans.amov.ui.Screens.AddAttraction
+import pt.isec.ans.amov.ui.Screens.AddCategory
+import pt.isec.ans.amov.ui.Screens.AddLocation
 import pt.isec.ans.amov.ui.Screens.MainScreen
+import pt.isec.ans.amov.ui.Screens.ViewAttraction
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
@@ -30,7 +34,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeTheme {
-                MainScreen()
+                //MainScreen()
+                //AddAttraction()
+                //AddLocation()
+                //AddCategory()
+                ViewAttraction()
             }
         }
         verifyPermissions()
