@@ -10,40 +10,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
 
+val InterFontFamily = FontFamily(
+    Font(R.font.inter_regular, FontWeight.W400),
+    Font(R.font.inter_medium, FontWeight.W500),
+    Font(R.font.inter_semibold, FontWeight.W600),
+    Font(R.font.inter_bold, FontWeight.W700)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.W500,
+    ),
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.W700,
     ),
     labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
-)
-
-@OptIn(ExperimentalTextApi::class)
-val SketchesFont = FontFamily(
-    Font(
-        R.font.font2,
-        variationSettings = FontVariation.Settings(
-            FontVariation.weight(950),
-            FontVariation.width(30f),
-        )
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.W400,
     )
 )
