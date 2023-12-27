@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.Components.AttractionCard
 import pt.isec.ans.amov.ui.Components.SortButton
 import pt.isec.ans.amov.ui.Components.UserAttractionCard
 import pt.isec.ans.amov.ui.theme.*
@@ -163,7 +164,13 @@ fun InfoLocation() {
                             contentAlignment = Alignment.Center
                         ) {
                             // Change with the correct listing later
-                            UserAttractionCard()
+                            AttractionCard(
+                                attraction = "Torre Eiffel Tower",
+                                averageRating = 2.3f,
+                                numRatings = 3214,
+                                distanceInKmFromCurrent = 32.4f,
+                                lastComment = "This is the last comment",
+                            )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                     }

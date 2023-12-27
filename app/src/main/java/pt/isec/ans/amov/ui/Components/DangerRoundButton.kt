@@ -26,51 +26,50 @@ import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.theme.*
 
 @Composable
-fun SortButton(
-    _text: String,
+fun DangerRoundIconButton(
+    drawableId: Int,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
 ) {
     Button(
         onClick = onClick,
         contentPadding = PaddingValues(0.dp),
-        shape = RoundedCornerShape(0.dp),
-        modifier = Modifier
-            .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(5.dp))
-            .background(
-                color = Color(0xCCFFFFFF),
-                shape = RoundedCornerShape(5.dp)
+        shape = CircleShape,
+        modifier = modifier
+            .size(32.dp)
+            .border(
+                1.dp,
+                color = WarningsError,
+                shape = RoundedCornerShape(50.dp)
             )
-            .wrapContentSize(align = Alignment.Center)
-            .requiredSizeIn(minWidth = 70.dp)
-            .height(30.dp)
-            .padding(start = 10.dp, end = 10.dp),
-    colors = ButtonDefaults.buttonColors(
+            .padding(2.dp)
+            .background(
+                color = Color(0x1AFF0000),
+                shape = CircleShape
+            )
+            .aspectRatio(1f),
+        colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-        )
+        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
     ) {
-        Text(
-            text = _text,
-            fontFamily = FontFamily(Font(R.font.inter_medium)),
-            fontSize = 14.sp,
-            color = BlueHighlight,
-            modifier = Modifier.padding(end = 5.dp)
-        )
-
         Image(
-            painter = painterResource(id = R.drawable.sort),
-            contentDescription = "sort-icon",
-            contentScale = ContentScale.Fit,
+            painter = painterResource(id = drawableId),
+            contentDescription = "Icon",
             modifier = Modifier
-                .padding(1.dp)
-                .wrapContentSize()
+                .fillMaxSize()
+                .padding(5.dp),
         )
     }
 }
 
 
 
+
+
+
 @Preview
 @Composable
-fun SortButtonPreview() {
-    SortButton("Sort")
+fun DangerRoundIconButtonPreview() {
+    DangerRoundIconButton(drawableId = R.drawable.trash)
 }
