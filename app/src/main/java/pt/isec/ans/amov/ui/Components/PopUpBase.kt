@@ -107,7 +107,7 @@ fun PopUpBasePreview() {
         title = "Title",
         content = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 26.dp, bottom = 26.dp)
