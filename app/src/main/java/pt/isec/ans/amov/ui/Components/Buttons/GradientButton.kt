@@ -1,4 +1,4 @@
-package pt.isec.ans.amov.ui.Components
+package pt.isec.ans.amov.ui.Components.Buttons
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
