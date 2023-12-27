@@ -61,12 +61,12 @@ fun MapScreen(viewModel : LocationViewModel){
 
     Column(
         modifier = Modifier //modifier com m pequeno que é passado por parametro
-            .fillMaxSize()
-            .padding(8.dp),
+            .fillMaxSize(),
+            //.padding(8.dp),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
+        /*Row(
             modifier= Modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -78,13 +78,14 @@ fun MapScreen(viewModel : LocationViewModel){
             })
             Text(text = "Lon: ${location.value?.longitude ?: "--"}")
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))*/
 
         Box(
             modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
-                .fillMaxHeight(0.5f)
+                //.padding(8.dp)
+                /*.fillMaxWidth()
+                .fillMaxHeight(0.5f)*/
+                .fillMaxSize()
                 .clipToBounds()
                 .background(Color(255, 240, 128)),
         ) {
@@ -110,7 +111,7 @@ fun MapScreen(viewModel : LocationViewModel){
                 }
             )
         }
-        Spacer(Modifier.height(16.dp))
+        /*Spacer(Modifier.height(16.dp))
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -139,6 +140,6 @@ fun MapScreen(viewModel : LocationViewModel){
                     }
                 }
             }
-        }
+        }*/
     }
 }

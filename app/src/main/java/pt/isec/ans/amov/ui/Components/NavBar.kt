@@ -20,8 +20,7 @@ fun NavBar(){
     Row(
         modifier = Modifier
             .width(340.dp)
-            .height(50.dp)
-            .zIndex(1f),
+            .height(50.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
     ) {
