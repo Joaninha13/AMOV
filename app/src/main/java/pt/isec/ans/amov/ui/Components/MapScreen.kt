@@ -100,8 +100,8 @@ fun MapScreen(viewModel : LocationViewModel){
                         setTileSource(TileSourceFactory.MAPNIK);//==TileSourceFactory.DEFAULT_TILE_SOURCE
                         setMultiTouchControls(true)
                         controller.setCenter(geoPoint)
-                        //controller.setZoom(18.0)
-                        controller.setZoom(8.0)
+                        controller.setZoom(15.0)
+                        //controller.setZoom(8.0)
                         for(poi in viewModel.POIs)
                             overlays.add(
                                 Marker(this).apply {
