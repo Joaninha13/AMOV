@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import pt.isec.ans.amov.R
 
 @Composable
@@ -19,7 +20,8 @@ fun NavBar(){
     Row(
         modifier = Modifier
             .width(340.dp)
-            .height(50.dp),
+            .height(50.dp)
+            .zIndex(1f),
         horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
     ) {

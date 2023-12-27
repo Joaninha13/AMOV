@@ -23,12 +23,12 @@ val Typography = Typography(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.W500,
     ),
-    titleLarge = TextStyle(
+    /*titleLarge = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.W700,
     ),
     labelSmall = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.W400,
-    )
+    )*/
 )

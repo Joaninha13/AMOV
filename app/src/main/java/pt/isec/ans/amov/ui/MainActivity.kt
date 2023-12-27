@@ -10,6 +10,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
@@ -25,6 +30,7 @@ import pt.isec.ans.amov.ui.Screens.ViewLocations
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
+import pt.isec.ans.amov.ui.theme.LocationMapsTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -44,7 +50,15 @@ class MainActivity : ComponentActivity() {
                 //ViewAttraction()
                 //ViewLocations()
                 //ViewCategories()
-                MainMapScreen()
+                LocationMapsTheme {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background)
+                    ) {
+                        MainMapScreen(viewModel = viewModel)
+                    }
+                }
             }
         }
         verifyPermissions()
