@@ -26,8 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
-import pt.isec.ans.amov.ui.Components.UserAttractionCard
-import pt.isec.ans.amov.ui.Components.UserLocationCard
+import pt.isec.ans.amov.ui.Components.Cards.UserLocationCard
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 
 @Preview()

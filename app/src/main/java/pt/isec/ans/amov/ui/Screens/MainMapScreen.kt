@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import pt.isec.ans.amov.ui.Components.MapScreen
-import pt.isec.ans.amov.ui.Components.NavBar
+import pt.isec.ans.amov.ui.Components.Nav.NavBar
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 
 

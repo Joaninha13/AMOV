@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.GradientButton
+import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueLighter
 import pt.isec.ans.amov.ui.theme.BlueSoft
@@ -221,7 +222,7 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
         //Coordinates
         Row(
             modifier = Modifier
-                .width(300.dp)
+                .fillMaxWidth()
                 .height(60.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -247,26 +248,11 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
             )
 
             //Icon container
-            Box(
+            RoundIconButton(
+                drawableId = R.drawable.vector,
                 modifier = Modifier
-                    .border(
-                        width = 2.dp,
-                        color = BlueLighter,
-                        shape = RoundedCornerShape(size = 50.dp)
-                    )
-                    .size(31.dp)
-                    .padding(5.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                // Icon
-                Image(
-                    modifier = Modifier
-                        .size(18.dp),
-                    painter = painterResource(id = R.drawable.vector),
-                    contentDescription = "Vector",
-                    contentScale = ContentScale.None
-                )
-            }
+                    .size(40.dp)
+            )
 
         }
     }
@@ -286,7 +272,7 @@ fun SecondInputs(){
             modifier = Modifier
                 .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
                 .width(300.dp)
-                .height(30.dp)
+                .height(50.dp)
                 .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
                 .padding(start = 10.dp, end = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
@@ -309,7 +295,7 @@ fun SecondInputs(){
             modifier = Modifier
                 .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
                 .width(300.dp)
-                .height(30.dp)
+                .height(50.dp)
                 .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
                 .padding(start = 10.dp, end = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
@@ -332,7 +318,7 @@ fun SecondInputs(){
             modifier = Modifier
                 .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
                 .width(300.dp)
-                .height(30.dp)
+                .height(50.dp)
                 .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
                 .padding(start = 10.dp, end = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),

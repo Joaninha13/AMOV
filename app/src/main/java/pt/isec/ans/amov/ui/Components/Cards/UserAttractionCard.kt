@@ -1,4 +1,4 @@
-package pt.isec.ans.amov.ui.Components
+package pt.isec.ans.amov.ui.Components.Cards
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -23,14 +23,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.Components.Buttons.DangerRoundIconButton
+import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
+import pt.isec.ans.amov.ui.Components.Buttons.SecButton
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
+
 @Composable
-fun UserLocationCard(
-    city: String,
-    country: String,
-    numAttractions: Int,
+fun UserAttractionCard(
+    attraction: String,
+    averageRating: Float,
+    numRatings: Int,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -55,7 +59,7 @@ fun UserLocationCard(
                 .width(100.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.paris_france),
+                painter = painterResource(id = R.drawable.torre_eiffel),
                 contentDescription = "image description",
                 contentScale = ContentScale.Crop, // Use ContentScale.Crop
                 modifier = Modifier.fillMaxSize() // This makes the Image fill the container
@@ -80,9 +84,9 @@ fun UserLocationCard(
                 horizontalAlignment = Alignment.Start,
             ) {
 
-                //Location Title
+                //Attraction Title
                 Text(
-                    text = "$city, $country",
+                    text = attraction,
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.inter_semibold)),
@@ -95,12 +99,30 @@ fun UserLocationCard(
                     horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.Start)
                 ) {
 
-                    //Number of attractions
+                    //Attraction rating
                     Text(
-                        text = "$numAttractions attractions",
+                        text = averageRating.toString(),
                         style = TextStyle(
                             fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.inter)),
+                            //fontFamily = FontFamily(Font(R.font.inter)),
+                            fontWeight = FontWeight(600),
+                            color = BlueSoft,
+                        )
+                    )
+
+                    //Start Icon
+                    Image(
+                        painter = painterResource(id = R.drawable.star),
+                        contentDescription = "Start icon",
+                        contentScale = ContentScale.None
+                    )
+
+                    //Number
+                    Text(
+                        text = "($numRatings)",
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_medium)),
                             fontWeight = FontWeight(600),
                             color = BlueSoft,
                         )
@@ -122,10 +144,11 @@ fun UserLocationCard(
                 modifier = Modifier
                     .width(52.dp)
                     .height(90.dp),
+
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start,
 
-                ) {
+            ) {
 
                 //Icon container
                 RoundIconButton(drawableId = R.drawable.vector)
@@ -135,17 +158,16 @@ fun UserLocationCard(
 
         }
 
-
     }
 
 }
 
 @Preview
 @Composable
-fun UserLocationCardPreview(){
-    UserLocationCard(
-        city = "Paris",
-        country = "France",
-        numAttractions = 4321
+fun UserAttractionCardPreview() {
+    UserAttractionCard(
+        attraction = "Torre Eiffel Tower",
+        averageRating = 2.3f,
+        numRatings = 3214
     )
 }
