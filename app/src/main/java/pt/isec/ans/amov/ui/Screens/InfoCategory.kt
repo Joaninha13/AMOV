@@ -1,6 +1,6 @@
 package pt.isec.ans.amov.ui.Screens
 
-
+// Correct the imports
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,23 +28,20 @@ import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.AttractionCard
 import pt.isec.ans.amov.ui.Components.SortButton
+import pt.isec.ans.amov.ui.Components.UserAttractionCard
 import pt.isec.ans.amov.ui.theme.*
 
-data class InfoLocationFormState(
-    var country: String = "France",
-    var region: String = "Paris",
+data class InfoCategoryFormState(
+    var name: String = "Monument",
     var description: String = "",
-    var coordinates: String = "48°51'52.9776''N 2°20'56.4504''E",
-
-
     var numRelatedAttractions: Int = 32,
 )
 
 
 @Preview
 @Composable
-fun InfoLocation() {
-    var formState by remember { mutableStateOf(InfoLocationFormState()) }
+fun InfoCategory() {
+    var formState by remember { mutableStateOf(InfoCategoryFormState()) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -64,8 +61,18 @@ fun InfoLocation() {
                     horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    //Change with the correct icon later
+                    Image(
+                        painter = painterResource(id = R.drawable.monument),
+                        contentDescription = "image description",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .padding(1.dp)
+                            .width(24.dp)
+                            .height(24.dp)
+                    )
                     Text(
-                        text = formState.country + ", " + formState.region,
+                        text = formState.name,
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -90,32 +97,6 @@ fun InfoLocation() {
                     painter = painterResource(id = R.drawable.cancellationx1),
                     contentDescription = "Cancel",
                     contentScale = ContentScale.None
-                )
-            }
-
-
-            Text(
-                text = formState.coordinates,
-                style = TextStyle(
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily(Font(R.font.inter_bold)),
-                    color = BlueSoft
-                )
-            )
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .height(214.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.torre_eiffel),
-                    contentDescription = "image description",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
                 )
             }
 
@@ -156,7 +137,7 @@ fun InfoLocation() {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 content = {
-                    items(5) { index ->
+                    items(7) { index ->
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center
@@ -170,7 +151,7 @@ fun InfoLocation() {
                                 lastComment = "This is the last comment",
                             )
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
             )
