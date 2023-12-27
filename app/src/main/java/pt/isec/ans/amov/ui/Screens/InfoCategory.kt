@@ -4,7 +4,6 @@ package pt.isec.ans.amov.ui.Screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -15,20 +14,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
-import pt.isec.ans.amov.ui.Components.AttractionCard
-import pt.isec.ans.amov.ui.Components.SortButton
-import pt.isec.ans.amov.ui.Components.UserAttractionCard
+import pt.isec.ans.amov.ui.Components.Cards.AttractionCard
+import pt.isec.ans.amov.ui.Components.Buttons.SortButton
 import pt.isec.ans.amov.ui.theme.*
 
 data class InfoCategoryFormState(

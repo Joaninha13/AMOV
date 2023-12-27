@@ -27,10 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
-import pt.isec.ans.amov.ui.Components.AttractionCard
-import pt.isec.ans.amov.ui.Components.ReviewCard
-import pt.isec.ans.amov.ui.Components.SecButton
-import pt.isec.ans.amov.ui.Components.SortButton
+import pt.isec.ans.amov.ui.Components.Cards.ReviewCard
+import pt.isec.ans.amov.ui.Components.Buttons.SecButton
+import pt.isec.ans.amov.ui.Components.Buttons.SortButton
 import pt.isec.ans.amov.ui.theme.*
 
 data class InfoAttractionFormState(
