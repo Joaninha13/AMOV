@@ -100,7 +100,7 @@ fun UserLocationCard(
                         text = "$numAttractions attractions",
                         style = TextStyle(
                             fontSize = 16.sp,
-                            //fontFamily = FontFamily(Font(R.font.inter)),
+                            fontFamily = FontFamily(Font(R.font.inter)),
                             fontWeight = FontWeight(600),
                             color = BlueSoft,
                         )
@@ -122,7 +122,6 @@ fun UserLocationCard(
                 modifier = Modifier
                     .width(52.dp)
                     .height(90.dp),
-
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start,
 
