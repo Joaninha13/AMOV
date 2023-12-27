@@ -17,6 +17,7 @@ import pt.isec.ans.amov.Application
 import pt.isec.ans.amov.ui.Screens.AddAttraction
 import pt.isec.ans.amov.ui.Screens.AddCategory
 import pt.isec.ans.amov.ui.Screens.AddLocation
+import pt.isec.ans.amov.ui.Screens.MainMapScreen
 import pt.isec.ans.amov.ui.Screens.MainScreen
 import pt.isec.ans.amov.ui.Screens.ViewAttraction
 import pt.isec.ans.amov.ui.Screens.ViewCategories
@@ -42,7 +43,8 @@ class MainActivity : ComponentActivity() {
                 //AddCategory()
                 //ViewAttraction()
                 //ViewLocations()
-                ViewCategories()
+                //ViewCategories()
+                MainMapScreen()
             }
         }
         verifyPermissions()
