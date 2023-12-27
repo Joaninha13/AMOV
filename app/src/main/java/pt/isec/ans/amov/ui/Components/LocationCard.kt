@@ -43,14 +43,12 @@ import pt.isec.ans.amov.ui.theme.WarningsError
 
 
 @Composable
-fun AttractionCard(
-    attraction: String,
-    averageRating: Float,
-    numRatings: Int,
+fun LocationCard(
+    country: String,
+    region: String,
+    numAttractions: Int,
     distanceInKmFromCurrent: Float,
-    lastComment: String,
-    //lastCommentPhoto: Int,???
-
+    description: String,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -105,9 +103,9 @@ fun AttractionCard(
                         .height(32.dp)
                         .width(210.dp)
                 ) {
-                    //Attraction Title
+
                     Text(
-                        text = attraction,
+                        text = "$country, $region",
                         style = TextStyle(
                             fontSize = 18.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -122,40 +120,20 @@ fun AttractionCard(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.Start)
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        //Attraction rating
-                        Text(
-                            text = averageRating.toString(),
-                            style = TextStyle(
-                                fontSize = 14.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_medium)),
-                                color = BlueSoft,
-                            )
-                        )
 
-                        //Star Icon
-                        Image(
-                            painter = painterResource(id = R.drawable.star),
-                            contentDescription = "Star icon",
-                            contentScale = ContentScale.None
-                        )
-
-                        //Number
-                        Text(
-                            text = "($numRatings)",
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_medium)),
-                                color = BlueSoft,
-                            )
-                        )
-                    }
 
                     Text(
                         text = "$distanceInKmFromCurrent km",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_medium)),
+                            fontWeight = FontWeight(600),
+                            color = BlueSoft,
+                        )
+                    )
+
+                    Text(
+                        text = "$numAttractions attractions",
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontFamily = FontFamily(Font(R.font.inter_medium)),
@@ -173,9 +151,8 @@ fun AttractionCard(
                         .width(214.dp)
                         .height(31.dp)
                 ) {
-                    RoundIconButton(drawableId = R.drawable.account)
                     Text(
-                        text = "''$lastComment''",
+                        text = "''$description''",
                         style = TextStyle(
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.inter)),
@@ -194,12 +171,12 @@ fun AttractionCard(
 
 @Preview
 @Composable
-fun AttractionCardPreview() {
-    AttractionCard(
-        attraction = "Torre Eiffel Tower",
-        averageRating = 2.3f,
-        numRatings = 3214,
+fun LocationCardPreview() {
+    LocationCard(
+        country = "Portugal",
+        region = "Lisboa",
+        numAttractions = 5,
         distanceInKmFromCurrent = 32.4f,
-        lastComment = "This is the last comment ysyayayay sdasyudsadas  kjnasjkd naskjd baskj dbas",
+        description = "This is the description of the location yyyyyyyyyyyyyyy sdkjnfi sdujbhfdv iusdabv siour dnvisdubvnsdiubvsdiuvcbsdiu"
     )
 }
