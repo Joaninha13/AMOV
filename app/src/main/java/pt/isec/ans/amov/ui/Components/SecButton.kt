@@ -28,13 +28,14 @@ import pt.isec.ans.amov.ui.theme.*
 @Composable
 fun SecButton(
     _text: String,
-    onClick: () -> Unit = { }
+    onClick: () -> Unit = { },
+    modifier: Modifier = Modifier
 ) {
     Button(
         onClick = onClick,
         contentPadding = PaddingValues(0.dp),
         shape = RoundedCornerShape(0.dp),
-        modifier = Modifier
+        modifier = modifier
             .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(5.dp))
             .background(
                 color = Color(0xCCFFFFFF),
@@ -44,7 +45,7 @@ fun SecButton(
             .requiredSizeIn(minWidth = 70.dp)
             .height(30.dp)
             .padding(start = 10.dp, end = 10.dp),
-    colors = ButtonDefaults.buttonColors(
+        colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
         )
     ) {
