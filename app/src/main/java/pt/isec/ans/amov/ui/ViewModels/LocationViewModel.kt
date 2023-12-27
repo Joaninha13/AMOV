@@ -1,6 +1,7 @@
 package pt.isec.ans.amov.ui.ViewModels
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -53,6 +54,8 @@ class LocationViewModel(private val locationHandler : LocationHandler) : ViewMod
     }
 
     fun startLocationUpdates() {
+        Log.d("Asd", "fineLocationPermission: ${fineLocationPermission}")
+        Log.d("Asd", "coarseLocationPermission: $coarseLocationPermission")
         if (fineLocationPermission && coarseLocationPermission) {
             locationHandler.startLocationUpdates()
         }

@@ -160,7 +160,6 @@ fun AddLocation(){
 
                 }
 
-                //SubmitButton(){} //TODO implement lambda when things work on firebase
                 GradientButton(
                     _text = "Submit",
                     _gradient = Brush.horizontalGradient(
@@ -211,23 +210,6 @@ fun TextInputs(locationFormState: LocationFormState, onLocationFormState: (Locat
                     country = newValue
                 }
             )
-
-            /*OutlinedTextField(
-                value = country,
-                label = { Text("Country") },
-                leadingIcon = {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(18.dp)
-                            .height(18.dp),
-                        painter = painterResource(id = R.drawable.nameicon),
-                        contentDescription = "name icon",
-                        contentScale = ContentScale.None,
-                    )
-                },
-                onValueChange = { country = it }
-            )*/
         }
 
         //Region
@@ -247,23 +229,6 @@ fun TextInputs(locationFormState: LocationFormState, onLocationFormState: (Locat
                     region = newValue
                 }
             )
-
-            /*OutlinedTextField(
-                value = region,
-                label = { Text("Region") },
-                leadingIcon = {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(18.dp)
-                            .height(18.dp),
-                        painter = painterResource(id = R.drawable.nameicon),
-                        contentDescription = "name icon",
-                        contentScale = ContentScale.None,
-                    )
-                },
-                onValueChange = { country = it }
-            )*/
         }
 
         //Description
@@ -284,21 +249,6 @@ fun TextInputs(locationFormState: LocationFormState, onLocationFormState: (Locat
                 }
             )
 
-            /*OutlinedTextField(
-                value = description,
-                label = { Text("Description") },
-                leadingIcon = {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(18.dp)
-                            .height(18.dp),
-                        painter = painterResource(id = R.drawable.descicon),
-                        contentDescription = "description icon",
-                    )
-                },
-                onValueChange = { description = it }
-            )*/
         }
 
         //Coordinates
@@ -319,24 +269,6 @@ fun TextInputs(locationFormState: LocationFormState, onLocationFormState: (Locat
                     coordinates = newValue
                 }
             )
-
-            /*OutlinedTextField(
-                modifier = Modifier.width(252.dp),
-                value = coordinates,
-                label = { Text("Coordinates") },
-                leadingIcon = {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(18.dp)
-                            .height(18.dp),
-                        painter = painterResource(id = R.drawable.coordsicon),
-                        contentDescription = "coordinates icon",
-                        contentScale = ContentScale.None
-                    )
-                },
-                onValueChange = { coordinates = it },
-            )*/
 
             //Icon container
             Box(

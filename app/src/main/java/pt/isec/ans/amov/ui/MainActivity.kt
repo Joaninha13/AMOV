@@ -10,18 +10,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
 import pt.isec.ans.amov.Application
-import pt.isec.ans.amov.ui.Screens.AddAttraction
-import pt.isec.ans.amov.ui.Screens.AddCategory
-import pt.isec.ans.amov.ui.Screens.AddLocation
-import pt.isec.ans.amov.ui.Screens.MainScreen
-import pt.isec.ans.amov.ui.Screens.ViewAttraction
+import pt.isec.ans.amov.ui.Screens.MainMapScreen
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
+import pt.isec.ans.amov.ui.theme.LocationMapsTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -38,7 +39,18 @@ class MainActivity : ComponentActivity() {
                 //AddAttraction()
                 //AddLocation()
                 //AddCategory()
-                ViewAttraction()
+                //ViewAttraction()
+                //ViewLocations()
+                //ViewCategories()
+                LocationMapsTheme {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background)
+                    ) {
+                        MainMapScreen(viewModel = viewModel)
+                    }
+                }
             }
         }
         verifyPermissions()
@@ -63,6 +75,11 @@ class MainActivity : ComponentActivity() {
             verifyOnePermission.launch(Manifest.permission.READ_MEDIA_IMAGES)
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.startLocationUpdates()
     }
 
     val verifyMultiplePermissions = registerForActivityResult(

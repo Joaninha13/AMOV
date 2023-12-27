@@ -22,7 +22,7 @@ class FusedLocationHandler(private val locationProvider: FusedLocationProviderCl
 
         val notify = onLocation ?: return
 
-        notify(Location(null).apply {
+        notify(Location(null).apply { //Map first location seen sem o autoenable
             latitude = 40.1925
             longitude = -8.4128
         })
