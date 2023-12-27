@@ -57,7 +57,7 @@ fun MapScreen(viewModel : LocationViewModel){
     Log.d("MapScreen", "Location: ${location.value}")
     Log.d("MapScreen", "GeoPoint: $geoPoint")
 
-    if (autoEnabled)
+    //if (autoEnabled)
         LaunchedEffect(key1 = location.value) {
             geoPoint = GeoPoint(
                 location.value?.latitude ?: 0.0, location.value?.longitude ?: 0.0
