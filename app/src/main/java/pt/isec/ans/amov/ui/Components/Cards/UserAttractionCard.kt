@@ -1,4 +1,4 @@
-package pt.isec.ans.amov.ui.Components
+package pt.isec.ans.amov.ui.Components.Cards
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

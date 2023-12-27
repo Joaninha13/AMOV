@@ -1,4 +1,4 @@
-package pt.isec.ans.amov.ui.Components
+package pt.isec.ans.amov.ui.Components.Cards
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.Components.Buttons.DangerRoundIconButton
+import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
+import pt.isec.ans.amov.ui.Components.Buttons.SecButton
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
