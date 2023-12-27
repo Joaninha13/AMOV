@@ -23,18 +23,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
-import pt.isec.ans.amov.ui.Components.Buttons.DangerRoundIconButton
-import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
-import pt.isec.ans.amov.ui.Components.Buttons.SecButton
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
-
 @Composable
-fun UserAttractionCard(
-    attraction: String,
-    averageRating: Float,
-    numRatings: Int,
+fun UserLocationCard(
+    city: String,
+    country: String,
+    numAttractions: Int,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -59,7 +55,7 @@ fun UserAttractionCard(
                 .width(100.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.torre_eiffel),
+                painter = painterResource(id = R.drawable.paris_france),
                 contentDescription = "image description",
                 contentScale = ContentScale.Crop, // Use ContentScale.Crop
                 modifier = Modifier.fillMaxSize() // This makes the Image fill the container
@@ -84,9 +80,9 @@ fun UserAttractionCard(
                 horizontalAlignment = Alignment.Start,
             ) {
 
-                //Attraction Title
+                //Location Title
                 Text(
-                    text = attraction,
+                    text = "$city, $country",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.inter_semibold)),
@@ -99,30 +95,12 @@ fun UserAttractionCard(
                     horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.Start)
                 ) {
 
-                    //Attraction rating
+                    //Number of attractions
                     Text(
-                        text = averageRating.toString(),
+                        text = "$numAttractions attractions",
                         style = TextStyle(
                             fontSize = 16.sp,
-                            //fontFamily = FontFamily(Font(R.font.inter)),
-                            fontWeight = FontWeight(600),
-                            color = BlueSoft,
-                        )
-                    )
-
-                    //Start Icon
-                    Image(
-                        painter = painterResource(id = R.drawable.star),
-                        contentDescription = "Start icon",
-                        contentScale = ContentScale.None
-                    )
-
-                    //Number
-                    Text(
-                        text = "($numRatings)",
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_medium)),
+                            fontFamily = FontFamily(Font(R.font.inter)),
                             fontWeight = FontWeight(600),
                             color = BlueSoft,
                         )
@@ -144,11 +122,10 @@ fun UserAttractionCard(
                 modifier = Modifier
                     .width(52.dp)
                     .height(90.dp),
-
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start,
 
-            ) {
+                ) {
 
                 //Icon container
                 RoundIconButton(drawableId = R.drawable.vector)
@@ -158,16 +135,17 @@ fun UserAttractionCard(
 
         }
 
+
     }
 
 }
 
 @Preview
 @Composable
-fun UserAttractionCardPreview() {
-    UserAttractionCard(
-        attraction = "Torre Eiffel Tower",
-        averageRating = 2.3f,
-        numRatings = 3214
+fun UserLocationCardPreview(){
+    UserLocationCard(
+        city = "Paris",
+        country = "France",
+        numAttractions = 4321
     )
 }

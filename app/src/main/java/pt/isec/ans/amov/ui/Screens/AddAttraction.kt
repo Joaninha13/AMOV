@@ -129,7 +129,6 @@ fun AddAttraction(){
 
                 }
 
-                //SubmitButton(){} //TODO implement lambda when things work on firebase
                 GradientButton(
                     _text = "Submit",
                     _gradient = Brush.horizontalGradient(
@@ -149,171 +148,6 @@ fun AddAttraction(){
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-/*@Composable
-fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateChange: (AttractionFormState) -> Unit){
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var coordinate by remember { mutableStateOf("") }
-
-    //Name + Description + Coordinates
-    Column(
-        modifier = Modifier
-            .width(300.dp)
-            .height(162.dp),
-        verticalArrangement = Arrangement.spacedBy(40.dp, Alignment.Top),
-        horizontalAlignment = Alignment.Start,
-    ) {
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
-            horizontalAlignment = Alignment.Start,
-        ) {
-
-            //Input Name
-            Row(
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(27.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .width(18.dp)
-                        .height(18.dp),
-                    painter = painterResource(id = R.drawable.nameicon),
-                    contentDescription = "name icon",
-                    contentScale = ContentScale.None,
-                )
-
-                TextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Name") },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        disabledContainerColor = Color.White
-                    )
-                )
-            }
-
-            Box(
-                Modifier
-                    .border(width = 1.dp, color = Color(0xFFD1D1D1))
-                    .width(300.dp)
-                    .height(1.dp))
-        }
-
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
-            horizontalAlignment = Alignment.Start,
-        ) {
-            //Input Description
-            Row(
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(27.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .width(18.dp)
-                        .height(18.dp),
-                    painter = painterResource(id = R.drawable.descicon),
-                    contentDescription = "description icon",
-                )
-
-                TextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Description") },
-                    placeholder = { Text("Description") },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        disabledContainerColor = Color.White
-                    )
-                )
-            }
-
-            Box(
-                Modifier
-                    .border(width = 1.dp, color = Color(0xFFD1D1D1))
-                    .width(300.dp)
-                    .height(1.dp))
-        }
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
-            horizontalAlignment = Alignment.Start,
-        ) {
-
-            //Input Coordinates
-            Row(
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(27.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .width(18.dp)
-                        .height(18.dp),
-                    painter = painterResource(id = R.drawable.coordsicon),
-                    contentDescription = "coordinates icon",
-                    contentScale = ContentScale.None
-                )
-
-                TextField(
-                    value = coordinate,
-                    onValueChange = { coordinate = it },
-                    label = { Text("Coordinates") },
-                    placeholder = { Text("Coordinates") },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        disabledContainerColor = Color.White
-                    )
-                    /*keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done
-                    )*/
-                )
-
-                Image(
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .width(18.dp)
-                        .height(18.dp)
-                        .background(color = BlueHighlight),
-                    painter = painterResource(id = R.drawable.vector),
-                    contentDescription = "Vector",
-                    contentScale = ContentScale.None
-                )
-            }
-
-            Box(
-                Modifier
-                    .border(width = 1.dp, color = Color(0xFFD1D1D1))
-                    .width(300.dp)
-                    .height(1.dp))
-
-        }
-
-
-    }
-}*/
 
 @Composable
 fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateChange: (AttractionFormState) -> Unit) {
@@ -509,7 +343,7 @@ fun SecondInputs(){
                 text = "Upload Images",
                 style = TextStyle(
                     fontSize = 16.sp,
-                    //fontFamily = FontFamily(Font(R.font.inter)),
+                    fontFamily = FontFamily(Font(R.font.inter)),
                     fontWeight = FontWeight(500),
                     color = BlueSoft,
                 )
@@ -519,30 +353,3 @@ fun SecondInputs(){
     }
 
 }
-
-/*@Composable
-fun SubmitButton(onClick: () -> Unit) {
-    Button(
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent
-        ),
-        modifier = Modifier
-            .background(
-                Brush.horizontalGradient(
-                    colors = listOf(
-                        Color(0xFF0B374B),
-                        Color(0xFF00B6DE)
-                    )
-                ),
-                shape = CircleShape
-            ),
-        onClick = onClick
-    ) {
-        Text(
-            modifier = Modifier.padding(5.dp),
-            text = "Submit",
-            color = Color.White,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}*/
