@@ -1,6 +1,7 @@
 package pt.isec.ans.amov.ui.Components
 
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,11 +47,15 @@ fun MapScreen(viewModel : LocationViewModel){
     var autoEnabled by remember{ mutableStateOf(false) }
     val location = viewModel.currentLocation.observeAsState()
 
+
     var geoPoint by remember { mutableStateOf(
         GeoPoint(
             location.value?.latitude ?: 0.0, location.value?.longitude ?: 0.0
         )
     ) }
+
+    Log.d("MapScreen", "Location: ${location.value}")
+    Log.d("MapScreen", "GeoPoint: $geoPoint")
 
     if (autoEnabled)
         LaunchedEffect(key1 = location.value) {
@@ -66,7 +71,7 @@ fun MapScreen(viewModel : LocationViewModel){
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        /*Row(
+        Row(
             modifier= Modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -78,7 +83,7 @@ fun MapScreen(viewModel : LocationViewModel){
             })
             Text(text = "Lon: ${location.value?.longitude ?: "--"}")
         }
-        Spacer(Modifier.height(16.dp))*/
+        Spacer(Modifier.height(16.dp))
 
         Box(
             modifier = Modifier
@@ -95,7 +100,8 @@ fun MapScreen(viewModel : LocationViewModel){
                         setTileSource(TileSourceFactory.MAPNIK);//==TileSourceFactory.DEFAULT_TILE_SOURCE
                         setMultiTouchControls(true)
                         controller.setCenter(geoPoint)
-                        controller.setZoom(18.0)
+                        //controller.setZoom(18.0)
+                        controller.setZoom(8.0)
                         for(poi in viewModel.POIs)
                             overlays.add(
                                 Marker(this).apply {
