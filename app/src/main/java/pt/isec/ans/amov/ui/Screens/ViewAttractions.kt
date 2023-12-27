@@ -2,12 +2,16 @@ package pt.isec.ans.amov.ui.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,74 +37,65 @@ import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.UserAttractionCard
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 
-@Preview
+
+@Preview()
 @Composable
 fun ViewAttraction() {
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        //Page Column
         Column(
-            modifier = Modifier
-                .width(360.dp)
-                .height(804.dp)
-                .padding(start = 20.dp, top = 35.dp, end = 20.dp, bottom = 20.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp)
         ) {
-
-            //Attractions Scroller
-            Column(
-                modifier = Modifier
-                    .width(320.dp)
-                    .height(676.dp)
-                    .verticalScroll(rememberScrollState()), //vertical scroll for the attractions
-                verticalArrangement = Arrangement.spacedBy(50.dp, Alignment.Top),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-
-                //Title + Cancel button
                 Row(
-                    modifier = Modifier
-                        .width(320.dp)
-                        .height(29.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-
                     Text(
-                        modifier = Modifier
-                            .width(248.dp)
-                            .height(29.dp),
                         text = "Active Attractions",
                         style = TextStyle(
                             fontSize = 24.sp,
-                            //fontFamily = FontFamily(Font(R.font.inter)), esta linha da erro porque nao tem o ficheiro inter
-                            fontWeight = FontWeight(600),
+                            fontFamily = FontFamily(Font(R.font.inter_bold)),
                             color = BlueHighlight,
                         )
                     )
-
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(16.dp)
-                            .height(16.dp),
-                        painter = painterResource(id = R.drawable.cancellationx1), //falta este resource
-                        contentDescription = "Cancel",
-                        contentScale = ContentScale.None
-                    )
-
                 }
+                Image(
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .width(16.dp)
+                        .height(16.dp),
+                    painter = painterResource(id = R.drawable.cancellationx1),
+                    contentDescription = "Cancel",
+                    contentScale = ContentScale.None
+                )
+            }
 
-                //TODO isto depois precisa de ser mudado para ter o numero de atractions do User
-                repeat(5){
-                    UserAttractionCard()
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(36.dp)
+                ) {
+                    items(10) { index ->
+                        UserAttractionCard(
+                            attraction = "Torre Eiffel",
+                            averageRating = 2.3f,
+                            numRatings = 3214
+                        )
+                    }
                 }
-
             }
         }
     }
 }
+

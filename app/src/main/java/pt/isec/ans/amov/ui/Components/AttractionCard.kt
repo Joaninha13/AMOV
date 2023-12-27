@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -42,10 +43,14 @@ import pt.isec.ans.amov.ui.theme.WarningsError
 
 
 @Composable
-fun UserAttractionCard(
+fun AttractionCard(
     attraction: String,
     averageRating: Float,
     numRatings: Int,
+    distanceInKmFromCurrent: Float,
+    lastComment: String,
+    //lastCommentPhoto: Int,???
+
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -88,22 +93,31 @@ fun UserAttractionCard(
             //Left side of the row
             Column(
                 modifier = Modifier
-                    .width(164.dp)
+                    .wrapContentWidth()
                     .height(90.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start,
             ) {
-
-                //Attraction Title
-                Text(
-                    text = attraction,
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                        fontFamily = FontFamily(Font(R.font.inter_semibold)),
-                        fontWeight = FontWeight(600),
-                        color = BlueHighlight,
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                        .height(32.dp)
+                        .width(210.dp)
+                ) {
+                    //Attraction Title
+                    Text(
+                        text = attraction,
+                        style = TextStyle(
+                            fontSize = 18.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_semibold)),
+                            fontWeight = FontWeight(600),
+                            color = BlueHighlight,
+                        )
                     )
-                )
+                    RoundIconButton(drawableId = R.drawable.vector)
+                }
+
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.Start)
@@ -143,29 +157,23 @@ fun UserAttractionCard(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .width(214.dp)
+                        .height(31.dp)
                 ) {
-                    SecButton(_text = "Go to Page")
-                    DangerRoundIconButton(drawableId = R.drawable.trash)
+                    RoundIconButton(drawableId = R.drawable.account)
+                    Text(
+                        text = "“The Eiffel tower is iconic and a must see in Paris. I visited it in 1981 and the surrounding areas have been greatly improved and beautified since then making it a pleasing journey to the tower and a place to stroll around.  It was a freezing cold day on n this visit so ruff up if you go in the winter, also it pays to our purchase your tickets because like so many other majors Tories attractions it is extremely busy even sat this time of year.  The views are spectacular and with the changing if the leaves in autumn paid is very beautiful.”\n",
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.inter)),
+                            fontWeight = FontWeight(600),
+                            color = BlueSoft,
+                        )
+                    )
                 }
 
             }
-
-            Column(
-                modifier = Modifier
-                    .width(52.dp)
-                    .height(90.dp),
-
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.Start,
-
-            ) {
-
-                //Icon container
-                RoundIconButton(drawableId = R.drawable.vector)
-                RoundIconButton(drawableId = R.drawable.edit)
-
-            }
-
         }
 
     }
@@ -174,10 +182,12 @@ fun UserAttractionCard(
 
 @Preview
 @Composable
-fun UserAttractionCardPreview() {
-    UserAttractionCard(
+fun AttractionCardPreview() {
+    AttractionCard(
         attraction = "Torre Eiffel Tower",
         averageRating = 2.3f,
-        numRatings = 3214
+        numRatings = 3214,
+        distanceInKmFromCurrent = 32.4f,
+        lastComment = "This is the last comment",
     )
 }

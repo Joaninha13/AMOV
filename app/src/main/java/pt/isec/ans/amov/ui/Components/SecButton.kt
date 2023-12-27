@@ -26,7 +26,7 @@ import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.theme.*
 
 @Composable
-fun SortButton(
+fun SecButton(
     _text: String,
     onClick: () -> Unit = { }
 ) {
@@ -55,15 +55,6 @@ fun SortButton(
             color = BlueHighlight,
             modifier = Modifier.padding(end = 5.dp)
         )
-
-        Image(
-            painter = painterResource(id = R.drawable.sort),
-            contentDescription = "sort-icon",
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .padding(1.dp)
-                .wrapContentSize()
-        )
     }
 }
 
@@ -71,6 +62,6 @@ fun SortButton(
 
 @Preview
 @Composable
-fun SortButtonPreview() {
-    SortButton("Sort")
+fun SecButtonPreview() {
+    SecButton("Sort")
 }
