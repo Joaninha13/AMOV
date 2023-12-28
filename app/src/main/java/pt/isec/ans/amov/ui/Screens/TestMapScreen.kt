@@ -63,7 +63,6 @@ fun TestMapScreen(viewModel: LocationViewModel) {
     // State for the bottom sheet
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
-    var overlayActive by remember { mutableStateOf(false) } // To track overlay's state
     val searchViewModel: SearchViewModel = remember { SearchViewModel() }
 
     val (buttonToCenterClicked, setButtonToCenterClicked) = remember { mutableStateOf(false) }
