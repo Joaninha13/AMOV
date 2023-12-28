@@ -71,19 +71,19 @@ fun MapScreen(viewModel : LocationViewModel){
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier= Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Lat: ${location.value?.latitude ?: "--"}")
-            Switch(checked = autoEnabled, onCheckedChange = {
-                autoEnabled = it
-            })
-            Text(text = "Lon: ${location.value?.longitude ?: "--"}")
-        }
-        Spacer(Modifier.height(16.dp))
+//        Row(
+//            modifier= Modifier
+//                .fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Text(text = "Lat: ${location.value?.latitude ?: "--"}")
+//            Switch(checked = autoEnabled, onCheckedChange = {
+//                autoEnabled = it
+//            })
+//            Text(text = "Lon: ${location.value?.longitude ?: "--"}")
+//        }
+//        Spacer(Modifier.height(16.dp))
 
         Box(
             modifier = Modifier
