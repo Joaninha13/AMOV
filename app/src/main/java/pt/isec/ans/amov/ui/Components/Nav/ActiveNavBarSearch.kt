@@ -52,7 +52,7 @@ fun ActiveNavBarSearch(
     Row(
         modifier = Modifier
             .border(width = 2.dp, color = BlueLighter, shape = RoundedCornerShape(size = 50.dp))
-            .width(250.dp)
+            .fillMaxWidth()
             .height(50.dp)
             .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 50.dp)),
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),

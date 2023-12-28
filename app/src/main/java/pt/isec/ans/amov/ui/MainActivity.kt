@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import pt.isec.ans.amov.Application
 import pt.isec.ans.amov.ui.Screens.MainMapScreen
+import pt.isec.ans.amov.ui.Screens.TestMapScreen
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
@@ -48,7 +49,8 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.background)
                     ) {
-                        MainMapScreen(viewModel = viewModel)
+                        //MainMapScreen(viewModel = viewModel)
+                        TestMapScreen(viewModel = viewModel)
                     }
                 }
             }

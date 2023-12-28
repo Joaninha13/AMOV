@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -19,56 +20,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 
-@OptIn(ExperimentalMaterialApi::class)
+@Preview
 @Composable
-fun NavBar(
-    coroutineScope: CoroutineScope,
-    modalBottomSheetState: ModalBottomSheetState,
-    searchViewModel: SearchViewModel
-
+fun ActiveNavBar(
     ){
     val (searchQuery, setSearchQuery) = remember { mutableStateOf("") }
 
     Row(
         modifier = Modifier
+            .background(color = Color.White)
+            .fillMaxWidth()
+            .padding(10.dp)
             .height(50.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
-        RoundIconButton(
-            drawableId = R.drawable.eiffel_tower,
-            onClick = {
-                onSearchTriggered(coroutineScope, modalBottomSheetState)
-                searchViewModel.onSearchTextChanged("Attractions")
-            },
-            modifier = Modifier
-                .size(50.dp)
-                .background(color = Color(0xFFFFFFFF), shape = CircleShape)
-        )
 
-        NavBarSearch(
+        ActiveNavBarSearch(
             query = searchQuery,
             onQueryChange = setSearchQuery,
             trailingOnClick = { setSearchQuery("") },
-            trailingIcon = searchQuery.isNotEmpty(),
-            coroutineScope = coroutineScope,
-            modalBottomSheetState = modalBottomSheetState,
-            searchViewModel= searchViewModel
-        )
-
-        RoundIconButton(
-            drawableId = R.drawable.account,
-            modifier = Modifier
-                .size(50.dp)
-                .background(color = Color(0xFFFFFFFF), shape = CircleShape)
-
         )
     }
 
 }
-

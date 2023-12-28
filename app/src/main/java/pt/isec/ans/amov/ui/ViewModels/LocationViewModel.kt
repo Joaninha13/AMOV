@@ -70,5 +70,6 @@ class LocationViewModel(private val locationHandler : LocationHandler) : ViewMod
         super.onCleared()
         stopLocationUpdates()
     }
+
 }
 
