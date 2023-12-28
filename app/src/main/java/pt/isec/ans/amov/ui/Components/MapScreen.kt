@@ -120,10 +120,6 @@ fun MapScreen(
                             )
                     }
                 },
-                /*update = { view ->
-                    view.controller.setCenter(geoPoint)
-                    onCenterChanged(geoPoint)
-                }*/
                 update = { view ->
                     view.controller.setCenter(geoPoint)
                     if(buttonToCenterClicked){
