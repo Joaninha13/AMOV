@@ -2,6 +2,7 @@ package pt.isec.ans.amov.ui.Components.PopUps
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 
 import androidx.compose.foundation.layout.width
 
@@ -68,13 +70,11 @@ fun PopUpBase(
                         )
                     )
                     Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(16.dp)
-                            .height(16.dp),
                         painter = painterResource(id = R.drawable.cancellationx1),
-                        contentDescription = "Cancel",
-                        contentScale = ContentScale.None
+                        contentDescription = "Close",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onDismiss() }
                     )
                 }
             },
@@ -120,7 +120,7 @@ fun PopUpBase(
                     ambientColor = Color(0x40000000)
                 ),
 
-        containerColor = White40,
+        containerColor = Color(0xFFFFFFFF),
 
 
         )
