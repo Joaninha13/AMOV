@@ -1,6 +1,8 @@
 package pt.isec.ans.amov.ui.Components
 
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -42,7 +45,11 @@ import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapScreen(viewModel : LocationViewModel){
+fun MapScreen(
+    viewModel : LocationViewModel,
+    buttonToCenterClicked : Boolean,
+    handleButtonToCenterClicked : (Boolean) -> Unit
+){
 
     var autoEnabled by remember{ mutableStateOf(false) }
     val location = viewModel.currentLocation.observeAsState()
@@ -97,6 +104,7 @@ fun MapScreen(viewModel : LocationViewModel){
             AndroidView(
                 factory = { context ->
                     MapView(context).apply {
+                        //Configuration.getInstance().userAgentValue = getContext().getPackageName();
                         setTileSource(TileSourceFactory.MAPNIK);//==TileSourceFactory.DEFAULT_TILE_SOURCE
                         setMultiTouchControls(true)
                         controller.setCenter(geoPoint)
@@ -114,6 +122,11 @@ fun MapScreen(viewModel : LocationViewModel){
                 },
                 update = { view ->
                     view.controller.setCenter(geoPoint)
+                    if(buttonToCenterClicked){
+                        view.controller.animateTo(geoPoint, 15.0, 1500, null)
+                        handleButtonToCenterClicked(false)
+                    }
+
                 }
             )
         }

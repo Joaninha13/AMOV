@@ -43,7 +43,7 @@ fun MainMapScreen(viewModel: LocationViewModel){
                     .fillMaxSize()
             ) {
                 // MapScreen
-                MapScreen(viewModel = viewModel)
+                //MapScreen(viewModel = viewModel)
 
                 // NavBar
                 Box(

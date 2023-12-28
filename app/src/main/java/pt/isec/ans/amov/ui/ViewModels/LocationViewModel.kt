@@ -54,8 +54,6 @@ class LocationViewModel(private val locationHandler : LocationHandler) : ViewMod
     }
 
     fun startLocationUpdates() {
-        Log.d("Asd", "fineLocationPermission: ${fineLocationPermission}")
-        Log.d("Asd", "coarseLocationPermission: $coarseLocationPermission")
         if (fineLocationPermission && coarseLocationPermission) {
             locationHandler.startLocationUpdates()
         }

@@ -1,5 +1,8 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +32,7 @@ import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -38,7 +42,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.osmdroid.util.GeoPoint
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.SortButton
@@ -58,6 +65,8 @@ fun TestMapScreen(viewModel: LocationViewModel) {
     val coroutineScope = rememberCoroutineScope()
     var overlayActive by remember { mutableStateOf(false) } // To track overlay's state
     val searchViewModel: SearchViewModel = remember { SearchViewModel() }
+
+    val (buttonToCenterClicked, setButtonToCenterClicked) = remember { mutableStateOf(false) }
 
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
@@ -88,7 +97,13 @@ fun TestMapScreen(viewModel: LocationViewModel) {
                         .fillMaxSize()
                 ) {
                     // MapScreen
-                    MapScreen(viewModel = viewModel)
+                    MapScreen(
+                        viewModel = viewModel,
+                        buttonToCenterClicked,
+                        handleButtonToCenterClicked = { newValue ->
+                            setButtonToCenterClicked(newValue)
+                        }
+                    )
 
                     Column(
                         modifier = Modifier
@@ -134,7 +149,13 @@ fun TestMapScreen(viewModel: LocationViewModel) {
 
                             RoundIconButton(
                                 drawableId = R.drawable.vector,
-                                onClick = {},
+                                onClick = {
+                                    //TODO quando se carrega aqui leva para a localizaçao do user
+                                    /*coroutineScope.launch {
+                                        setButtonToCenterClicked(true)
+                                    }*/
+                                    setButtonToCenterClicked(true)
+                                },
                                 modifier = Modifier
                                     .size(50.dp)
                                     .background(color = Color(0xFFFFFFFF), shape = CircleShape)
@@ -148,8 +169,6 @@ fun TestMapScreen(viewModel: LocationViewModel) {
         }
     }
 }
-
-
 
 // Dummy composable for search results overlay
 @Composable

@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
+import org.osmdroid.config.Configuration.getInstance
 import pt.isec.ans.amov.Application
 import pt.isec.ans.amov.ui.Screens.MainMapScreen
 import pt.isec.ans.amov.ui.Screens.TestMapScreen
@@ -56,6 +58,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         verifyPermissions()
+        getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
 
