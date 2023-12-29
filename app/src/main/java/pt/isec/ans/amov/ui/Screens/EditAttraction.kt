@@ -123,7 +123,9 @@ fun EditAttraction(){
                     }
 
                     //Second 3 inputs
-                    SecondInputs()
+                    /*SecondInputs(attractionFormState) { updatedState ->
+                        attractionFormState = updatedState
+                    }*/
 
                 }
 
@@ -140,9 +142,6 @@ fun EditAttraction(){
                 }
 
             }
-
-
-
         }
     }
 }

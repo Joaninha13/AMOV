@@ -1,5 +1,6 @@
 package pt.isec.ans.amov.ui.Components.Buttons
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
+import com.google.android.gms.tasks.OnSuccessListener
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.theme.*
 
@@ -41,6 +43,7 @@ fun SearchDropdownButton(
     text: String,
     filterFields: FilterFields,
     items: List<String>,
+    onSuccessListener: OnSuccessListener<String>
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember {
@@ -89,6 +92,7 @@ fun SearchDropdownButton(
                             FilterField.LOCATION -> filterFields.location = label
                             FilterField.COUNTRY -> filterFields.country = label
                         }
+                        onSuccessListener.onSuccess(label)
                         expanded = false
                     },
                     text = {

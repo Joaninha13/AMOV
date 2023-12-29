@@ -1,9 +1,16 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,14 +34,18 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.GradientButton
 import pt.isec.ans.amov.ui.Components.OutlinedInput
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueLighter
 import pt.isec.ans.amov.ui.theme.BlueSoft
@@ -41,13 +53,25 @@ import pt.isec.ans.amov.ui.theme.BlueSoft
 data class CategoryFormState(
     var name: String = "",
     var description: String = "",
-    //var logo: String = ""
+    var logo: String = "",
+    var logoUri: Uri? = null
 )
 
-@Preview
 @Composable
-fun AddCategory() {
+fun AddCategory(viewModel: FireBaseViewModel) {
     var categoryFormState by remember { mutableStateOf(CategoryFormState()) }
+
+    val pickImageLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                //Log.d("VERRR------>", "result: $result") // passa aqui
+                result.data?.data?.let { uri ->
+                    // Aqui você tem a URI da imagem selecionada
+                    // Agora você pode fazer o upload para o Firestore ou atualizar o estado conforme necessário
+                    categoryFormState.logoUri = uri
+                }
+            }
+        }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -139,8 +163,26 @@ fun AddCategory() {
                         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-
-                        Text(
+                        ClickableText(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color.Blue)) {
+                                    append("Upload Logo")
+                                }
+                            },
+                            onClick = { offset ->
+                                // Iniciar a atividade de escolha de imagem da galeria
+                                pickImageLauncher.launch(
+                                    Intent(
+                                        Intent.ACTION_PICK,
+                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                                    )
+                                )
+                            },
+                            modifier = Modifier.clickable {
+                                // por aqui a foto que deu upload
+                            }
+                        )
+                        /*Text(
                             text = "Upload Logo",
                             style = TextStyle(
                                 fontSize = 16.sp,
@@ -148,7 +190,7 @@ fun AddCategory() {
                                 fontWeight = FontWeight(500),
                                 color = BlueSoft,
                             )
-                        )
+                        )*/
                     }
                 }
 
@@ -160,8 +202,25 @@ fun AddCategory() {
                             Color(0xFF00B6DE)
                         )
                     )
-                ){ //TODO implement lambda when things work on firebase
-                    Log.d("D", "submit")
+                ){
+                    categoryFormState.logoUri?.let { uri ->
+                        // Quando o botão de registro é clicado, faz o upload da imagem
+                        viewModel.uploadImage(uri) { imageUrl ->
+                            // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
+                            categoryFormState = categoryFormState.copy(logo = imageUrl)
+
+                            Log.d("VERRR------>", "CategoryFormState.name: ${categoryFormState.name}")
+                            Log.d("VERRR------>", "CategoryFormState.description: ${categoryFormState.description}")
+                            Log.d("VERRR------>", "CategoryFormState.logo: ${categoryFormState.logo}")
+                            Log.d("VERRR------>", "CategoryFormState.logoUri: ${categoryFormState.logoUri}")
+
+                            // Agora você pode salvar os dados do formulário no Firestore
+                            viewModel.addCategory(
+                                name = categoryFormState.name,
+                                desc = categoryFormState.description,
+                                image = categoryFormState.logo)
+                        }
+                    }
                 }
             }
         }
@@ -170,8 +229,6 @@ fun AddCategory() {
 
 @Composable
 fun TextInputs(categoryFormState: CategoryFormState, onCategoryFormState: (CategoryFormState) -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
 
     //Name + Description
     Column(
@@ -191,11 +248,11 @@ fun TextInputs(categoryFormState: CategoryFormState, onCategoryFormState: (Categ
         ){
 
             OutlinedInput(
-                _value = name,
+                _value = categoryFormState.name,
                 _label = "Name",
                 _iconName = R.drawable.nameicon,
                 onValueChange = { newValue ->
-                    name = newValue
+                    categoryFormState.name = newValue
                 }
             )
         }
@@ -210,11 +267,11 @@ fun TextInputs(categoryFormState: CategoryFormState, onCategoryFormState: (Categ
         ){
 
             OutlinedInput(
-                _value = description,
+                _value = categoryFormState.description,
                 _label = "Description",
                 _iconName = R.drawable.descicon,
                 onValueChange = { newValue ->
-                    description = newValue
+                    categoryFormState.description = newValue
                 }
             )
 

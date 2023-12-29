@@ -15,13 +15,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import org.osmdroid.config.Configuration.getInstance
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
 import pt.isec.ans.amov.Application
+import pt.isec.ans.amov.ui.Screens.AddAttraction
+import pt.isec.ans.amov.ui.Screens.AddCategory
+import pt.isec.ans.amov.ui.Screens.AddLocation
 import pt.isec.ans.amov.ui.Screens.MainMapScreen
 import pt.isec.ans.amov.ui.Screens.TestMapScreen
+import pt.isec.ans.amov.ui.Screens.LoginScreen
+import pt.isec.ans.amov.ui.Screens.RegisterAcc
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
@@ -32,31 +44,41 @@ class MainActivity : ComponentActivity() {
     val app by lazy { application as Application }
 
     //sera aqui??
-    private val viewModel : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
+    private val viewModelL : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
+    private val viewModelFB : FireBaseViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ComposeTheme {
-                //MainScreen()
-                //AddAttraction()
-                //AddLocation()
-                //AddCategory()
-                //ViewAttraction()
-                //ViewLocations()
-                //ViewCategories()
-                LocationMapsTheme {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background)
-                    ) {
-                        //MainMapScreen(viewModel = viewModel)
-                        TestMapScreen(viewModel = viewModel)
+            //val navController = rememberNavController()
+            /*ComposeTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    NavHost(navController = navController, startDestination = "LoginScreen") {
+                        composable("LoginScreen") {
+                            LoginScreen(viewModel = viewModelFB) {
+                                navController.navigate("AddAttraction")
+                            }
+                        }
+                        composable("AddAttraction") {
+                            /*AddAttraction() {
+                                navController.navigateUp()
+                                // se tiver mais que uma janela de navegação, pode ser necessário usar o popBackStack("LoginScreen")
+                            }*/
+                        }
                     }
                 }
-            }
+            }*/
+            //RegisterAcc(viewModel = viewModelFB) {}
+            //LoginScreen(viewModel = viewModelFB) {}
+            //AddCategory(viewModel = viewModelFB)
+            //AddLocation(ViewModelL = viewModelL, viewModelFB = viewModelFB)
+            AddAttraction(viewModelL = viewModelL, viewModelFB = viewModelFB)
+
         }
+
         verifyPermissions()
         getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
 
@@ -84,7 +106,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.startLocationUpdates()
+        viewModelL.startLocationUpdates()
     }
 
     val verifyMultiplePermissions = registerForActivityResult(
@@ -99,25 +121,25 @@ class MainActivity : ComponentActivity() {
 
     }
     private fun verifyPermissions() : Boolean{
-        viewModel.coarseLocationPermission = ContextCompat.checkSelfPermission(
+        viewModelL.coarseLocationPermission = ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
-        viewModel.fineLocationPermission = ContextCompat.checkSelfPermission(
+        viewModelL.fineLocationPermission = ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            viewModel.backgroundLocationPermission = ContextCompat.checkSelfPermission(
+            viewModelL.backgroundLocationPermission = ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         } else
-            viewModel.backgroundLocationPermission = viewModel.coarseLocationPermission || viewModel.fineLocationPermission
+            viewModelL.backgroundLocationPermission = viewModelL.coarseLocationPermission || viewModelL.fineLocationPermission
 
-        if (!viewModel.coarseLocationPermission && !viewModel.fineLocationPermission) {
+        if (!viewModelL.coarseLocationPermission && !viewModelL.fineLocationPermission) {
             basicPermissionsAuthorization.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -133,17 +155,17 @@ class MainActivity : ComponentActivity() {
     private val basicPermissionsAuthorization = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { results ->
-        viewModel.coarseLocationPermission = results[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
-        viewModel.fineLocationPermission = results[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-        viewModel.startLocationUpdates()
+        viewModelL.coarseLocationPermission = results[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+        viewModelL.fineLocationPermission = results[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        viewModelL.startLocationUpdates()
         verifyBackgroundPermission()
     }
 
     private fun verifyBackgroundPermission() {
-        if (!(viewModel.coarseLocationPermission || viewModel.fineLocationPermission))
+        if (!(viewModelL.coarseLocationPermission || viewModelL.fineLocationPermission))
             return
 
-        if (!viewModel.backgroundLocationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (!viewModelL.backgroundLocationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this, Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 )
@@ -172,7 +194,7 @@ class MainActivity : ComponentActivity() {
     private val backgroundPermissionAuthorization = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { result ->
-        viewModel.backgroundLocationPermission = result
+        viewModelL.backgroundLocationPermission = result
         Toast.makeText(this,"Background location enabled: $result", Toast.LENGTH_LONG).show()
     }
 
