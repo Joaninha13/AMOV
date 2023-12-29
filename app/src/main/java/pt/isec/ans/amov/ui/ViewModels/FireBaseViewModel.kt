@@ -12,6 +12,8 @@ import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import pt.isec.ans.amov.Utils.FireBase.AuthUtil
 import pt.isec.ans.amov.Utils.FireBase.StorageUtil
+import pt.isec.ans.amov.dataStructures.Category
+import pt.isec.ans.amov.dataStructures.Location
 
 data class  User (val name: String, val email: String, val picture: String?)
 
@@ -100,6 +102,38 @@ class FireBaseViewModel : ViewModel() {
     fun getAllLocations(onResult: (List<String>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllLocationsDocumentsNames { names ->
+                onResult(names)
+            }
+        }
+    }
+    fun getLocationDetails(onResult: (Location) -> Unit, userGeo: GeoPoint, name: String) {
+        viewModelScope.launch {
+            StorageUtil.getLocationDetails(
+                userGeo,
+                name
+            ) { locations ->
+                if (locations != null) {
+                    onResult(locations)
+                }
+            }
+        }
+    }
+
+    fun getCategoryDetails(onResult: (Category) -> Unit, name: String) {
+        viewModelScope.launch {
+            StorageUtil.getCategoryDetails(
+                name
+            ) { category ->
+                if (category != null) {
+                    onResult(category)
+                }
+            }
+        }
+    }
+
+    fun getAllAttractions(onResult: (List<String>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllAttractionsDocumentsNames { names ->
                 onResult(names)
             }
         }
