@@ -48,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.google.firebase.firestore.GeoPoint
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.FilterField
@@ -74,7 +75,11 @@ data class AttractionFormState(
     var imageUri: List<Uri> = listOf()
 )
 
+
 @Composable
+fun AddAttraction(
+    navController: NavHostController
+){
 fun AddAttraction(viewModelL: LocationViewModel, viewModelFB: FireBaseViewModel){
     var attractionFormState by remember { mutableStateOf(AttractionFormState()) }
 
@@ -125,16 +130,21 @@ fun AddAttraction(viewModelL: LocationViewModel, viewModelFB: FireBaseViewModel)
                         )
                     )
 
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(16.dp)
-                            .height(16.dp),
-                        painter = painterResource(id = R.drawable.cancellationx1), //falta este resource
-                        contentDescription = "Cancel",
-                        contentScale = ContentScale.None
-                    )
-
+                    Box(
+                        modifier = Modifier.clickable {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(1.dp)
+                                .width(16.dp)
+                                .height(16.dp),
+                            painter = painterResource(id = R.drawable.cancellationx1),
+                            contentDescription = "Cancel",
+                            contentScale = ContentScale.None
+                        )
+                    }
                 }
 
                 //Form Column
@@ -481,7 +491,6 @@ fun SecondInputs(attractionFormState: AttractionFormState, viewModelFB: FireBase
                     // por aqui a foto que deu upload
                 }
             )
-
         }
 
     }

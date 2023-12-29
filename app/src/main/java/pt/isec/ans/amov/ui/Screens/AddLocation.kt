@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.google.firebase.firestore.GeoPoint
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.GradientButton
@@ -66,6 +67,9 @@ data class LocationFormState(
 )
 
 @Composable
+fun AddLocation(
+    navController: NavHostController
+){
 fun AddLocation(ViewModelL: LocationViewModel, viewModelFB: FireBaseViewModel) {
 
     var locationFormState by remember { mutableStateOf(LocationFormState()) }
@@ -129,15 +133,21 @@ fun AddLocation(ViewModelL: LocationViewModel, viewModelFB: FireBaseViewModel) {
                         )
                     )
 
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(16.dp)
-                            .height(16.dp),
-                        painter = painterResource(id = R.drawable.cancellationx1), //falta este resource
-                        contentDescription = "Cancel",
-                        contentScale = ContentScale.None
-                    )
+                    Box(
+                        modifier = Modifier.clickable {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(1.dp)
+                                .width(16.dp)
+                                .height(16.dp),
+                            painter = painterResource(id = R.drawable.cancellationx1),
+                            contentDescription = "Cancel",
+                            contentScale = ContentScale.None
+                        )
+                    }
 
                 }
 

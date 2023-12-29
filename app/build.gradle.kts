@@ -71,6 +71,7 @@ dependencies {
     implementation("org.osmdroid:osmdroid-android:6.1.17")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
+    implementation( "androidx.navigation:navigation-compose:2.7.6")
 
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-analytics")

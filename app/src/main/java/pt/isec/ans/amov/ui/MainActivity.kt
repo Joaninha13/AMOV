@@ -15,68 +15,40 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavHostController
 import androidx.preference.PreferenceManager
 import org.osmdroid.config.Configuration.getInstance
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-
 import pt.isec.ans.amov.Application
-import pt.isec.ans.amov.ui.Screens.AddAttraction
-import pt.isec.ans.amov.ui.Screens.AddCategory
-import pt.isec.ans.amov.ui.Screens.AddLocation
 import pt.isec.ans.amov.ui.Screens.MainMapScreen
-import pt.isec.ans.amov.ui.Screens.TestMapScreen
-import pt.isec.ans.amov.ui.Screens.LoginScreen
-import pt.isec.ans.amov.ui.Screens.RegisterAcc
-import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
 import pt.isec.ans.amov.ui.theme.LocationMapsTheme
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import pt.isec.ans.amov.ui.Screens.AddAttraction
 
 class MainActivity : ComponentActivity() {
 
     val app by lazy { application as Application }
 
+    private val viewModel : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
     //sera aqui??
     private val viewModelL : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
     private val viewModelFB : FireBaseViewModel by viewModels()
 
+    lateinit var navController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            //val navController = rememberNavController()
-            /*ComposeTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    NavHost(navController = navController, startDestination = "LoginScreen") {
-                        composable("LoginScreen") {
-                            LoginScreen(viewModel = viewModelFB) {
-                                navController.navigate("AddAttraction")
-                            }
-                        }
-                        composable("AddAttraction") {
-                            /*AddAttraction() {
-                                navController.navigateUp()
-                                // se tiver mais que uma janela de navegação, pode ser necessário usar o popBackStack("LoginScreen")
-                            }*/
-                        }
-                    }
-                }
-            }*/
-            //RegisterAcc(viewModel = viewModelFB) {}
-            //LoginScreen(viewModel = viewModelFB) {}
-            //AddCategory(viewModel = viewModelFB)
-            //AddLocation(ViewModelL = viewModelL, viewModelFB = viewModelFB)
-            AddAttraction(viewModelL = viewModelL, viewModelFB = viewModelFB)
+            ComposeTheme {
 
+                navController = rememberNavController()
+                SetupNavGraph(navController = navController, viewModel = viewModel)
+            }
         }
 
         verifyPermissions()
