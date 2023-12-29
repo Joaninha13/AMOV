@@ -170,11 +170,12 @@ fun MapScreen(
                                 onLocationChanged(null, null)
                                 //enableFollowLocation()
 
-                                val defaultDrawable = ContextCompat.getDrawable(context, R.drawable.position)
-                                val defaultBitmap = Bitmap.createScaledBitmap((defaultDrawable as BitmapDrawable).bitmap, 100, 100, false)
+                                val defaultDrawable =
+                                    ContextCompat.getDrawable(context, R.drawable.position)
+                                        ?.toBitmap(100, 100, null)
 
-                                setDirectionIcon(defaultBitmap)
-                                setPersonIcon(defaultBitmap)
+                                setDirectionIcon(defaultDrawable)
+                                setPersonIcon(defaultDrawable)
                             }
                         )
                     }
