@@ -47,13 +47,15 @@ import pt.isec.ans.amov.ui.Components.Cards.LocationCard
 import pt.isec.ans.amov.ui.Components.Nav.SearchViewModel
 import pt.isec.ans.amov.ui.Components.Nav.onSearchTriggered
 import pt.isec.ans.amov.ui.Screen
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MainMapScreen(
-    viewModel: LocationViewModel,
+    viewModelL: LocationViewModel,
+    viewModelFB: FireBaseViewModel,
     navController: NavController
 ) {
 
@@ -95,7 +97,8 @@ fun MainMapScreen(
                 ) {
                     // MapScreen
                     MapScreen(
-                        viewModel = viewModel,
+                        viewModelL = viewModelL,
+                        viewModelFB = viewModelFB,
                         buttonToCenterClicked,
                         handleButtonToCenterClicked = { newValue ->
                             setButtonToCenterClicked(newValue)

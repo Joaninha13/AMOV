@@ -32,19 +32,21 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
-    viewModel : LocationViewModel,
+    viewModelL: LocationViewModel,
+    viewModelFB: FireBaseViewModel,
     buttonToCenterClicked : Boolean,
     handleButtonToCenterClicked : (Boolean) -> Unit
 ){
 
     var autoEnabled by remember{ mutableStateOf(false) }
-    val location = viewModel.currentLocation.observeAsState()
+    val location = viewModelL.currentLocation.observeAsState()
 
 
     var geoPoint by remember { mutableStateOf(
@@ -101,7 +103,7 @@ fun MapScreen(
                         controller.setCenter(geoPoint)
                         controller.setZoom(15.0)
                         //controller.setZoom(8.0)
-                        for(poi in viewModel.POIs)
+                        for(poi in viewModelL.POIs)
                             overlays.add(
                                 Marker(this).apply {
                                     position = GeoPoint(poi.latitude,poi.longitude)

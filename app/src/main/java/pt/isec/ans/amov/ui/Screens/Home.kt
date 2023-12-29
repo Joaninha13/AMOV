@@ -23,7 +23,7 @@ fun Home(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            MainMapScreen(viewModel = viewModelL, navController = navController)
+            MainMapScreen(viewModelL = viewModelL, viewModelFB = viewModelFB, navController = navController)
         }
     }
 }
