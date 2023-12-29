@@ -40,7 +40,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -50,7 +49,6 @@ import pt.isec.ans.amov.ui.Components.OutlinedInput
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueLighter
-import pt.isec.ans.amov.ui.theme.BlueSoft
 
 data class CategoryFormState(
     var name: String = "",
@@ -60,10 +58,7 @@ data class CategoryFormState(
 )
 
 @Composable
-fun AddCategory(
-    navController: NavHostController
-) {
-fun AddCategory(viewModel: FireBaseViewModel) {
+fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel) {
     var categoryFormState by remember { mutableStateOf(CategoryFormState()) }
 
     val pickImageLauncher =
@@ -216,7 +211,7 @@ fun AddCategory(viewModel: FireBaseViewModel) {
                 ){
                     categoryFormState.logoUri?.let { uri ->
                         // Quando o botão de registro é clicado, faz o upload da imagem
-                        viewModel.uploadImage(uri) { imageUrl ->
+                        viewModelFB.uploadImage(uri) { imageUrl ->
                             // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
                             categoryFormState = categoryFormState.copy(logo = imageUrl)
 
@@ -226,7 +221,7 @@ fun AddCategory(viewModel: FireBaseViewModel) {
                             Log.d("VERRR------>", "CategoryFormState.logoUri: ${categoryFormState.logoUri}")
 
                             // Agora você pode salvar os dados do formulário no Firestore
-                            viewModel.addCategory(
+                            viewModelFB.addCategory(
                                 name = categoryFormState.name,
                                 desc = categoryFormState.description,
                                 image = categoryFormState.logo)

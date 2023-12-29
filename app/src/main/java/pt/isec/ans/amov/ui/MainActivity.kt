@@ -10,32 +10,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.preference.PreferenceManager
 import org.osmdroid.config.Configuration.getInstance
 import pt.isec.ans.amov.Application
-import pt.isec.ans.amov.ui.Screens.MainMapScreen
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
-import pt.isec.ans.amov.ui.theme.LocationMapsTheme
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import pt.isec.ans.amov.ui.Screens.AddAttraction
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 
 class MainActivity : ComponentActivity() {
 
     val app by lazy { application as Application }
 
-    private val viewModel : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
     //sera aqui??
     private val viewModelL : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
     private val viewModelFB : FireBaseViewModel by viewModels()
@@ -47,7 +37,7 @@ class MainActivity : ComponentActivity() {
             ComposeTheme {
 
                 navController = rememberNavController()
-                SetupNavGraph(navController = navController, viewModel = viewModel)
+                SetupNavGraph(navController,viewModelL,viewModelFB)
             }
         }
 

@@ -67,10 +67,7 @@ data class LocationFormState(
 )
 
 @Composable
-fun AddLocation(
-    navController: NavHostController
-){
-fun AddLocation(ViewModelL: LocationViewModel, viewModelFB: FireBaseViewModel) {
+fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, viewModelFB: FireBaseViewModel) {
 
     var locationFormState by remember { mutableStateOf(LocationFormState()) }
 
