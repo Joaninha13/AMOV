@@ -33,6 +33,8 @@ import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Cards.ReviewCard
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
 import pt.isec.ans.amov.ui.Components.Buttons.SortButton
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
+import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.*
 
 data class InfoAttractionFormState(
@@ -51,7 +53,9 @@ data class InfoAttractionFormState(
 @Composable
 fun InfoAttraction(
     navController: NavController,
-    attractionId: String
+    attractionId: String,
+    viewModelL: LocationViewModel,
+    viewModelFB: FireBaseViewModel,
 ) {
     var formState by remember { mutableStateOf(InfoAttractionFormState()) }
 
@@ -282,8 +286,10 @@ fun InfoAttraction(
 @Preview
 @Composable
 fun InfoAttractionPreview() {
-    InfoAttraction(
-        navController = NavController(LocalContext.current),
-        attractionId = "Torre Eiffel"
-    )
+//    InfoAttraction(
+//        navController = NavController(LocalContext.current),
+//        attractionId = "Torre Eiffel",
+//        viewModelL = LocationViewModel(),
+//        viewModelFB = FireBaseViewModel()
+//    )
 }

@@ -9,7 +9,10 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import pt.isec.ans.amov.dataStructures.Category
+import pt.isec.ans.amov.dataStructures.Location
 import java.util.UUID
+import kotlin.math.*
 
 class StorageUtil {
 
@@ -88,6 +91,7 @@ class StorageUtil {
                     }
                 }
         }
+
         fun uploadImagesToFirebaseStorage(imageUris: List<Uri>, onSuccess: (List<String>) -> Unit) {
             val storage = FirebaseStorage.getInstance()
             val storageRef: StorageReference = storage.reference
@@ -212,6 +216,21 @@ class StorageUtil {
 
             val db = Firebase.firestore
             val doc = db.collection("Location")
+
+            doc.get().addOnSuccessListener { result ->
+                val names = ArrayList<String>()
+                for (document in result) {
+                    names.add(document.id)
+                }
+                onResult(names)
+            }.addOnFailureListener { exception ->
+                onResult(arrayListOf())
+            }
+        }
+        fun getAllAttractionsDocumentsNames(onResult : (List<String>) -> Unit) {
+
+            val db = Firebase.firestore
+            val doc = db.collection("Attractions")
 
             doc.get().addOnSuccessListener { result ->
                 val names = ArrayList<String>()
@@ -348,6 +367,107 @@ class StorageUtil {
                 }
 
         }
+
+
+
+
+
+
+        fun getLocationDetails(userGeo: GeoPoint, name: String, onResult: (Location?) -> Unit) {
+            fun calculateDistance(startGeo: GeoPoint, endGeo: GeoPoint): Float {
+                val earthRadius = 6371 // Radius of the earth in km
+                val latDistance = Math.toRadians(endGeo.latitude - startGeo.latitude)
+                val lonDistance = Math.toRadians(endGeo.longitude - startGeo.longitude)
+                val a = sin(latDistance / 2) * sin(latDistance / 2) +
+                        cos(Math.toRadians(startGeo.latitude)) * cos(Math.toRadians(endGeo.latitude)) *
+                        sin(lonDistance / 2) * sin(lonDistance / 2)
+                val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+                return (earthRadius * c).toFloat() // convert the distance from double to float
+            }
+
+            val db = Firebase.firestore
+
+            // Attempt to fetch the single location document based on country and region
+            val doc = db.collection("Location").document(name)
+            doc.get().addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val fetchedCountry = document["Country"] as? String ?: "Unknown"
+                    val fetchedRegion = document["Region"] as? String ?: "Unknown"
+
+                    //Change later TODO
+                    val numAttractions = document["NumAttractions"] as? Int ?: 0
+
+                    val description = document["Description"] as? String ?: "No description available"
+                    val geoPoint = document["Coordinates"] as? GeoPoint ?: GeoPoint(0.0, 0.0)
+                    val imageUrl = document["Image"] as? String ?: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/800px-Image_not_available.png?20210219185637"
+
+
+                    val distanceInKmFromCurrent = calculateDistance(userGeo, geoPoint)
+
+                    val location = Location(
+                        country = fetchedCountry,
+                        region = fetchedRegion,
+                        numAttractions = numAttractions,
+                        distanceInKmFromCurrent = distanceInKmFromCurrent,
+                        description = description,
+                        coordinates = geoPoint,
+                        imageUrl = imageUrl
+                    )
+
+                    onResult(location)
+                } else {
+                    onResult(null)  // Handle case where the document does not exist
+                }
+            }.addOnFailureListener {
+                onResult(null)  // Handle failure case
+            }
+        }
+
+        fun getCategoryDetails(name: String, onResult: (Category?) -> Unit) {
+
+            val db = Firebase.firestore
+
+            // Attempt to fetch the single location document based on country and region
+            val doc = db.collection("Category").document(name)
+            doc.get().addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val fetchedName = document["Name"] as? String ?: "Unknown"
+                    val description = document["Description"] as? String ?: "No description available"
+                    val logoUrl = document["Logo"] as? String ?: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/800px-Image_not_available.png?20210219185637"
+
+
+                    //Change later TODO
+                    val numAttractions = document["NumAttractions"] as? Int ?: 0
+
+
+                    val category = Category(
+                        name = fetchedName,
+                        description = description,
+                        logoUrl = logoUrl,
+                        numAttractions = numAttractions
+                    )
+
+                    onResult(category)
+                } else {
+                    onResult(null)  // Handle case where the document does not exist
+                }
+            }.addOnFailureListener {
+                onResult(null)  // Handle failure case
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 

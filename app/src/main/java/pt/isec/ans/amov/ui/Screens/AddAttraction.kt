@@ -1,5 +1,6 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -70,6 +71,7 @@ data class AttractionFormState(
 )
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun AddAttraction( navController: NavHostController,viewModelL: LocationViewModel, viewModelFB: FireBaseViewModel){
     var attractionFormState by remember { mutableStateOf(AttractionFormState()) }
@@ -115,7 +117,6 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                         text = "Contribute Attraction",
                         style = TextStyle(
                             fontSize = 24.sp,
-                            //fontFamily = FontFamily(Font(R.font.inter)), esta linha da erro porque nao tem o ficheiro inter
                             fontWeight = FontWeight(600),
                             color = BlueHighlight,
                         )

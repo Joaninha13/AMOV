@@ -62,14 +62,21 @@ fun SetupNavGraph(
             arguments = listOf(navArgument("attractionId") { type = NavType.StringType })
         ) { backStackEntry ->
             val attractionId = backStackEntry.arguments?.getString("attractionId")
-            InfoAttraction(navController = navController, attractionId = attractionId ?: "")
+            InfoAttraction(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, attractionId = attractionId ?: "")
         }
-
-        composable(Screen.InfoLocation.route) {
-            InfoLocation(navController = navController)
+        composable(
+            route = Screen.InfoLocation.route,
+            arguments = listOf(navArgument("locationId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val locationId = backStackEntry.arguments?.getString("locationId")
+            InfoLocation(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, locationId = locationId ?: "")
         }
-        composable(Screen.InfoCategory.route) {
-            InfoCategory(navController = navController)
+        composable(
+            route = Screen.InfoCategory.route,
+            arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId")
+            InfoCategory(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, categoryId = categoryId ?: "")
         }
         composable(Screen.ViewAttraction.route) {
             ViewAttractions(navController = navController)

@@ -10,7 +10,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,27 +28,47 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
+import com.google.firebase.firestore.GeoPoint
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.dataStructures.Location
 import pt.isec.ans.amov.ui.Components.Cards.AttractionCard
 import pt.isec.ans.amov.ui.Components.Buttons.SortButton
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
+import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.*
-
-data class InfoLocationFormState(
-    var country: String = "France",
-    var region: String = "Paris",
-    var description: String = "",
-    var coordinates: String = "48°51'52.9776''N 2°20'56.4504''E",
-
-
-    var numRelatedAttractions: Int = 32,
-)
 
 
 @Composable
 fun InfoLocation(
     navController: NavController,
+    viewModelFB: FireBaseViewModel,
+    viewModelL: LocationViewModel,
+
+    locationId: String
 ) {
-    var formState by remember { mutableStateOf(InfoLocationFormState()) }
+
+    val location = viewModelL.currentLocation.observeAsState()
+
+
+    var geoPoint by remember { mutableStateOf(
+        GeoPoint(
+            location.value?.latitude ?: 0.0, location.value?.longitude ?: 0.0
+        )
+    ) }
+
+    var formState by remember { mutableStateOf<Location?>(null) }
+
+    // Fetch location details when the item enters composition
+    LaunchedEffect(locationId) {
+        viewModelFB.getLocationDetails(
+            userGeo = geoPoint,
+            name = locationId,
+            onResult = { details ->
+                formState = details
+            }
+        )
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -67,7 +89,7 @@ fun InfoLocation(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = formState.country + ", " + formState.region,
+                        text = (formState?.country ?: "Unknown") + ", " + (formState?.region ?: "Unknown"),
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -103,7 +125,7 @@ fun InfoLocation(
 
 
             Text(
-                text = formState.coordinates,
+                text = "${"%.6f".format(formState?.coordinates?.latitude?.toDouble())}, ${"%.6f".format(formState?.coordinates?.longitude?.toDouble())}",
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -120,7 +142,7 @@ fun InfoLocation(
                     .height(214.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.torre_eiffel),
+                    painter = rememberImagePainter(formState?.imageUrl),
                     contentDescription = "image description",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
@@ -133,7 +155,7 @@ fun InfoLocation(
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = "Related Attractions (" + formState.numRelatedAttractions + ")",
+                    text = "Related Attractions (" + formState?.numAttractions + ")",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.inter_semibold)),
