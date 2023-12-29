@@ -225,7 +225,7 @@ fun SearchResultsOverlay(onItemClicked: () -> Unit, searchViewModel: SearchViewM
                     FilterButtonWithPopUp(
                         filterOptions = listOf(
                             { ToggleFilterOption("Approved", selectedFilterCriteria.approved, liableFilterCriteria) },
-                            { SearchDropdownButton(FilterField.CATEGORY, "Category", liableFilterCriteria, listOf("Apple", "Banana", "Cherry")) }
+                            { SearchDropdownButton(FilterField.CATEGORY, "Category", liableFilterCriteria, listOf("Apple", "Banana", "Cherry")){} }
                             // ... other filter options ...
                         ),
                         liableFilterCriteria,
@@ -264,7 +264,6 @@ fun SearchResultsOverlay(onItemClicked: () -> Unit, searchViewModel: SearchViewM
         }
 
         LazyColumn(
-
 
             content = {
                 if (searchViewModel.searchText.value.equals("attractions", ignoreCase = true)) {

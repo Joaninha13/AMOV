@@ -1,27 +1,15 @@
 package pt.isec.ans.amov.ui.Components
 
 
-import android.os.Handler
-import android.os.Looper
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,14 +22,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import org.osmdroid.config.Configuration
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,7 +96,6 @@ fun MapScreen(
             AndroidView(
                 factory = { context ->
                     MapView(context).apply {
-                        //Configuration.getInstance().userAgentValue = getContext().getPackageName();
                         setTileSource(TileSourceFactory.MAPNIK);//==TileSourceFactory.DEFAULT_TILE_SOURCE
                         setMultiTouchControls(true)
                         controller.setCenter(geoPoint)
@@ -118,15 +109,35 @@ fun MapScreen(
                                     title = poi.team
                                 }
                             )
+                        overlays.add(
+                            MyLocationNewOverlay(this).apply {
+                                enableMyLocation()
+                                onLocationChanged(null, null)
+                                enableFollowLocation()
+
+                                val defaultDrawable = ContextCompat.getDrawable(context, R.drawable.street_view_person)
+                                val defaultBitmap = Bitmap.createScaledBitmap((defaultDrawable as BitmapDrawable).bitmap, 100, 100, false)
+
+                                setDirectionIcon(defaultBitmap)
+                                setPersonIcon(defaultBitmap)
+                            }
+                        )
                     }
                 },
                 update = { view ->
                     view.controller.setCenter(geoPoint)
+                    /*val myLocationOverlay = view.overlays.firstOrNull { it is MyLocationNewOverlay } as? MyLocationNewOverlay
+                    myLocationOverlay?.enableMyLocation()
+                    myLocationOverlay?.onLocationChanged(null, null)
+                    myLocationOverlay?.enableFollowLocation();
+                    val defaultDrawable = ContextCompat.getDrawable(view.context, android.R.drawable.ic_menu_mylocation)
+                    val defaultBitmap = (defaultDrawable as BitmapDrawable).bitmap
+                    myLocationOverlay?.setPersonIcon(defaultBitmap)*/
+
                     if(buttonToCenterClicked){
                         view.controller.animateTo(geoPoint, 15.0, 1500, null)
                         handleButtonToCenterClicked(false)
                     }
-
                 }
             )
         }

@@ -4,6 +4,10 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.location.LocationManager
 import androidx.core.location.LocationListenerCompat
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+
+
+
 
 class LocationManagerHandler(private val locationManager: LocationManager) : LocationHandler {
     override var locationEnabled = false
@@ -30,6 +34,7 @@ class LocationManagerHandler(private val locationManager: LocationManager) : Loc
             100f,
             locationListener
         )
+
         locationEnabled = true
     }
 
