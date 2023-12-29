@@ -3,15 +3,12 @@ package pt.isec.ans.amov.ui.Components
 
 import android.app.Activity
 import android.content.Intent
-import android.gesture.GestureOverlayView
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
-import android.view.GestureDetector
+import android.view.InputDevice
 import android.view.MotionEvent
-import android.widget.Toast
+import android.view.View
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -45,11 +42,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
@@ -57,10 +54,10 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.PopUps.PopUpBase
 import pt.isec.ans.amov.ui.Screens.LocationFormState
-import pt.isec.ans.amov.ui.Screens.TextInputs
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.BlueLighter
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,25 +95,9 @@ fun MapScreen(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-//        Row(
-//            modifier= Modifier
-//                .fillMaxWidth(),
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Text(text = "Lat: ${location.value?.latitude ?: "--"}")
-//            Switch(checked = autoEnabled, onCheckedChange = {
-//                autoEnabled = it
-//            })
-//            Text(text = "Lon: ${location.value?.longitude ?: "--"}")
-//        }
-//        Spacer(Modifier.height(16.dp))
 
         Box(
             modifier = Modifier
-                //.padding(8.dp)
-                /*.fillMaxWidth()
-                .fillMaxHeight(0.5f)*/
                 .fillMaxSize()
                 .clipToBounds()
                 .background(Color(255, 240, 128)),
@@ -126,25 +107,12 @@ fun MapScreen(
             AndroidView(
                 factory = { context ->
 
-                    /*val mReceive = object : MapEventsReceiver {
-                        override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
-                            return false
-                        }
-
-                        override fun longPressHelper(p: GeoPoint?): Boolean {
-                            p?.let {
-                                Toast.makeText(context, "${p.latitude} - ${p.longitude}", Toast.LENGTH_LONG).show()
-                            }
-                            return true  // Retorna true para indicar que o evento foi tratado
-                        }
-                    }*/
-
                     mapView = MapView(context).apply {
                         setTileSource(TileSourceFactory.MAPNIK);//==TileSourceFactory.DEFAULT_TILE_SOURCE
                         setMultiTouchControls(true)
                         controller.setCenter(geoPoint)
                         controller.setZoom(20.0)
-                        //controller.setZoom(8.0)
+                        zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
                         viewModelFB.getAllLocationsCoordinates { pois ->
                             for (poi in pois)
                                 overlays.add(
@@ -152,7 +120,7 @@ fun MapScreen(
                                         position = GeoPoint(poi.latitude, poi.longitude)
                                         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                         icon = ContextCompat.getDrawable(context, R.drawable.location_marker)
-                                        //title = poi.team
+                                        title = "${poi.latitude} ${poi.longitude}"
                                     }
                                 )
 
@@ -160,8 +128,6 @@ fun MapScreen(
                         overlays.add(
                             MyLocationNewOverlay(this).apply {
                                 enableMyLocation()
-                                //onLocationChanged(null, null)
-                                //enableFollowLocation()
 
                                 val defaultDrawable =
                                     ContextCompat.getDrawable(context, R.drawable.position)
@@ -172,35 +138,14 @@ fun MapScreen(
                             }
                         )
 
-                        /*val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-
-                            override fun onDown(e: MotionEvent): Boolean {
-                                return e.pointerCount == 1
-                            }
-
-                            override fun onLongPress(e: MotionEvent){
-                                if (e.pointerCount == 1) {
-                                    val x = e.x
-                                    val y = e.y
-                                    val touchedGeoPoint = mapView?.projection?.fromPixels(x.toInt(), y.toInt())
-                                    // Lógica adicional, se necessário, ao detectar uma pressão longa
-                                    touchedGeoPoint?.let {
-                                        Toast.makeText(context, "${it.latitude} - ${it.longitude}", Toast.LENGTH_LONG).show()
-                                    }
-
-                                    // Chama performClick para lidar com acessibilidade
-                                    performClick()
-                                }
-                            }
-                        })*/
-
                         // Adiciona o MapEventsReceiver diretamente ao MapView -> isto serve para quando a pessoa pressionar drante algum tempo seguido sejam obtidas as coordenadas do ponto onde carregou
                         val mReceive = object : MapEventsReceiver {
                             private val handler = Handler()
-                            private val longPressDuration = 2000L // Tempo de pressão longa em milissegundos (2 segundos)
+                            private val longPressDuration = 1500L // Tempo de pressão longa em milissegundos (2 segundos)
                             private var lastPressTime = 0L
 
                             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
+                                showPopUp = false
                                 return false
                             }
 
@@ -244,7 +189,7 @@ fun MapScreen(
 
 @Composable
 fun ShowPopUpBase(showPopUp: Boolean, onDismiss: () -> Unit) {
-    var locationFormState by remember { mutableStateOf(LocationFormState()) }
+    val locationFormState by remember { mutableStateOf(LocationFormState()) }
 
     val pickImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
@@ -328,60 +273,50 @@ fun ShowPopUpBase(showPopUp: Boolean, onDismiss: () -> Unit) {
                         )
 
                     }
-                }
 
-                //Upload Images
-                Row(
-                    modifier = Modifier
-                        .border(
-                            width = 1.dp,
-                            color = BlueLighter,
-                            shape = RoundedCornerShape(size = 5.dp)
-                        )
-                        .width(300.dp)
-                        .height(30.dp)
-                        .background(
-                            color = Color(0xCCFFFFFF),
-                            shape = RoundedCornerShape(size = 5.dp)
-                        )
-                        .padding(start = 10.dp, end = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    ClickableText(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = Color.Blue)) {
-                                append("Upload Image")
-                            }
-                        },
-                        onClick = { offset ->
-                            // Iniciar a atividade de escolha de imagem da galeria
-                            pickImageLauncher.launch(
-                                Intent(
-                                    Intent.ACTION_PICK,
-                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                                )
+                    //Upload Images
+                    Row(
+                        modifier = Modifier
+                            .border(
+                                width = 1.dp,
+                                color = BlueLighter,
+                                shape = RoundedCornerShape(size = 5.dp)
                             )
-                        },
-                        modifier = Modifier.clickable {
-                            // por aqui a foto que deu upload
-                        }
-                    )
-
-                    /*Text(
-                        text = "Upload Images",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            //fontFamily = FontFamily(Font(R.font.inter)),
-                            fontWeight = FontWeight(500),
-                            color = BlueSoft,
+                            .width(300.dp)
+                            .height(30.dp)
+                            .background(
+                                color = Color(0xCCFFFFFF),
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
+                            .padding(start = 10.dp, end = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        ClickableText(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color.Blue)) {
+                                    append("Upload Image")
+                                }
+                            },
+                            onClick = { offset ->
+                                // Iniciar a atividade de escolha de imagem da galeria
+                                pickImageLauncher.launch(
+                                    Intent(
+                                        Intent.ACTION_PICK,
+                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                                    )
+                                )
+                            },
+                            modifier = Modifier.clickable {
+                                // por aqui a foto que deu upload
+                            }
                         )
-                    )*/
+                    }
                 }
                       },
             buttonText = "Add",
             onConfirm = {
-                // Implemente a lógica de confirmação
+                // Implemente a lógica de confirmação -> enviar para a firebase
             },
             onDismiss = onDismiss
         )
