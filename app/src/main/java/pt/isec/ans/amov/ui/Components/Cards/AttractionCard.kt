@@ -39,6 +39,7 @@ import pt.isec.ans.amov.ui.theme.BlueSoft
 @Composable
 fun AttractionCard(
     navController: NavController,
+    attractionId: String,
 
     attraction: String,
     averageRating: Float,
@@ -71,7 +72,7 @@ fun AttractionCard(
         ) {
             Box(
                 modifier = Modifier.clickable {
-                    navController.navigate(Screen.InfoAttraction.route)
+                    navController.navigate(Screen.InfoAttraction.createRoute(attractionId))
                 }
             ) {
                 Image(

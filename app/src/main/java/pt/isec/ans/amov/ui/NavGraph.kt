@@ -3,8 +3,10 @@ package pt.isec.ans.amov.ui
 import androidx.compose.runtime.Composable
 
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import pt.isec.ans.amov.ui.Screens.AddAttraction
 import pt.isec.ans.amov.ui.Screens.AddCategory
 import pt.isec.ans.amov.ui.Screens.AddLocation
@@ -53,9 +55,14 @@ fun SetupNavGraph(
         composable(Screen.EditPersonalData.route) {
             EditPersonalData(navController = navController)
         }
-        composable(Screen.InfoAttraction.route) {
-            InfoAttraction(navController = navController)
+        composable(
+            route = Screen.InfoAttraction.route,
+            arguments = listOf(navArgument("attractionId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val attractionId = backStackEntry.arguments?.getString("attractionId")
+            InfoAttraction(navController = navController, attractionId = attractionId ?: "")
         }
+
         composable(Screen.InfoLocation.route) {
             InfoLocation(navController = navController)
         }

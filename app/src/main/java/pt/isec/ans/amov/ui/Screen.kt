@@ -9,7 +9,10 @@ sealed class Screen(val route: String) {
     object EditLocation : Screen("editLocation")
     object EditCategory : Screen("editCategory")
     object EditPersonalData : Screen("editPersonalData")
-    object InfoAttraction : Screen("infoAttraction")
+    object InfoAttraction : Screen("infoAttraction/{attractionId}") {
+        fun createRoute(attractionId: String) = "infoAttraction/$attractionId"
+    }
+
     object InfoLocation : Screen("infoLocation")
     object InfoCategory : Screen("infoCategory")
     object ViewAttraction : Screen("viewAttraction")
