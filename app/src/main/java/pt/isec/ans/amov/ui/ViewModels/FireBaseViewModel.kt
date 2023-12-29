@@ -105,6 +105,14 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
+    fun getAllLocationsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllLocationsDocumentsCoordinates { coordinates ->
+                onResult(coordinates)
+            }
+        }
+    }
+
     //Attractions
     fun addAtraction(name: String, desc : String, coordinates: GeoPoint, category : String, Location : String, images : List<String>, onResult : (Throwable?) -> Unit) {
         viewModelScope.launch { StorageUtil.addAttraction(name, desc, coordinates, category, Location, images){ e ->

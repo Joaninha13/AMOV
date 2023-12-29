@@ -97,16 +97,17 @@ fun MapScreen(
         ) {
             AndroidView(
                 factory = { context ->
-                    MapView(context).apply {
+
+                    /*MapView(context).apply {
                         setTileSource(TileSourceFactory.MAPNIK);//==TileSourceFactory.DEFAULT_TILE_SOURCE
                         setMultiTouchControls(true)
                         controller.setCenter(geoPoint)
                         controller.setZoom(15.0)
                         //controller.setZoom(8.0)
-                        for(poi in viewModelL.POIs)
+                        for (poi in viewModelL.POIs)
                             overlays.add(
                                 Marker(this).apply {
-                                    position = GeoPoint(poi.latitude,poi.longitude)
+                                    position = GeoPoint(poi.latitude, poi.longitude)
                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                     title = poi.team
                                 }
@@ -114,10 +115,62 @@ fun MapScreen(
                         overlays.add(
                             MyLocationNewOverlay(this).apply {
                                 enableMyLocation()
-                                onLocationChanged(null, null)
-                                enableFollowLocation()
+                                //onLocationChanged(null, null)
+                                //enableFollowLocation()
 
                                 val defaultDrawable = ContextCompat.getDrawable(context, R.drawable.street_view_person)
+                                val defaultBitmap = Bitmap.createScaledBitmap((defaultDrawable as BitmapDrawable).bitmap, 100, 100, false)
+
+                                setDirectionIcon(defaultBitmap)
+                                setPersonIcon(defaultBitmap)
+                            }
+                        )
+                    }*/
+
+                    /*viewModelFB.getAllLocations { pois ->
+
+                        MapView(context).apply {
+                            setTileSource(TileSourceFactory.MAPNIK);//==TileSourceFactory.DEFAULT_TILE_SOURCE
+                            setMultiTouchControls(true)
+                            controller.setCenter(geoPoint)
+                            controller.setZoom(15.0)
+                            //controller.setZoom(8.0)
+                            for (poi in pois)
+                                overlays.add(
+                                    Marker(this).apply {
+                                        position = GeoPoint(poi.latitude, poi.longitude)
+                                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                        title = poi.team
+                                    }
+                                )
+                        }
+
+                    }*/
+
+                    MapView(context).apply {
+                        setTileSource(TileSourceFactory.MAPNIK);//==TileSourceFactory.DEFAULT_TILE_SOURCE
+                        setMultiTouchControls(true)
+                        controller.setCenter(geoPoint)
+                        controller.setZoom(15.0)
+                        //controller.setZoom(8.0)
+                        viewModelFB.getAllLocationsCoordinates { pois ->
+                            for (poi in pois)
+                                overlays.add(
+                                    Marker(this).apply {
+                                        position = GeoPoint(poi.latitude, poi.longitude)
+                                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                        //title = poi.team
+                                    }
+                                )
+
+                        }
+                        overlays.add(
+                            MyLocationNewOverlay(this).apply {
+                                enableMyLocation()
+                                onLocationChanged(null, null)
+                                //enableFollowLocation()
+
+                                val defaultDrawable = ContextCompat.getDrawable(context, R.drawable.position)
                                 val defaultBitmap = Bitmap.createScaledBitmap((defaultDrawable as BitmapDrawable).bitmap, 100, 100, false)
 
                                 setDirectionIcon(defaultBitmap)
@@ -128,13 +181,6 @@ fun MapScreen(
                 },
                 update = { view ->
                     view.controller.setCenter(geoPoint)
-                    /*val myLocationOverlay = view.overlays.firstOrNull { it is MyLocationNewOverlay } as? MyLocationNewOverlay
-                    myLocationOverlay?.enableMyLocation()
-                    myLocationOverlay?.onLocationChanged(null, null)
-                    myLocationOverlay?.enableFollowLocation();
-                    val defaultDrawable = ContextCompat.getDrawable(view.context, android.R.drawable.ic_menu_mylocation)
-                    val defaultBitmap = (defaultDrawable as BitmapDrawable).bitmap
-                    myLocationOverlay?.setPersonIcon(defaultBitmap)*/
 
                     if(buttonToCenterClicked){
                         view.controller.animateTo(geoPoint, 15.0, 1500, null)

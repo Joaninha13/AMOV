@@ -223,6 +223,25 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
+        fun getAllLocationsDocumentsCoordinates(onResult : (List<GeoPoint>) -> Unit) {
+
+            val db = Firebase.firestore
+            val doc = db.collection("Location")
+
+            doc.get().addOnSuccessListener { result ->
+                val coordinates = ArrayList<GeoPoint>()
+                for (document in result) {
+                    val geoPoint = document["Coordinates"] as? GeoPoint
+
+                    if(geoPoint != null){
+                        coordinates.add(GeoPoint(geoPoint.latitude, geoPoint.longitude))
+                    }
+                }
+                onResult(coordinates)
+            }.addOnFailureListener { exception ->
+                onResult(arrayListOf())
+            }
+        }
         fun updateApprovedLocation(onResult : (Throwable?) -> Unit, country: String, region : String) {
 
             val db = Firebase.firestore
