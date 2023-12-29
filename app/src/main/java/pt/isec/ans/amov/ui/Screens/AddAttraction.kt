@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.GradientButton
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
@@ -51,9 +53,11 @@ data class AttractionFormState(
     var coordinates: String = ""
 )
 
-@Preview
+
 @Composable
-fun AddAttraction(){
+fun AddAttraction(
+    navController: NavHostController
+){
     var attractionFormState by remember { mutableStateOf(AttractionFormState()) }
 
     Surface(
@@ -101,16 +105,21 @@ fun AddAttraction(){
                         )
                     )
 
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(16.dp)
-                            .height(16.dp),
-                        painter = painterResource(id = R.drawable.cancellationx1), //falta este resource
-                        contentDescription = "Cancel",
-                        contentScale = ContentScale.None
-                    )
-
+                    Box(
+                        modifier = Modifier.clickable {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(1.dp)
+                                .width(16.dp)
+                                .height(16.dp),
+                            painter = painterResource(id = R.drawable.cancellationx1),
+                            contentDescription = "Cancel",
+                            contentScale = ContentScale.None
+                        )
+                    }
                 }
 
                 //Form Column

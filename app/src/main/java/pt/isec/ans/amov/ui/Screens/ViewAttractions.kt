@@ -1,6 +1,7 @@
 package pt.isec.ans.amov.ui.Screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,17 +23,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Cards.UserAttractionCard
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 
 
-@Preview()
 @Composable
-fun ViewAttraction() {
+fun ViewAttractions(
+    navController: NavController,
+) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -60,15 +62,21 @@ fun ViewAttraction() {
                         )
                     )
                 }
-                Image(
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .width(16.dp)
-                        .height(16.dp),
-                    painter = painterResource(id = R.drawable.cancellationx1),
-                    contentDescription = "Cancel",
-                    contentScale = ContentScale.None
-                )
+                Box(
+                    modifier = Modifier.clickable {
+                        navController.popBackStack()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .padding(1.dp)
+                            .width(16.dp)
+                            .height(16.dp),
+                        painter = painterResource(id = R.drawable.cancellationx1),
+                        contentDescription = "Cancel",
+                        contentScale = ContentScale.None
+                    )
+                }
             }
 
             Box(

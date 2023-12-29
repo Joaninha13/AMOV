@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,16 +42,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.GradientButton
+import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueLighter
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
 @Composable
-fun EditLocation(
+fun EditPersonalData(
     navController: NavHostController
 ){
-
-    var locationFormState by remember { mutableStateOf(LocationFormState()) }
+    var attractionFormState by remember { mutableStateOf(AttractionFormState()) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -83,7 +89,7 @@ fun EditLocation(
                         modifier = Modifier
                             .width(248.dp)
                             .height(29.dp),
-                        text = "Edit Location",
+                        text = "Edit Personal Data",
                         style = TextStyle(
                             fontSize = 24.sp,
                             //fontFamily = FontFamily(Font(R.font.inter)), esta linha da erro porque nao tem o ficheiro inter
@@ -120,40 +126,13 @@ fun EditLocation(
                     horizontalAlignment = Alignment.Start,
                 ) {
 
-                    //First inputs
-                    TextInputs(locationFormState) { updatedState ->
-                        locationFormState = updatedState
+                    //First 3 inputs
+                    TextInputs(attractionFormState) { updatedState ->
+                        attractionFormState = updatedState
                     }
 
-                    //Upload Images
-                    Row(
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = BlueLighter,
-                                shape = RoundedCornerShape(size = 5.dp)
-                            )
-                            .width(300.dp)
-                            .height(30.dp)
-                            .background(
-                                color = Color(0xCCFFFFFF),
-                                shape = RoundedCornerShape(size = 5.dp)
-                            )
-                            .padding(start = 10.dp, end = 10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-
-                        Text(
-                            text = "Upload Images",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                //fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
-                                color = BlueSoft,
-                            )
-                        )
-                    }
+                    //Second 3 inputs
+                    SecondInputs()
 
                 }
 
@@ -164,13 +143,15 @@ fun EditLocation(
                             Color(0xFF0B374B),
                             Color(0xFF00B6DE)
                         )
-                    )
+                    ),
                 ){ //TODO implement lambda when things work on firebase
                     Log.d("D", "save")
                 }
+
             }
 
-        }
 
+
+        }
     }
 }

@@ -31,7 +31,7 @@ fun DangerRoundIconButton(
         modifier = modifier
             .size(32.dp)
             .border(
-                1.dp,
+                2.dp,
                 color = WarningsError,
                 shape = RoundedCornerShape(50.dp)
             )
