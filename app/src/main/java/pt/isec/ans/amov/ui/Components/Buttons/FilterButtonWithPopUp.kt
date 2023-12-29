@@ -37,9 +37,12 @@ fun FilterButtonWithPopUp(
     // Placeholder for your sort button or trigger button
     Button(
         onClick = { showPopup = true },
+        contentPadding = PaddingValues(0.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-        )
+        ),
+        modifier = Modifier
+            .width(35.dp)
     ) {
         Image(
             painter = painterResource(id = R.drawable.filters),
@@ -47,8 +50,8 @@ fun FilterButtonWithPopUp(
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .padding(1.dp)
-                .width(20.dp)
-                .height(20.dp)
+                .width(24.dp)
+                .height(24.dp)
         )
     }
 

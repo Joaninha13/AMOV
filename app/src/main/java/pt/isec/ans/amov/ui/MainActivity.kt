@@ -17,44 +17,34 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavHostController
 import androidx.preference.PreferenceManager
 import org.osmdroid.config.Configuration.getInstance
 import pt.isec.ans.amov.Application
 import pt.isec.ans.amov.ui.Screens.MainMapScreen
-import pt.isec.ans.amov.ui.Screens.TestMapScreen
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
 import pt.isec.ans.amov.ui.theme.LocationMapsTheme
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import pt.isec.ans.amov.ui.Screens.AddAttraction
 
 class MainActivity : ComponentActivity() {
 
     val app by lazy { application as Application }
 
-    //sera aqui??
     private val viewModel : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
 
+    lateinit var navController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeTheme {
-                //MainScreen()
-                //AddAttraction()
-                //AddLocation()
-                //AddCategory()
-                //ViewAttraction()
-                //ViewLocations()
-                //ViewCategories()
-                LocationMapsTheme {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background)
-                    ) {
-                        //MainMapScreen(viewModel = viewModel)
-                        TestMapScreen(viewModel = viewModel)
-                    }
-                }
+
+                navController = rememberNavController()
+                SetupNavGraph(navController = navController, viewModel = viewModel)
             }
         }
         verifyPermissions()

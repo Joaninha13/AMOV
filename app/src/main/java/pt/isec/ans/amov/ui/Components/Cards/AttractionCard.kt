@@ -1,12 +1,16 @@
 package pt.isec.ans.amov.ui.Components.Cards
 
+import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,14 +28,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
+import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
 
 @Composable
 fun AttractionCard(
+    navController: NavController,
+
     attraction: String,
     averageRating: Float,
     numRatings: Int,
@@ -61,12 +69,18 @@ fun AttractionCard(
                 .height(100.dp)
                 .width(100.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.torre_eiffel),
-                contentDescription = "image description",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
+            Box(
+                modifier = Modifier.clickable {
+                    navController.navigate(Screen.InfoAttraction.route)
+                }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.torre_eiffel),
+                    contentDescription = "image description",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
 
 
@@ -183,11 +197,11 @@ fun AttractionCard(
 @Preview
 @Composable
 fun AttractionCardPreview() {
-    AttractionCard(
-        attraction = "Torre Eiffel Tower",
-        averageRating = 2.3f,
-        numRatings = 3214,
-        distanceInKmFromCurrent = 32.4f,
-        lastComment = "This is the last comment ysyayayay sdasyudsadas  kjnasjkd naskjd baskj dbas",
-    )
+//    AttractionCard(
+//        attraction = "Torre Eiffel Tower",
+//        averageRating = 2.3f,
+//        numRatings = 3214,
+//        distanceInKmFromCurrent = 32.4f,
+//        lastComment = "This is the last comment ysyayayay sdasyudsadas  kjnasjkd naskjd baskj dbas",
+//    )
 }

@@ -24,12 +24,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.Components.Buttons.DangerRoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
 
 @Composable
-fun ReviewCard(
+fun UserReviewCard(
     comment: String,
     rating: Int,
     numApprovals: Int,
@@ -44,12 +45,11 @@ fun ReviewCard(
             .padding(10.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.End,
             modifier = Modifier
                 .height(56.dp)
         ) {
-            RoundIconButton(R.drawable.account)
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
@@ -73,6 +73,30 @@ fun ReviewCard(
                         .padding(1.dp)
                         .width(14.dp)
                         .height(14.dp)
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = numApprovals.toString(),
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily(Font(R.font.inter)),
+                        fontWeight = FontWeight(600),
+                        color = BlueSoft,
+                    )
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.check_circle),
+                    contentDescription = "approved status",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .width(14.dp)
+                        .height(14.dp),
+                    colorFilter = if (numApprovals > 2) ColorFilter.tint(Color(0xFF00B913)) else ColorFilter.tint(Color(0xFFFFB800))
                 )
             }
         }
@@ -102,48 +126,15 @@ fun ReviewCard(
             modifier = Modifier
                 .height(56.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.thumbs_up),
-                contentDescription = "approve icon",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .padding(1.dp)
-                    .width(26.dp)
-                    .height(26.dp)
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = numApprovals.toString(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily(Font(R.font.inter)),
-                        fontWeight = FontWeight(600),
-                        color = BlueSoft,
-                    )
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.check_circle),
-                    contentDescription = "approved status",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .width(14.dp)
-                        .height(14.dp),
-                    colorFilter = if (numApprovals > 2) ColorFilter.tint(Color(0xFF00B913)) else ColorFilter.tint(Color(0xFFFFB800))
-                )
-            }
+            DangerRoundIconButton(drawableId = R.drawable.trash)
         }
     }
 }
 
 @Preview
 @Composable
-fun ReviewCardPreview() {
-    ReviewCard(
+fun UserReviewCardPreview() {
+    UserReviewCard(
         comment = "This is the comment of the category yyyyyyyyyyyyyyy sdkjnfi sdujbhfdv iusdabv siour dnvisdubvnsdiubvsdiuvcbsdiu",
         rating = 2,
         numApprovals = 3,

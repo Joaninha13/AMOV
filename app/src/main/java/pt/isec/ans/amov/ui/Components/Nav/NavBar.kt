@@ -1,6 +1,7 @@
 package pt.isec.ans.amov.ui.Components.Nav
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,14 +19,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
+import pt.isec.ans.amov.ui.Screen
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NavBar(
+    navController: NavController,
     coroutineScope: CoroutineScope,
     modalBottomSheetState: ModalBottomSheetState,
     searchViewModel: SearchViewModel
@@ -48,6 +52,7 @@ fun NavBar(
             },
             modifier = Modifier
                 .size(50.dp)
+                .border(2.dp, Color.LightGray, CircleShape)
                 .background(color = Color(0xFFFFFFFF), shape = CircleShape)
         )
 
@@ -63,8 +68,12 @@ fun NavBar(
 
         RoundIconButton(
             drawableId = R.drawable.account,
+            onClick = {
+                navController.navigate(Screen.ViewAccount.route)
+            },
             modifier = Modifier
                 .size(50.dp)
+                .border(2.dp, Color.LightGray, CircleShape)
                 .background(color = Color(0xFFFFFFFF), shape = CircleShape)
 
         )
