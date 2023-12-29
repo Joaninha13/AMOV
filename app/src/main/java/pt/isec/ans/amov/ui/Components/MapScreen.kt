@@ -109,6 +109,7 @@ fun MapScreen(
                                     Marker(this).apply {
                                         position = GeoPoint(poi.latitude, poi.longitude)
                                         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                        icon = ContextCompat.getDrawable(context, R.drawable.location_marker)
                                         //title = poi.team
                                     }
                                 )
