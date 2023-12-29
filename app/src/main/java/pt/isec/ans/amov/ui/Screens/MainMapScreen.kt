@@ -1,5 +1,6 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.FilterButtonWithPopUp
@@ -39,7 +41,6 @@ import pt.isec.ans.amov.ui.Components.Buttons.FilterField
 import pt.isec.ans.amov.ui.Components.Buttons.FilterFields
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.SearchDropdownButton
-import pt.isec.ans.amov.ui.Components.Buttons.SortButton
 import pt.isec.ans.amov.ui.Components.Buttons.SortButtonWithPopUp
 import pt.isec.ans.amov.ui.Components.Buttons.ToggleFilterOption
 import pt.isec.ans.amov.ui.Components.Cards.AttractionCard
@@ -53,14 +54,14 @@ import pt.isec.ans.amov.ui.theme.BlueHighlight
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MainMapScreen(
-    viewModel: LocationViewModel,
+    locationViewModel: LocationViewModel,
     navController: NavController
 ) {
 
     // State for the bottom sheet
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
-    val searchViewModel: SearchViewModel = remember { SearchViewModel() }
+    val searchViewModel: SearchViewModel = viewModel() // Scoped to the nearest LifecycleOwner
 
     val (buttonToCenterClicked, setButtonToCenterClicked) = remember { mutableStateOf(false) }
 
@@ -71,7 +72,7 @@ fun MainMapScreen(
         sheetContent = {
             SearchResultsOverlay(
                 onItemClicked = {
-                    // TODO: Handle item clic
+                    // TODO: Handle item click
                 },
                 searchViewModel = searchViewModel,
                 navController = navController
@@ -95,7 +96,7 @@ fun MainMapScreen(
                 ) {
                     // MapScreen
                     MapScreen(
-                        viewModel = viewModel,
+                        viewModel = locationViewModel,
                         buttonToCenterClicked,
                         handleButtonToCenterClicked = { newValue ->
                             setButtonToCenterClicked(newValue)
@@ -130,8 +131,8 @@ fun MainMapScreen(
                                 RoundIconButton(
                                     drawableId = R.drawable.categories,
                                     onClick = {
+                                        searchViewModel.setSearchBarState("Categories")
                                         onSearchTriggered(coroutineScope, modalBottomSheetState)
-                                        searchViewModel.onSearchTextChanged("Categories")
                                     },
                                     modifier = Modifier
                                         .size(50.dp)
@@ -141,8 +142,8 @@ fun MainMapScreen(
                                 RoundIconButton(
                                     drawableId = R.drawable.locations,
                                     onClick = {
+                                        searchViewModel.setSearchBarState("Locations")
                                         onSearchTriggered(coroutineScope, modalBottomSheetState)
-                                        searchViewModel.onSearchTextChanged("Locations")
                                     },
                                     modifier = Modifier
                                         .size(50.dp)
@@ -176,8 +177,11 @@ fun MainMapScreen(
 }
 
 // Dummy composable for search results overlay
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SearchResultsOverlay(onItemClicked: () -> Unit, searchViewModel: SearchViewModel, navController: NavController) {
+
+    val currentSearchText = searchViewModel.searchBarState.collectAsState()
 
     val sortOptions = listOf("Option 1", "Option 2", "Option 3") // Dummy sort options
     var selectedSortCriteria by remember { mutableStateOf("") }
@@ -245,11 +249,11 @@ fun SearchResultsOverlay(onItemClicked: () -> Unit, searchViewModel: SearchViewM
             Box(
                 modifier = Modifier.clickable {
                     // Check if the searchText.value equals "attractions" ignoring the case
-                    if (searchViewModel.searchText.value.equals("attractions", ignoreCase = true)) {
+                    if (currentSearchText.value.equals("attractions", ignoreCase = true)) {
                         navController.navigate(Screen.AddAttractions.route)
-                    } else if (searchViewModel.searchText.value.equals("locations", ignoreCase = true)) {
+                    } else if (currentSearchText.value.equals("locations", ignoreCase = true)) {
                         navController.navigate(Screen.AddLocations.route)
-                    } else if (searchViewModel.searchText.value.equals("categories", ignoreCase = true)) {
+                    } else if (currentSearchText.value.equals("categories", ignoreCase = true)) {
                         navController.navigate(Screen.AddCategories.route)
                     }
                 }
@@ -267,7 +271,7 @@ fun SearchResultsOverlay(onItemClicked: () -> Unit, searchViewModel: SearchViewM
 
 
             content = {
-                if (searchViewModel.searchText.value.equals("attractions", ignoreCase = true)) {
+                if (currentSearchText.value.equals("attractions", ignoreCase = true)) {
                     items(80) { index ->
                         Box(
                             modifier = Modifier.fillMaxWidth(),
@@ -276,6 +280,7 @@ fun SearchResultsOverlay(onItemClicked: () -> Unit, searchViewModel: SearchViewM
                             // Change with the correct listing later
                             AttractionCard(
                                 navController = navController,
+                                attractionId = index.toString(),
                                 attraction = index.toString(),
                                 averageRating = 2.3f,
                                 numRatings = 3214,
@@ -285,7 +290,7 @@ fun SearchResultsOverlay(onItemClicked: () -> Unit, searchViewModel: SearchViewM
                         }
                         Spacer(modifier = Modifier.height(20.dp))
                     }
-                } else if (searchViewModel.searchText.value.equals("locations", ignoreCase = true)
+                } else if (currentSearchText.value.equals("locations", ignoreCase = true)
                 ) {
                     items(80) { index ->
                         Box(
@@ -303,13 +308,13 @@ fun SearchResultsOverlay(onItemClicked: () -> Unit, searchViewModel: SearchViewM
                         }
                         Spacer(modifier = Modifier.height(20.dp))
                     }
-                } else if (searchViewModel.searchText.value.equals("categories", ignoreCase = true)) {
+                } else if (currentSearchText.value.equals("categories", ignoreCase = true)) {
 
-                } else if (searchViewModel.searchText.value.equals("all categories", ignoreCase = true)) {
+                } else if (currentSearchText.value.equals("all categories", ignoreCase = true)) {
 
-                } else if (searchViewModel.searchText.value.equals("all locations", ignoreCase = true)) {
+                } else if (currentSearchText.value.equals("all locations", ignoreCase = true)) {
 
-                } else if (searchViewModel.searchText.value.equals("all attractions", ignoreCase = true)) {
+                } else if (currentSearchText.value.equals("all attractions", ignoreCase = true)) {
 
                 }
                 else {
@@ -322,7 +327,7 @@ fun SearchResultsOverlay(onItemClicked: () -> Unit, searchViewModel: SearchViewM
                         ) {
                             // Change with the correct listing later
                             LocationCard(
-                                country = "Portugal",
+                                country = currentSearchText.value,
                                 region = "Lisbon",
                                 numAttractions = 4,
                                 distanceInKmFromCurrent = 32.4f,

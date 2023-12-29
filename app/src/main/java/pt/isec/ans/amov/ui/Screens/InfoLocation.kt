@@ -171,6 +171,7 @@ fun InfoLocation(
                         ) {
                             // Change with the correct listing later
                             AttractionCard(
+                                attractionId = "1",
                                 navController = navController,
                                 attraction = "Torre Eiffel Tower",
                                 averageRating = 2.3f,
