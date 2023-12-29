@@ -22,26 +22,28 @@ import pt.isec.ans.amov.ui.Screens.ViewAccount
 import pt.isec.ans.amov.ui.Screens.ViewAttractions
 import pt.isec.ans.amov.ui.Screens.ViewCategories
 import pt.isec.ans.amov.ui.Screens.ViewLocations
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 
 @Composable
 fun SetupNavGraph(
     navController: NavHostController,
-    viewModel: LocationViewModel
+    viewModelL: LocationViewModel,
+    viewModelFB: FireBaseViewModel
 ) {
     NavHost(navController = navController, startDestination = Screen.Home.route)
     {
         composable(Screen.Home.route) {
-            Home(navController = navController, viewModel = viewModel)
+            Home(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
         }
         composable(Screen.AddAttractions.route) {
-            AddAttraction(navController = navController)
+            AddAttraction(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
         }
         composable(Screen.AddLocations.route) {
-            AddLocation(navController = navController)
+            AddLocation(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
         }
         composable(Screen.AddCategories.route) {
-            AddCategory(navController = navController)
+            AddCategory(navController = navController,viewModelFB = viewModelFB)
         }
         composable(Screen.EditAttraction.route) {
             EditAttraction(navController = navController)

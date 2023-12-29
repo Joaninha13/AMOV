@@ -10,32 +10,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.preference.PreferenceManager
 import org.osmdroid.config.Configuration.getInstance
 import pt.isec.ans.amov.Application
-import pt.isec.ans.amov.ui.Screens.MainMapScreen
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModelFactory
 import pt.isec.ans.amov.ui.theme.ComposeTheme
-import pt.isec.ans.amov.ui.theme.LocationMapsTheme
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import pt.isec.ans.amov.ui.Screens.AddAttraction
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 
 class MainActivity : ComponentActivity() {
 
     val app by lazy { application as Application }
 
-    private val viewModel : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
+    //sera aqui??
+    private val viewModelL : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
+    private val viewModelFB : FireBaseViewModel by viewModels()
 
     lateinit var navController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,9 +37,10 @@ class MainActivity : ComponentActivity() {
             ComposeTheme {
 
                 navController = rememberNavController()
-                SetupNavGraph(navController = navController, viewModel = viewModel)
+                SetupNavGraph(navController,viewModelL,viewModelFB)
             }
         }
+
         verifyPermissions()
         getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
 
@@ -74,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.startLocationUpdates()
+        viewModelL.startLocationUpdates()
     }
 
     val verifyMultiplePermissions = registerForActivityResult(
@@ -89,25 +83,25 @@ class MainActivity : ComponentActivity() {
 
     }
     private fun verifyPermissions() : Boolean{
-        viewModel.coarseLocationPermission = ContextCompat.checkSelfPermission(
+        viewModelL.coarseLocationPermission = ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
-        viewModel.fineLocationPermission = ContextCompat.checkSelfPermission(
+        viewModelL.fineLocationPermission = ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            viewModel.backgroundLocationPermission = ContextCompat.checkSelfPermission(
+            viewModelL.backgroundLocationPermission = ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         } else
-            viewModel.backgroundLocationPermission = viewModel.coarseLocationPermission || viewModel.fineLocationPermission
+            viewModelL.backgroundLocationPermission = viewModelL.coarseLocationPermission || viewModelL.fineLocationPermission
 
-        if (!viewModel.coarseLocationPermission && !viewModel.fineLocationPermission) {
+        if (!viewModelL.coarseLocationPermission && !viewModelL.fineLocationPermission) {
             basicPermissionsAuthorization.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -123,17 +117,17 @@ class MainActivity : ComponentActivity() {
     private val basicPermissionsAuthorization = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { results ->
-        viewModel.coarseLocationPermission = results[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
-        viewModel.fineLocationPermission = results[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-        viewModel.startLocationUpdates()
+        viewModelL.coarseLocationPermission = results[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+        viewModelL.fineLocationPermission = results[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        viewModelL.startLocationUpdates()
         verifyBackgroundPermission()
     }
 
     private fun verifyBackgroundPermission() {
-        if (!(viewModel.coarseLocationPermission || viewModel.fineLocationPermission))
+        if (!(viewModelL.coarseLocationPermission || viewModelL.fineLocationPermission))
             return
 
-        if (!viewModel.backgroundLocationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (!viewModelL.backgroundLocationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this, Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 )
@@ -162,7 +156,7 @@ class MainActivity : ComponentActivity() {
     private val backgroundPermissionAuthorization = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { result ->
-        viewModel.backgroundLocationPermission = result
+        viewModelL.backgroundLocationPermission = result
         Toast.makeText(this,"Background location enabled: $result", Toast.LENGTH_LONG).show()
     }
 

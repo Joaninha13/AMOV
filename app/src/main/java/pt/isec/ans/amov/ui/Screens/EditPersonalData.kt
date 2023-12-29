@@ -132,7 +132,7 @@ fun EditPersonalData(
                     }
 
                     //Second 3 inputs
-                    SecondInputs()
+                    //SecondInputs()
 
                 }
 
