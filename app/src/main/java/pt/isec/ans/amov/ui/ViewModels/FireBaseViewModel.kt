@@ -144,13 +144,13 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
-    fun getAllAttractions(onResult: (List<String>) -> Unit) {
+    /*fun getAllAttractions(onResult: (List<String>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllAttractionsDocumentsNames { names ->
                 onResult(names)
             }
         }
-    }
+    }*/
     fun getLocations(name: String, onResult : (List<String>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllFromOneLocation(name) { desc ->
