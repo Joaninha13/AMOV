@@ -27,6 +27,8 @@ sealed class Screen(val route: String) {
         fun createRoute(categoryId: String) = "infoCategory/$categoryId"
     }
 
+    object Review : Screen("Review")
+
     object ViewAttraction : Screen("viewAttraction")
     object ViewLocation : Screen("viewLocation")
     object ViewCategory : Screen("viewCategory")

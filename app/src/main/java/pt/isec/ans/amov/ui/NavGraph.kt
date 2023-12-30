@@ -18,6 +18,7 @@ import pt.isec.ans.amov.ui.Screens.Home
 import pt.isec.ans.amov.ui.Screens.InfoAttraction
 import pt.isec.ans.amov.ui.Screens.InfoCategory
 import pt.isec.ans.amov.ui.Screens.InfoLocation
+import pt.isec.ans.amov.ui.Screens.Review
 import pt.isec.ans.amov.ui.Screens.ViewAccount
 import pt.isec.ans.amov.ui.Screens.ViewAttractions
 import pt.isec.ans.amov.ui.Screens.ViewCategories
@@ -90,6 +91,11 @@ fun SetupNavGraph(
             val categoryId = backStackEntry.arguments?.getString("categoryId")
             InfoCategory(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, categoryId = categoryId ?: "")
         }
+
+        composable(Screen.Review.route) {
+            Review(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
+        }
+
         composable(Screen.ViewAttraction.route) {
             ViewAttractions(navController = navController)
         }
