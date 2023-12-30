@@ -148,7 +148,7 @@ fun MapScreen(
                                             viewModelFB.getLocationDetails(userGeo = geoPoint.toFirebaseGeoPoint(), locationGeo =  poi) { location ->
                                                 markedLocation = location
                                             }
-
+                                            
                                             showLocationMarkerPopUp = true
 
                                             true
@@ -738,12 +738,18 @@ fun ShowLocationMarkerPopUp(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    // Mostra o carrossel de imagens
-                    ImageCarousel(images = listOf(location.imageUrl), modifier = Modifier.fillMaxWidth().height(200.dp))
+                    Image(
+                        painter = rememberImagePainter(data = location.imageUrl),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(MaterialTheme.shapes.medium),
+                        contentScale = ContentScale.Crop
+                    )
+
 
                     // Exibe outras informações da localização
-                    //Text(text = "Country: ${location.country}", modifier = Modifier.padding(vertical = 8.dp))
-                    //Text(text = "Region: ${location.region}", modifier = Modifier.padding(vertical = 8.dp))
                     Text(text = "Number of Attractions: ${location.numAttractions}", modifier = Modifier.padding(vertical = 8.dp))
                     Text(text = "Distance from Current: ${location.distanceInKmFromCurrent.toInt()} km", modifier = Modifier.padding(vertical = 8.dp))
                     Text(text = "Description: ${location.description}", modifier = Modifier.padding(vertical = 8.dp))

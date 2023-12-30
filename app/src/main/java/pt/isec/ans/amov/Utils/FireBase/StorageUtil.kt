@@ -417,7 +417,7 @@ class StorageUtil {
                         //val distanceInKmFromCurrent = result.documents[0].getDouble("DistanceInKmFromCurrent")?.toFloat() ?: 0.0f
                         val description = result.documents[0].getString("Description") ?: "Unknown"
                         val coordinates = result.documents[0].getGeoPoint("Coordinates") ?: GeoPoint(0.0, 0.0)
-                        val imageUrl = result.documents[0].getString("Images") ?: ""
+                        val imageUrl = result.documents[0].getString("Image") ?: ""
 
                         val location = Location(
                             country = country,
@@ -667,31 +667,31 @@ class StorageUtil {
                     if (result.exists()) {
                         val approved = result.getLong("Approved")
                         val delete = result.getLong("DeleteApproved")
-                            if (approved!! >= 2 || delete!! >= 3) {
-                                val doc = db.collection("Attractions").document(name)
-                                doc.get().addOnSuccessListener { results ->
-                                    if (results.exists())
-                                        doc.delete()
-                                }
+                        if (approved!! >= 2 || delete!! >= 3) {
+                            val doc = db.collection("Attractions").document(name)
+                            doc.get().addOnSuccessListener { results ->
+                                if (results.exists())
+                                    doc.delete()
                             }
-                            else{
-                                val v = db.collection("Attractions").document(name)
-                                db.runTransaction { transaction ->
-                                    val doc = transaction.get(v)
-                                    if (doc.exists()) {
-                                        val deleteapproved = (doc.getLong("DeleteApproved") ?: 0) + 1
-                                        transaction.update(v, "DeleteApproved", deleteapproved)
-                                        null
-                                    } else
-                                        throw FirebaseFirestoreException(
-                                            "Doesn't exist",
-                                            FirebaseFirestoreException.Code.UNAVAILABLE
-                                        )
-                                }.addOnCompleteListener{result ->
-                                    onResult(result.exception)
-                                }
+                        }
+                        else{
+                            val v = db.collection("Attractions").document(name)
+                            db.runTransaction { transaction ->
+                                val doc = transaction.get(v)
+                                if (doc.exists()) {
+                                    val deleteapproved = (doc.getLong("DeleteApproved") ?: 0) + 1
+                                    transaction.update(v, "DeleteApproved", deleteapproved)
+                                    null
+                                } else
+                                    throw FirebaseFirestoreException(
+                                        "Doesn't exist",
+                                        FirebaseFirestoreException.Code.UNAVAILABLE
+                                    )
+                            }.addOnCompleteListener{result ->
+                                onResult(result.exception)
+                            }
 
-                            }
+                        }
                     }
                 }
 
