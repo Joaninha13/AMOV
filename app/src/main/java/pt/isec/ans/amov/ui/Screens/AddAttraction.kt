@@ -191,7 +191,7 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                                 attractionFormState.coordinates,
                                 attractionFormState.category,
                                 attractionFormState.location,
-                                attractionFormState.image
+                                attractionFormState.image,
                             ) { e ->
                                 if (e == null) {
                                     Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT)

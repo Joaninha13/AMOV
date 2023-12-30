@@ -55,6 +55,9 @@ import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.Components.Buttons.FilterField
+import pt.isec.ans.amov.ui.Components.Buttons.FilterFields
+import pt.isec.ans.amov.ui.Components.Buttons.SearchDropdownButton
 import pt.isec.ans.amov.ui.Components.PopUps.PopUpBase
 import pt.isec.ans.amov.ui.Screens.AttractionFormState
 import pt.isec.ans.amov.ui.Screens.LocationFormState
@@ -205,6 +208,21 @@ fun ShowPopUpBase(
 ) {
     var attractionFormState by remember { mutableStateOf(AttractionFormState()) }
 
+    var inputValues by remember { mutableStateOf(FilterFields()) }
+
+    var categoriesList by remember { mutableStateOf<List<String>>(emptyList()) }
+
+    var locationList by remember { mutableStateOf<List<String>>(emptyList()) }
+
+
+    viewModelFB.getAllCategories { loadedCategories ->
+        categoriesList = loadedCategories
+    }
+
+    viewModelFB.getAllLocations { loadedLocations ->
+        locationList = loadedLocations
+    }
+
     val pickImagesLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetMultipleContents()) { results ->
             val uris = results.mapNotNull { it }
@@ -225,7 +243,7 @@ fun ShowPopUpBase(
                     horizontalAlignment = Alignment.Start,
                 ) {
 
-                    //Country
+                    //Name
                     Row(
                         modifier = Modifier
                             .width(300.dp)
@@ -244,7 +262,7 @@ fun ShowPopUpBase(
                         )
                     }
 
-                    //Region
+                    //Description
                     Row(
                         modifier = Modifier
                             .width(300.dp)
@@ -256,11 +274,45 @@ fun ShowPopUpBase(
                         OutlinedInput(
                             _value = attractionFormState.description,
                             _label = "Region",
-                            _iconName = R.drawable.nameicon,
+                            _iconName = R.drawable.descicon,
                             onValueChange = { newValue ->
                                 attractionFormState.description = newValue
                             }
                         )
+                    }
+
+                    //Category
+                    Row(
+                        modifier = Modifier
+                            .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
+                            .width(300.dp)
+                            .height(50.dp)
+                            .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
+                            .padding(start = 10.dp, end = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+
+                        SearchDropdownButton(FilterField.CATEGORY, "Category", inputValues, categoriesList){ newValue ->
+                            attractionFormState.category = newValue
+                        }
+                    }
+
+                    //Location
+                    Row(
+                        modifier = Modifier
+                            .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
+                            .width(300.dp)
+                            .height(50.dp)
+                            .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
+                            .padding(start = 10.dp, end = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+
+                        SearchDropdownButton(FilterField.LOCATION, "Location", inputValues, locationList){newValue ->
+                            attractionFormState.location = newValue
+                        }
                     }
 
                     //Upload Images
@@ -305,13 +357,15 @@ fun ShowPopUpBase(
                     attractionGeoPoint.longitude
                 )
 
+                attractionFormState.category = "Museus"
+                attractionFormState.location = "teste"
+
 
                 var imageUrls: List<String> = listOf()
 
                 attractionFormState.imageUri.let { uri ->
                     // Quando o botão de registro é clicado, faz o upload da imagem
                     viewModelFB.uploadImages(uri) { imageUrl ->
-                        Log.d("D", "Ola")
                         attractionFormState.image = imageUrl
 
                         viewModelFB.addAtraction(
@@ -323,12 +377,9 @@ fun ShowPopUpBase(
                             attractionFormState.image
                         ) { e ->
                             if (e == null) {
-                                Log.d("D", "sucesso")
-                                /*Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT).show()*/
+                                Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT).show()
                             } else {
-                                Log.d("D", "sucesso")
-
-                                /*Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()*/
+                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
