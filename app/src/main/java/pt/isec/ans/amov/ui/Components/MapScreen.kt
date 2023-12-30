@@ -185,7 +185,7 @@ fun MapScreen(
                     view.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
                     if(buttonToCenterClicked){
-                        view.controller.animateTo(geoPoint, 15.0, 1500, null)
+                        view.controller.animateTo(geoPoint, 20.0, 1500, null)
                         handleButtonToCenterClicked(false)
                     }
                 }
