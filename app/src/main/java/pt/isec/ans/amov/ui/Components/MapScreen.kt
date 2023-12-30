@@ -1,15 +1,9 @@
 package pt.isec.ans.amov.ui.Components
 
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Handler
-import android.provider.MediaStore
 import android.util.Log
-import android.view.InputDevice
-import android.view.MotionEvent
-import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,7 +54,6 @@ import pt.isec.ans.amov.ui.Components.Buttons.FilterFields
 import pt.isec.ans.amov.ui.Components.Buttons.SearchDropdownButton
 import pt.isec.ans.amov.ui.Components.PopUps.PopUpBase
 import pt.isec.ans.amov.ui.Screens.AttractionFormState
-import pt.isec.ans.amov.ui.Screens.LocationFormState
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.BlueLighter
@@ -133,6 +126,105 @@ fun MapScreen(
                                 )
 
                         }
+                        viewModelFB.getAllAttractionsCoordinates { attractionsCords ->
+                            for (attractionCords in attractionsCords) {
+                                viewModelFB.getAttractionCategory(attractionCords) { category ->
+
+                                    Log.d("Categoria", "$category")
+                                    when (category) {
+                                        "Alojamentos" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = ContextCompat.getDrawable(context, R.drawable.house)
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                }
+                                            )
+                                        }
+
+                                        "Jardins" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = ContextCompat.getDrawable(context, R.drawable.park)
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                }
+                                            )
+                                        }
+
+                                        "Miradouros" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = ContextCompat.getDrawable(context, R.drawable.binoculars)
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                }
+                                            )
+                                        }
+
+                                        "Monumentos&Locais" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = ContextCompat.getDrawable(context, R.drawable.monu_2)
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                }
+                                            )
+                                        }
+
+                                        "Museu" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = ContextCompat.getDrawable(context, R.drawable.museum)
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                }
+                                            )
+                                        }
+
+                                        "parque de diversoes" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = ContextCompat.getDrawable(context, R.drawable.amusement)
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                }
+                                            )
+                                        }
+
+                                        "Restaurantes&Bares" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = ContextCompat.getDrawable(context, R.drawable.restaurant)
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+
+                                                }
+                                            )
+                                        }
+
+                                        else -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = ContextCompat.getDrawable(context, R.drawable.location_marker)
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         overlays.add(
                             MyLocationNewOverlay(this).apply {
                                 enableMyLocation()

@@ -188,7 +188,20 @@ class FireBaseViewModel : ViewModel() {
             }
         }
     }
-
+    fun getAllAttractionsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllAttractionsDocumentsCoordinates { coordinates ->
+                onResult(coordinates)
+            }
+        }
+    }
+    fun getAttractionCategory(attraction: GeoPoint, onResult: (String?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAttractionCategory(attraction) { category ->
+                onResult(category)
+            }
+        }
+    }
 
     //Users
     fun addUser(name: String, image: String) {

@@ -492,6 +492,57 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
+        fun getAllAttractionsDocumentsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
+
+            val db = Firebase.firestore
+            val doc = db.collection("Attractions")
+
+            doc.get().addOnSuccessListener { result ->
+                val coordinates = ArrayList<GeoPoint>()
+                for (document in result) {
+                    val geoPoint = document["Coordinates"] as? GeoPoint
+
+                    if (geoPoint != null) {
+                        coordinates.add(GeoPoint(geoPoint.latitude, geoPoint.longitude))
+                    }
+                }
+                onResult(coordinates)
+            }.addOnFailureListener { exception ->
+                onResult(arrayListOf())
+            }
+        }
+        fun getAttractionCategory(attraction: GeoPoint, onResult: (String?) -> Unit) {
+            val db = Firebase.firestore
+            val docRef = db.collection("Attractions")
+
+            docRef
+                .whereEqualTo("Coordinates", attraction)
+                .get()
+                .addOnSuccessListener { result ->
+                    if (!result.isEmpty) {
+                        val categoryRef = result.documents[0].getDocumentReference("Category")
+
+                        categoryRef?.get()
+                            ?.addOnSuccessListener { categoryDoc ->
+                                if (categoryDoc != null) {
+                                    val category = categoryDoc.getString("Name")
+                                    onResult(category)
+                                } else {
+                                    onResult(null)
+                                }
+                            }
+                            ?.addOnFailureListener {
+                                onResult(null)
+                            }
+                    } else {
+                        onResult(null)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    onResult(null)
+                }
+        }
+
         fun updateApprovedAttraction( name: String,onResult : (Throwable?) -> Unit) {
 
             val db = Firebase.firestore
