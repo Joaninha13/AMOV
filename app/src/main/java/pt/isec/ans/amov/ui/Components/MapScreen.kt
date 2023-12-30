@@ -148,8 +148,6 @@ fun MapScreen(
                         viewModelFB.getAllAttractionsCoordinates { attractionsCords ->
                             for (attractionCords in attractionsCords) {
                                 viewModelFB.getAttractionCategory(attractionCords) { category ->
-
-                                    Log.d("Categoria", "$category")
                                     when (category) {
                                         "Alojamentos" -> {
                                             overlays.add(
@@ -174,7 +172,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
+
 
                                                         true
                                                     }
@@ -205,7 +203,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
+
                                                         true
                                                     }
                                                 }
@@ -235,7 +233,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
+
                                                         true
                                                     }
                                                 }
@@ -265,7 +263,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
+
                                                         true
                                                     }
                                                 }
@@ -295,7 +293,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
+
                                                         true
                                                     }
                                                 }
@@ -325,7 +323,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
+
                                                         true
                                                     }
                                                 }
@@ -355,7 +353,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
+
                                                         true
                                                     }
                                                 }
@@ -655,8 +653,6 @@ fun ShowMarkerPopUp(
     onDismiss: () -> Unit
 ) {
     if (showMarkerPopUp) {
-        Log.d("Click", "entrei aqui")
-
         PopUpBase(
             showDialog = true,
             title = attraction.name,
@@ -680,41 +676,6 @@ fun ShowMarkerPopUp(
         )
     }
 }
-
-/*@Composable
-fun ShowMarkerPopUp(
-    showMarkerPopUp: Boolean,
-    viewModelFB: FireBaseViewModel,
-    attractionGeoPoint: GeoPoint,
-    onDismiss: () -> Unit
-) {
-    var attraction by remember { mutableStateOf<Attraction?>(null) }
-
-    if(showMarkerPopUp){
-        PopUpBase(
-            showDialog = true,
-            title = "oi",
-            content = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    // Mostra o carrossel de imagens
-                    //ImageCarousel(images = attractionDetails.imageUrl, modifier = Modifier.fillMaxWidth().height(200.dp))
-
-                    // Exibe outras informações da atração
-                    Text(text = "Description:", modifier = Modifier.padding(vertical = 8.dp))
-                }
-            },
-            buttonText = "OK",
-            onConfirm = {},
-            onDismiss = onDismiss
-        )
-    }
-
-
-}*/
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
