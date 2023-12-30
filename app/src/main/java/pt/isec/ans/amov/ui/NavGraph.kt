@@ -31,7 +31,7 @@ fun SetupNavGraph(
     viewModelL: LocationViewModel,
     viewModelFB: FireBaseViewModel
 ) {
-    NavHost(navController = navController, startDestination = Screen.EditLocation.route)
+    NavHost(navController = navController, startDestination = Screen.Home.route)
     {
         composable(Screen.Home.route) {
             Home(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
