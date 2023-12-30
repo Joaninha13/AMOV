@@ -156,7 +156,7 @@ fun EditLocation(
                 ) {
 
                     viewModelFB.getLocations(nameToEdit){ desc ->
-                        Log.d("VEERRRRR->>>>>>", "desc: $desc")
+                        Log.d("VEERRRRR----->>>>>>", "desc: $desc")
                         //depois ver como isto é recebido
                         oldLocationFormState.country = desc[4]
                         oldLocationFormState.region = desc[6]
