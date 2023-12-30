@@ -106,7 +106,8 @@ fun MainMapScreen(
                 ) {
                     // MapScreen
                     MapScreen(
-                        viewModel = viewModelL,
+                        viewModelL = viewModelL,
+                        viewModelFB = viewModelFB,
                         buttonToCenterClicked,
                         handleButtonToCenterClicked = { newValue ->
                             setButtonToCenterClicked(newValue)
@@ -319,7 +320,6 @@ fun SearchResultsOverlay(
         }
 
         LazyColumn(
-
 
             content = {
 
