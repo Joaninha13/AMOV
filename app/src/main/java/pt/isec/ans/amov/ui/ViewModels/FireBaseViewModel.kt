@@ -133,6 +133,19 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
+    fun getLocationDetails(userGeo: GeoPoint, locationGeo: GeoPoint, onResult: (Location) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getLocationDetails(
+                userGeo,
+                locationGeo
+            ) { locations ->
+                if (locations != null) {
+                    onResult(locations)
+                }
+            }
+        }
+    }
+
     fun getCategoryDetails(onResult: (Category) -> Unit, name: String) {
         viewModelScope.launch {
             StorageUtil.getCategoryDetails(

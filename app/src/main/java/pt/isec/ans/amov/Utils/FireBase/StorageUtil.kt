@@ -389,6 +389,57 @@ class StorageUtil {
                 onResult(null)  // Handle failure case
             }
         }
+
+        //esta funcao serve para ir buscar os details da locations dado um GeoPoint -> overload
+        fun getLocationDetails(userGeo: GeoPoint, locationGeoPoint: GeoPoint, onResult: (Location?) -> Unit) {
+            fun calculateDistance(startGeo: GeoPoint, endGeo: GeoPoint): Float {
+                val earthRadius = 6371 // Radius of the earth in km
+                val latDistance = Math.toRadians(endGeo.latitude - startGeo.latitude)
+                val lonDistance = Math.toRadians(endGeo.longitude - startGeo.longitude)
+                val a = sin(latDistance / 2) * sin(latDistance / 2) +
+                        cos(Math.toRadians(startGeo.latitude)) * cos(Math.toRadians(endGeo.latitude)) *
+                        sin(lonDistance / 2) * sin(lonDistance / 2)
+                val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+                return (earthRadius * c).toFloat() // convert the distance from double to float
+            }
+
+            val db = Firebase.firestore
+            val docRef = db.collection("Location")
+
+            docRef
+                .whereEqualTo("Coordinates", locationGeoPoint)
+                .get()
+                .addOnSuccessListener { result ->
+                    if (!result.isEmpty) {
+                        val country = result.documents[0].getString("Country") ?: "Unknown"
+                        val region = result.documents[0].getString("Region") ?: "Unknown"
+                        val numAttractions = result.documents[0].getLong("NumAttractions")?.toInt() ?: 0
+                        //val distanceInKmFromCurrent = result.documents[0].getDouble("DistanceInKmFromCurrent")?.toFloat() ?: 0.0f
+                        val description = result.documents[0].getString("Description") ?: "Unknown"
+                        val coordinates = result.documents[0].getGeoPoint("Coordinates") ?: GeoPoint(0.0, 0.0)
+                        val imageUrl = result.documents[0].getString("Images") ?: ""
+
+                        val location = Location(
+                            country = country,
+                            region = region,
+                            numAttractions = numAttractions,
+                            distanceInKmFromCurrent = calculateDistance(locationGeoPoint, userGeo),
+                            description = description,
+                            coordinates = coordinates,
+                            imageUrl = imageUrl
+                        )
+
+                        onResult(location)
+                    } else {
+                        onResult(null)
+                    }
+                }
+                .addOnFailureListener {
+                    onResult(null)  // Handle failure case
+                }
+        }
+
+
         fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
 
             val db = Firebase.firestore

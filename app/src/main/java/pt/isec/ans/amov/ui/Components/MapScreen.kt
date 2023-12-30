@@ -17,7 +17,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,7 +50,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.constraintlayout.helper.widget.Carousel
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import coil.compose.rememberImagePainter
@@ -73,7 +71,7 @@ import pt.isec.ans.amov.ui.Screens.AttractionFormState
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.BlueLighter
-import coil.compose.rememberImagePainter
+import pt.isec.ans.amov.dataStructures.Location
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,8 +82,10 @@ fun MapScreen(
     handleButtonToCenterClicked : (Boolean) -> Unit
 ){
     var showPopUp by remember { mutableStateOf(false) }
-    var showMarkerPopUp by remember { mutableStateOf(false) }
+    var showAttractionMarkerPopUp by remember { mutableStateOf(false) }
     var attraction by remember { mutableStateOf<Attraction?>(null) }
+    var showLocationMarkerPopUp by remember { mutableStateOf(false) }
+    var markedLocation by remember { mutableStateOf<Location?>(null) }
 
     var autoEnabled by remember{ mutableStateOf(false) }
     var attractionGeoPoint by remember { mutableStateOf(GeoPoint(0.0, 0.0)) }
@@ -133,6 +133,8 @@ fun MapScreen(
                         controller.setCenter(geoPoint)
                         controller.setZoom(20.0)
                         zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+
+                        //Criar os markers para as Locatizacoes
                         viewModelFB.getAllLocationsCoordinates { pois ->
                             for (poi in pois)
                                 overlays.add(
@@ -140,11 +142,22 @@ fun MapScreen(
                                         position = GeoPoint(poi.latitude, poi.longitude)
                                         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                         icon = ContextCompat.getDrawable(context, R.drawable.location_marker)
-                                        title = "${poi.latitude} ${poi.longitude}"
+                                        //title = "${poi.latitude} ${poi.longitude}"
+
+                                        setOnMarkerClickListener{ _, _ ->
+                                            viewModelFB.getLocationDetails(userGeo = geoPoint.toFirebaseGeoPoint(), locationGeo =  poi) { location ->
+                                                markedLocation = location
+                                            }
+
+                                            showLocationMarkerPopUp = true
+
+                                            true
+                                        }
                                     }
                                 )
-
                         }
+
+                        //Criar os Markers para as Atracoes
                         viewModelFB.getAllAttractionsCoordinates { attractionsCords ->
                             for (attractionCords in attractionsCords) {
                                 viewModelFB.getAttractionCategory(attractionCords) { category ->
@@ -171,7 +184,7 @@ fun MapScreen(
                                                             attraction = result
                                                         }
 
-                                                        showMarkerPopUp = true
+                                                        showAttractionMarkerPopUp = true
 
 
                                                         true
@@ -202,7 +215,7 @@ fun MapScreen(
                                                             attraction = result
                                                         }
 
-                                                        showMarkerPopUp = true
+                                                        showAttractionMarkerPopUp = true
 
                                                         true
                                                     }
@@ -232,7 +245,7 @@ fun MapScreen(
                                                             attraction = result
                                                         }
 
-                                                        showMarkerPopUp = true
+                                                        showAttractionMarkerPopUp = true
 
                                                         true
                                                     }
@@ -262,7 +275,7 @@ fun MapScreen(
                                                             attraction = result
                                                         }
 
-                                                        showMarkerPopUp = true
+                                                        showAttractionMarkerPopUp = true
 
                                                         true
                                                     }
@@ -292,7 +305,7 @@ fun MapScreen(
                                                             attraction = result
                                                         }
 
-                                                        showMarkerPopUp = true
+                                                        showAttractionMarkerPopUp = true
 
                                                         true
                                                     }
@@ -322,7 +335,7 @@ fun MapScreen(
                                                             attraction = result
                                                         }
 
-                                                        showMarkerPopUp = true
+                                                        showAttractionMarkerPopUp = true
 
                                                         true
                                                     }
@@ -352,7 +365,7 @@ fun MapScreen(
                                                             attraction = result
                                                         }
 
-                                                        showMarkerPopUp = true
+                                                        showAttractionMarkerPopUp = true
 
                                                         true
                                                     }
@@ -374,7 +387,7 @@ fun MapScreen(
                                                             attraction = result
                                                         }
 
-                                                        showMarkerPopUp = true
+                                                        showAttractionMarkerPopUp = true
 
                                                         true
                                                     }
@@ -386,6 +399,7 @@ fun MapScreen(
                             }
                         }
 
+                        //Overlay para a minha localizacao
                         overlays.add(
                             MyLocationNewOverlay(this).apply {
                                 enableMyLocation()
@@ -450,8 +464,14 @@ fun MapScreen(
         }
 
         attraction?.let {
-            ShowMarkerPopUp(showMarkerPopUp, it){
-                showMarkerPopUp = false
+            ShowAttractionMarkerPopUp(showAttractionMarkerPopUp, it){
+                showAttractionMarkerPopUp = false
+            }
+        }
+
+        markedLocation?.let {
+            ShowLocationMarkerPopUp(showLocationMarkerPopUp, it){
+                showLocationMarkerPopUp = false
             }
         }
     }
@@ -647,12 +667,12 @@ fun ShowPopUpBase(
 }
 
 @Composable
-fun ShowMarkerPopUp(
-    showMarkerPopUp: Boolean,
+fun ShowAttractionMarkerPopUp(
+    showAttractionMarkerPopUp: Boolean,
     attraction: Attraction,
     onDismiss: () -> Unit
 ) {
-    if (showMarkerPopUp) {
+    if (showAttractionMarkerPopUp) {
         PopUpBase(
             showDialog = true,
             title = attraction.name,
@@ -700,4 +720,42 @@ fun ImageCarousel(images: List<String>, modifier: Modifier = Modifier) {
             contentScale = ContentScale.Crop
         )
     }
+}
+
+@Composable
+fun ShowLocationMarkerPopUp(
+    showLocationMarkerPopUp: Boolean,
+    location: Location,
+    onDismiss: () -> Unit
+) {
+    if (showLocationMarkerPopUp) {
+        PopUpBase(
+            showDialog = true,
+            title = "${location.country}, ${location.region}",
+            content = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    // Mostra o carrossel de imagens
+                    ImageCarousel(images = listOf(location.imageUrl), modifier = Modifier.fillMaxWidth().height(200.dp))
+
+                    // Exibe outras informações da localização
+                    //Text(text = "Country: ${location.country}", modifier = Modifier.padding(vertical = 8.dp))
+                    //Text(text = "Region: ${location.region}", modifier = Modifier.padding(vertical = 8.dp))
+                    Text(text = "Number of Attractions: ${location.numAttractions}", modifier = Modifier.padding(vertical = 8.dp))
+                    Text(text = "Distance from Current: ${location.distanceInKmFromCurrent.toInt()} km", modifier = Modifier.padding(vertical = 8.dp))
+                    Text(text = "Description: ${location.description}", modifier = Modifier.padding(vertical = 8.dp))
+                }
+            },
+            buttonText = "OK",
+            onConfirm = onDismiss,
+            onDismiss = onDismiss
+        )
+    }
+}
+
+fun GeoPoint.toFirebaseGeoPoint(): com.google.firebase.firestore.GeoPoint {
+    return com.google.firebase.firestore.GeoPoint(latitude, longitude)
 }
