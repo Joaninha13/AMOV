@@ -1,6 +1,11 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.app.Activity
+import android.content.Intent
+import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,24 +34,46 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.GradientButton
+import pt.isec.ans.amov.ui.Components.OutlinedInput
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
+import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueLighter
-import pt.isec.ans.amov.ui.theme.BlueSoft
+
 
 @Composable
 fun EditCategory(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModelL: LocationViewModel,
+    viewModelFB: FireBaseViewModel,
+    nameToEdit : String,
 
-) {
-    var categoryFormState by remember { mutableStateOf(CategoryFormState()) }
+    ) {
+    var newCategoryFormState by remember { mutableStateOf(CategoryFormState()) }
+
+    var oldCategoryFormState by remember { mutableStateOf(CategoryFormState()) }
+
+    val pickImageLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                //Log.d("VERRR------>", "result: $result") // passa aqui
+                result.data?.data?.let { uri ->
+                    // Aqui você tem a URI da imagem selecionada
+                    // Agora você pode fazer o upload para o Firestore ou atualizar o estado conforme necessário
+                    newCategoryFormState.logoUri = uri
+                }
+            }
+        }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -120,9 +148,16 @@ fun EditCategory(
                     horizontalAlignment = Alignment.Start,
                 ) {
 
+                    viewModelFB.getCategories(nameToEdit){ desc ->
+                        Log.d("VEERRRRR->>>>>>", "desc: $desc")
+                        oldCategoryFormState.name = nameToEdit
+                        oldCategoryFormState.description = desc[0]
+                        oldCategoryFormState.logo = desc[1]
+                    }
+
                     //First Input
-                    TextInputs(categoryFormState){ updateState ->
-                        categoryFormState = updateState
+                    TextInputsEdit(newCategoryFormState, oldCategoryFormState){ updateState ->
+                        newCategoryFormState = updateState
                     }
 
                     //Upload Logos
@@ -143,15 +178,24 @@ fun EditCategory(
                         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-
-                        Text(
-                            text = "Upload Logo",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                //fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
-                                color = BlueSoft,
-                            )
+                        ClickableText(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color.Blue)) {
+                                    append("upload new Logo")
+                                }
+                            },
+                            onClick = { offset ->
+                                // Iniciar a atividade de escolha de imagem da galeria
+                                pickImageLauncher.launch(
+                                    Intent(
+                                        Intent.ACTION_PICK,
+                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                                    )
+                                )
+                            },
+                            modifier = Modifier.clickable {
+                                // por aqui a foto que deu upload
+                            }
                         )
                     }
                 }
@@ -164,10 +208,83 @@ fun EditCategory(
                             Color(0xFF00B6DE)
                         )
                     )
-                ){ //TODO implement lambda when things work on firebase
-                    Log.d("D", "save")
+                ){
+                    newCategoryFormState.logoUri?.let { uri ->
+                    // Quando o botão de registro é clicado, faz o upload da imagem
+                    viewModelFB.uploadImage(uri) { imageUrl ->
+                        // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
+                        newCategoryFormState = newCategoryFormState.copy(logo = imageUrl)
+
+                        // Agora você pode salvar os dados do formulário no Firestore
+                        Log.d("VEERRRRR->>>>>>", "newCategoryFormState: $newCategoryFormState")
+                        Log.d("VEERRRRR->>>>>>", "oldCategoryFormState: $oldCategoryFormState")
+                    }
+                }
+
+                    viewModelFB.updateCategories(
+                        categoryName = nameToEdit,
+                        name = newCategoryFormState.name,
+                        desc = newCategoryFormState.description,
+                        image = newCategoryFormState.logo
+                    )
                 }
             }
+        }
+    }
+}
+@Composable
+fun TextInputsEdit(newCategoryFormState: CategoryFormState, oldCategoryFormState: CategoryFormState,onCategoryFormState: (CategoryFormState) -> Unit) {
+
+    newCategoryFormState.name = oldCategoryFormState.name
+    newCategoryFormState.description = oldCategoryFormState.description
+    newCategoryFormState.logo = oldCategoryFormState.logo
+
+
+    //Name + Description
+    Column(
+        modifier = Modifier
+            .width(300.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
+        horizontalAlignment = Alignment.Start,
+    ) {
+
+        //Name
+        Row(
+            modifier = Modifier
+                .width(300.dp)
+                .height(60.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ){
+
+            OutlinedInput(
+                _value = oldCategoryFormState.name,
+                _label = oldCategoryFormState.name,
+                _iconName = R.drawable.nameicon,
+                onValueChange = { newValue ->
+                    newCategoryFormState.name = newValue
+                }
+            )
+        }
+
+        //Description
+        Row(
+            modifier = Modifier
+                .width(300.dp)
+                .height(60.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ){
+
+            OutlinedInput(
+                _value = oldCategoryFormState.description,
+                _label = oldCategoryFormState.description,
+                _iconName = R.drawable.descicon,
+                onValueChange = { newValue ->
+                    newCategoryFormState.description = newValue
+                }
+            )
+
         }
     }
 }

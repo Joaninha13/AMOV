@@ -3,8 +3,10 @@ package pt.isec.ans.amov.ui
 import androidx.compose.runtime.Composable
 
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import pt.isec.ans.amov.ui.Screens.AddAttraction
 import pt.isec.ans.amov.ui.Screens.AddCategory
 import pt.isec.ans.amov.ui.Screens.AddLocation
@@ -29,7 +31,7 @@ fun SetupNavGraph(
     viewModelL: LocationViewModel,
     viewModelFB: FireBaseViewModel
 ) {
-    NavHost(navController = navController, startDestination = Screen.Home.route)
+    NavHost(navController = navController, startDestination = Screen.EditLocation.route)
     {
         composable(Screen.Home.route) {
             Home(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
@@ -44,25 +46,37 @@ fun SetupNavGraph(
             AddCategory(navController = navController,viewModelFB = viewModelFB)
         }
         composable(Screen.EditAttraction.route) {
-            EditAttraction(navController = navController)
+            EditAttraction(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
         }
         composable(Screen.EditLocation.route) {
-            EditLocation(navController = navController)
+            EditLocation(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = "teste")
         }
         composable(Screen.EditCategory.route) {
-            EditCategory(navController = navController)
+            EditCategory(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = "teste")
         }
         composable(Screen.EditPersonalData.route) {
             EditPersonalData(navController = navController)
         }
-        composable(Screen.InfoAttraction.route) {
-            InfoAttraction(navController = navController)
+        composable(
+            route = Screen.InfoAttraction.route,
+            arguments = listOf(navArgument("attractionId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val attractionId = backStackEntry.arguments?.getString("attractionId")
+            InfoAttraction(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, attractionId = attractionId ?: "")
         }
-        composable(Screen.InfoLocation.route) {
-            InfoLocation(navController = navController)
+        composable(
+            route = Screen.InfoLocation.route,
+            arguments = listOf(navArgument("locationId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val locationId = backStackEntry.arguments?.getString("locationId")
+            InfoLocation(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, locationId = locationId ?: "")
         }
-        composable(Screen.InfoCategory.route) {
-            InfoCategory(navController = navController)
+        composable(
+            route = Screen.InfoCategory.route,
+            arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId")
+            InfoCategory(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, categoryId = categoryId ?: "")
         }
         composable(Screen.ViewAttraction.route) {
             ViewAttractions(navController = navController)

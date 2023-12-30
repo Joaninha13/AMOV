@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -32,6 +33,8 @@ import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Cards.ReviewCard
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
 import pt.isec.ans.amov.ui.Components.Buttons.SortButton
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
+import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.*
 
 data class InfoAttractionFormState(
@@ -50,6 +53,9 @@ data class InfoAttractionFormState(
 @Composable
 fun InfoAttraction(
     navController: NavController,
+    attractionId: String,
+    viewModelL: LocationViewModel,
+    viewModelFB: FireBaseViewModel,
 ) {
     var formState by remember { mutableStateOf(InfoAttractionFormState()) }
 
@@ -72,7 +78,7 @@ fun InfoAttraction(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = formState.country + ", " + formState.region,
+                        text = attractionId,
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -181,44 +187,6 @@ fun InfoAttraction(
 
 
 
-//            Row(
-//                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
-//                verticalAlignment = Alignment.Top,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .clip(RoundedCornerShape(16.dp))
-//                    .height(214.dp)
-//            ) {
-//                // Main image
-//                Image(
-//                    painter = painterResource(id = R.drawable.torre_eiffel),
-//                    contentDescription = "Main image",
-//                    contentScale = ContentScale.Crop,
-//                    modifier = Modifier
-//                        .height(225.dp)
-//                        .width(225.dp)
-//                        .clip(RoundedCornerShape(16.dp))
-//                )
-//
-//                // Horizontal scrollable row for smaller images
-//                LazyRow(
-//                    // Add padding to allow for the overflow effect of the larger image
-//                    contentPadding = PaddingValues(start = 16.dp, top = (-30).dp, end = 16.dp),
-//                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                ) {
-//
-//                    items(10) { index ->
-//                        Image(
-//                            painter = painterResource(id = R.drawable.torre_eiffel),
-//                            contentDescription = "Small image $index",
-//                            contentScale = ContentScale.Crop,
-//                            modifier = Modifier
-//                                .size(120.dp)
-//                                .clip(RoundedCornerShape(12.dp))
-//                        )
-//                    }
-//                }
-//            }
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.Top,
@@ -227,14 +195,6 @@ fun InfoAttraction(
                     .height(250.dp)
             ) {
                 // Main image
-                Image(
-                    painter = painterResource(id = R.drawable.torre_eiffel),
-                    contentDescription = "Main image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(225.dp, 250.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                )
 
                 // Horizontal scrollable row for smaller images
                 LazyRow(
@@ -244,24 +204,35 @@ fun InfoAttraction(
                         Column(
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
+                            if (index%2 == 0) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.torre_eiffel),
+                                    contentDescription = "Main image",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(225.dp, 250.dp)
+                                        .clip(RoundedCornerShape(16.dp))
+                                )
+                            } else {
+                                Image(
+                                    painter = painterResource(id = R.drawable.torre_eiffel),
+                                    contentDescription = "Small image top $index",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(120.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                )
+                                // Bottom small image
+                                Image(
+                                    painter = painterResource(id = R.drawable.torre_eiffel),
+                                    contentDescription = "Small image bottom $index",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(120.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                )
+                            }
                             // Top small image
-                            Image(
-                                painter = painterResource(id = R.drawable.torre_eiffel),
-                                contentDescription = "Small image top $index",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(120.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                            )
-                            // Bottom small image
-                            Image(
-                                painter = painterResource(id = R.drawable.torre_eiffel),
-                                contentDescription = "Small image bottom $index",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(120.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                            )
                         }
                     }
                 }
@@ -310,4 +281,15 @@ fun InfoAttraction(
 
         }
     }
+}
+
+@Preview
+@Composable
+fun InfoAttractionPreview() {
+//    InfoAttraction(
+//        navController = NavController(LocalContext.current),
+//        attractionId = "Torre Eiffel",
+//        viewModelL = LocationViewModel(),
+//        viewModelFB = FireBaseViewModel()
+//    )
 }

@@ -12,6 +12,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,7 +38,8 @@ fun NavBar(
     searchViewModel: SearchViewModel
 
     ){
-    val (searchQuery, setSearchQuery) = remember { mutableStateOf("") }
+    val searchText = searchViewModel.searchBarState.collectAsState()
+
 
     Row(
         modifier = Modifier
@@ -46,9 +50,9 @@ fun NavBar(
 
         RoundIconButton(
             drawableId = R.drawable.eiffel_tower,
-            onClick = {
-                onSearchTriggered(coroutineScope, modalBottomSheetState)
-                searchViewModel.onSearchTextChanged("Attractions")
+            onClick = { 
+                searchViewModel.setSearchBarState("Attractions")
+                onSearchTriggered(coroutineScope, modalBottomSheetState) 
             },
             modifier = Modifier
                 .size(50.dp)
@@ -57,14 +61,15 @@ fun NavBar(
         )
 
         NavBarSearch(
-            query = searchQuery,
-            onQueryChange = setSearchQuery,
-            trailingOnClick = { setSearchQuery("") },
-            trailingIcon = searchQuery.isNotEmpty(),
+            query = searchText.value,
+            onQueryChange = { searchViewModel.setSearchBarState(it) },
+            trailingOnClick = { onSearchTriggered(coroutineScope, modalBottomSheetState) },
             coroutineScope = coroutineScope,
             modalBottomSheetState = modalBottomSheetState,
-            searchViewModel= searchViewModel
+            searchViewModel = searchViewModel,
+            modifier = Modifier
         )
+
 
         RoundIconButton(
             drawableId = R.drawable.account,

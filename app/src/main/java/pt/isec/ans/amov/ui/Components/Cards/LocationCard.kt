@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.theme.BlueHighlight
@@ -37,6 +38,7 @@ fun LocationCard(
     numAttractions: Int,
     distanceInKmFromCurrent: Float,
     description: String,
+    imageUrl: String,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -60,8 +62,8 @@ fun LocationCard(
                 .width(100.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.torre_eiffel),
-                contentDescription = "image description",
+                painter = rememberImagePainter(imageUrl),
+                contentDescription = description,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
@@ -101,7 +103,6 @@ fun LocationCard(
                             color = BlueHighlight,
                         )
                     )
-                    RoundIconButton(drawableId = R.drawable.vector)
                 }
 
 
@@ -111,7 +112,7 @@ fun LocationCard(
 
 
                     Text(
-                        text = "$distanceInKmFromCurrent km",
+                        text = "$distanceInKmFromCurrent. km",
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontFamily = FontFamily(Font(R.font.inter_medium)),
@@ -165,6 +166,7 @@ fun LocationCardPreview() {
         region = "Lisboa",
         numAttractions = 5,
         distanceInKmFromCurrent = 32.4f,
-        description = "This is the description of the location yyyyyyyyyyyyyyy sdkjnfi sdujbhfdv iusdabv siour dnvisdubvnsdiubvsdiuvcbsdiu"
+        description = "This is the description of the location yyyyyyyyyyyyyyy sdkjnfi sdujbhfdv iusdabv siour dnvisdubvnsdiubvsdiuvcbsdiu",
+        imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/800px-Image_not_available.png?20210219185637"
     )
 }

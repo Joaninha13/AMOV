@@ -188,15 +188,6 @@ fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel
                                 // por aqui a foto que deu upload
                             }
                         )
-                        /*Text(
-                            text = "Upload Logo",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                //fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
-                                color = BlueSoft,
-                            )
-                        )*/
                     }
                 }
 
@@ -214,11 +205,6 @@ fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel
                         viewModelFB.uploadImage(uri) { imageUrl ->
                             // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
                             categoryFormState = categoryFormState.copy(logo = imageUrl)
-
-                            Log.d("VERRR------>", "CategoryFormState.name: ${categoryFormState.name}")
-                            Log.d("VERRR------>", "CategoryFormState.description: ${categoryFormState.description}")
-                            Log.d("VERRR------>", "CategoryFormState.logo: ${categoryFormState.logo}")
-                            Log.d("VERRR------>", "CategoryFormState.logoUri: ${categoryFormState.logoUri}")
 
                             // Agora você pode salvar os dados do formulário no Firestore
                             viewModelFB.addCategory(

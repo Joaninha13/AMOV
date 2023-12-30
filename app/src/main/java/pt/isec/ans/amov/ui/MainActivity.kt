@@ -26,7 +26,6 @@ class MainActivity : ComponentActivity() {
 
     val app by lazy { application as Application }
 
-    //sera aqui??
     private val viewModelL : LocationViewModel by viewModels{ LocationViewModelFactory(app.locationHandler) }
     private val viewModelFB : FireBaseViewModel by viewModels()
 
@@ -35,7 +34,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeTheme {
-
                 navController = rememberNavController()
                 SetupNavGraph(navController,viewModelL,viewModelFB)
             }

@@ -24,7 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,7 +63,8 @@ fun NavBarSearch(
     modalBottomSheetState: ModalBottomSheetState,
     searchViewModel: SearchViewModel
 ){
-    var searchText by remember { mutableStateOf(query) }
+    val searchText = searchViewModel.searchBarState.collectAsState()
+
 
 
     //NavBar Container Row
@@ -76,7 +79,6 @@ fun NavBarSearch(
     ) {
 
         SearchItem(
-            query = query,
             onQueryChange = onQueryChange,
             trailingOnClick = trailingOnClick,
             trailingIcon = trailingIcon,
@@ -92,7 +94,6 @@ fun NavBarSearch(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SearchItem(
-    query: String,
     onQueryChange: (String) -> Unit,
     trailingOnClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -103,12 +104,15 @@ fun SearchItem(
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val searchText = searchViewModel.searchBarState.collectAsState()  // Collecting as state
 
-    Column (
-    ){
+    Column {
         TextField(
-            value = searchViewModel.searchText.value,
-            onValueChange = searchViewModel::onSearchTextChanged,
+            value = searchText.value,
+            onValueChange = { newValue ->
+                searchViewModel.setSearchBarState(newValue)
+                onQueryChange(newValue)
+            },
             colors = TextFieldDefaults.colors(
                 focusedTextColor = BlueHighlight,
                 unfocusedTextColor = BlueHighlight,

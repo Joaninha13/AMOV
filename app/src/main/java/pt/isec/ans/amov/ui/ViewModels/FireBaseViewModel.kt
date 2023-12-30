@@ -12,6 +12,8 @@ import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import pt.isec.ans.amov.Utils.FireBase.AuthUtil
 import pt.isec.ans.amov.Utils.FireBase.StorageUtil
+import pt.isec.ans.amov.dataStructures.Category
+import pt.isec.ans.amov.dataStructures.Location
 
 data class  User (val name: String, val email: String, val picture: String?)
 
@@ -58,6 +60,12 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         } }
     }
+    fun signOut() {
+        AuthUtil.signOut()
+        _error.value = null
+        _user.value = null
+    }
+
 
     //Images
     fun uploadImage(imageUri: Uri, onSuccess: (String) -> Unit) {
@@ -69,12 +77,6 @@ class FireBaseViewModel : ViewModel() {
             onSuccess(list)
         } }
     }
-    fun signOut() {
-        AuthUtil.signOut()
-        _error.value = null
-        _user.value = null
-    }
-
     //Categorias
     fun addCategory(name: String, desc : String, image: String) {
         viewModelScope.launch { StorageUtil.addCategory(name, desc, image){ e ->
@@ -87,6 +89,19 @@ class FireBaseViewModel : ViewModel() {
             StorageUtil.getAllCategorysDocumentsNames { names ->
                 onResult(names)
             }
+        }
+    }
+    fun getCategories(name: String, onResult : (List<String>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllFromOneCategory(name) { desc ->
+                onResult(desc)
+            }
+        }
+    }
+    fun updateCategories(categoryName: String,name: String, desc : String, image: String) {
+        viewModelScope.launch { StorageUtil.updateCategory(categoryName,name, desc, image){ e ->
+            _error.value = e?.message
+        }
         }
     }
 
@@ -102,6 +117,51 @@ class FireBaseViewModel : ViewModel() {
             StorageUtil.getAllLocationsDocumentsNames { names ->
                 onResult(names)
             }
+        }
+    }
+    fun getLocationDetails(onResult: (Location) -> Unit, userGeo: GeoPoint, name: String) {
+        viewModelScope.launch {
+            StorageUtil.getLocationDetails(
+                userGeo,
+                name
+            ) { locations ->
+                if (locations != null) {
+                    onResult(locations)
+                }
+            }
+        }
+    }
+
+    fun getCategoryDetails(onResult: (Category) -> Unit, name: String) {
+        viewModelScope.launch {
+            StorageUtil.getCategoryDetails(
+                name
+            ) { category ->
+                if (category != null) {
+                    onResult(category)
+                }
+            }
+        }
+    }
+
+    fun getAllAttractions(onResult: (List<String>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllAttractionsDocumentsNames { names ->
+                onResult(names)
+            }
+        }
+    }
+    fun getLocations(name: String, onResult : (List<String>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllFromOneLocation(name) { desc ->
+                onResult(desc)
+            }
+        }
+    }
+    fun updateLocations(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String) {
+        viewModelScope.launch { StorageUtil.updateLocation(locationName,country,region,desc,coordinates,image){ e ->
+            _error.value = e?.message
+        }
         }
     }
 
@@ -121,6 +181,14 @@ class FireBaseViewModel : ViewModel() {
         }
         }
     }
+    fun getAllAttractions(onResult: (List<String>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllAttractionsDocumentsNames { names ->
+                onResult(names)
+            }
+        }
+    }
+
 
     //Users
     fun addUser(name: String, image: String) {

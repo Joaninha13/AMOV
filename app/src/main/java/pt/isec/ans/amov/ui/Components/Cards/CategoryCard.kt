@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
@@ -27,10 +28,10 @@ import pt.isec.ans.amov.ui.theme.BlueSoft
 
 @Composable
 fun CategoryCard(
-    drawableId: Int,
     name: String,
     numAttractions: Int,
     description: String,
+    logoUrl: String,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -48,7 +49,7 @@ fun CategoryCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
-                painter = painterResource(drawableId),
+                painter = rememberImagePainter(logoUrl),
                 contentDescription = "image description",
                 contentScale = ContentScale.None,
                 modifier = Modifier
@@ -96,13 +97,14 @@ fun CategoryCard(
     }
 }
 
-@Preview
-@Composable
-fun CategoryCardPreview() {
-    CategoryCard(
-        drawableId = R.drawable.monument,
-        name = "Category Name",
-        numAttractions = 5,
-        description = "This is the description of the category yyyyyyyyyyyyyyy sdkjnfi sdujbhfdv iusdabv siour dnvisdubvnsdiubvsdiuvcbsdiu"
-    )
-}
+//@Preview
+//@Composable
+//fun CategoryCardPreview() {
+//    CategoryCard(
+//        drawableId = R.drawable.monument,
+//        name = "Category Name",
+//        numAttractions = 5,
+//        description = "This is the description of the category yyyyyyyyyyyyyyy sdkjnfi sdujbhfdv iusdabv siour dnvisdubvnsdiubvsdiuvcbsdiu",
+//
+//    )
+//}

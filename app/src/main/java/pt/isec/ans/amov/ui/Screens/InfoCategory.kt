@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,23 +25,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.dataStructures.Category
+import pt.isec.ans.amov.dataStructures.Location
 import pt.isec.ans.amov.ui.Components.Cards.AttractionCard
 import pt.isec.ans.amov.ui.Components.Buttons.SortButton
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
+import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.*
 
-data class InfoCategoryFormState(
-    var name: String = "Monument",
-    var description: String = "",
-    var numRelatedAttractions: Int = 32,
-)
 
 
 @Composable
 fun InfoCategory(
     navController: NavController,
+    viewModelFB: FireBaseViewModel,
+    viewModelL: LocationViewModel,
+    categoryId: String
 ) {
-    var formState by remember { mutableStateOf(InfoCategoryFormState()) }
+    var formState by remember { mutableStateOf<Category?>(null) }
+
+    // Fetch location details when the item enters composition
+    LaunchedEffect(categoryId) {
+        viewModelFB.getCategoryDetails(
+            name = categoryId,
+            onResult = { details ->
+                formState = details
+            }
+        )
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -62,7 +76,7 @@ fun InfoCategory(
                 ) {
                     //Change with the correct icon later
                     Image(
-                        painter = painterResource(id = R.drawable.monument),
+                        painter = rememberImagePainter(formState?.logoUrl),
                         contentDescription = "image description",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
@@ -70,18 +84,20 @@ fun InfoCategory(
                             .width(24.dp)
                             .height(24.dp)
                     )
-                    Text(
-                        text = formState.name,
-                        style = TextStyle(
-                            fontSize = 24.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_bold)),
-                            color = BlueHighlight,
+                    formState?.let {
+                        Text(
+                            text = it.name,
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontFamily = FontFamily(Font(R.font.inter_bold)),
+                                color = BlueHighlight,
+                            )
                         )
-                    )
+                    }
                     Image(
                         painter = painterResource(id = R.drawable.info),
                         contentDescription = "image description",
-                        contentScale = ContentScale.None,
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .padding(1.dp)
                             .width(16.dp)
@@ -111,7 +127,7 @@ fun InfoCategory(
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = "Related Attractions (" + formState.numRelatedAttractions + ")",
+                    text = "Related Attractions (" + (formState?.numAttractions ?: "0") + ")",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.inter_semibold)),
@@ -149,6 +165,7 @@ fun InfoCategory(
                         ) {
                             // Change with the correct listing later
                             AttractionCard(
+                                attractionId = "1",
                                 navController = navController,
                                 attraction = "Torre Eiffel Tower",
                                 averageRating = 2.3f,
