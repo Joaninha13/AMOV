@@ -234,20 +234,20 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
 
 
                     locationFormState.imageUri?.let { uri ->
-                    // Quando o botão de registro é clicado, faz o upload da imagem
-                    viewModelFB.uploadImage(uri) { imageUrl ->
-                        // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
-                        locationFormState = locationFormState.copy(image = imageUrl)
+                        // Quando o botão de registro é clicado, faz o upload da imagem
+                        viewModelFB.uploadImage(uri) { imageUrl ->
+                            // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
+                            locationFormState = locationFormState.copy(image = imageUrl)
 
-                        // Agora você pode salvar os dados do formulário no Firestore
-                        viewModelFB.addLocation(
-                            locationFormState.country,
-                            locationFormState.region,
-                            locationFormState.description,
-                            locationFormState.coordinates,
-                            locationFormState.image)
+                            // Agora você pode salvar os dados do formulário no Firestore
+                            viewModelFB.addLocation(
+                                locationFormState.country,
+                                locationFormState.region,
+                                locationFormState.description,
+                                locationFormState.coordinates,
+                                locationFormState.image)
+                        }
                     }
-                }
                 }
             }
 

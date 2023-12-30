@@ -2,6 +2,7 @@ package pt.isec.ans.amov.ui.Components
 
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.provider.MediaStore
@@ -9,6 +10,7 @@ import android.util.Log
 import android.view.InputDevice
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -53,6 +56,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.PopUps.PopUpBase
+import pt.isec.ans.amov.ui.Screens.AttractionFormState
 import pt.isec.ans.amov.ui.Screens.LocationFormState
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
@@ -69,6 +73,7 @@ fun MapScreen(
 ){
     var showPopUp by remember { mutableStateOf(false) }
     var autoEnabled by remember{ mutableStateOf(false) }
+    var attractionGeoPoint by remember { mutableStateOf(GeoPoint(0.0, 0.0)) }
     val location = viewModelL.currentLocation.observeAsState()
 
 
@@ -141,7 +146,8 @@ fun MapScreen(
                         // Adiciona o MapEventsReceiver diretamente ao MapView -> isto serve para quando a pessoa pressionar drante algum tempo seguido sejam obtidas as coordenadas do ponto onde carregou
                         val mReceive = object : MapEventsReceiver {
                             private val handler = Handler()
-                            private val longPressDuration = 1500L // Tempo de pressão longa em milissegundos (2 segundos)
+                            private val longPressDuration =
+                                1500L // Tempo de pressão longa em milissegundos (2 segundos)
                             private var lastPressTime = 0L
 
                             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
@@ -155,6 +161,7 @@ fun MapScreen(
                                     handler.postDelayed({
                                         p?.let {
                                             showPopUp = true
+                                            attractionGeoPoint = GeoPoint(it.latitude, it.longitude)
                                             //Toast.makeText(context, "${it.latitude} - ${it.longitude}", Toast.LENGTH_LONG).show()
                                         }
                                     }, longPressDuration)
@@ -172,6 +179,7 @@ fun MapScreen(
                 },
                 update = { view ->
                     view.controller.setCenter(geoPoint)
+                    view.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
                     if(buttonToCenterClicked){
                         view.controller.animateTo(geoPoint, 15.0, 1500, null)
@@ -181,26 +189,27 @@ fun MapScreen(
             )
         }
 
-        ShowPopUpBase(showPopUp){
+        ShowPopUpBase(showPopUp, attractionGeoPoint, LocalContext.current, viewModelFB){
             showPopUp = false
         }
     }
 }
 
 @Composable
-fun ShowPopUpBase(showPopUp: Boolean, onDismiss: () -> Unit) {
-    val locationFormState by remember { mutableStateOf(LocationFormState()) }
+fun ShowPopUpBase(
+    showPopUp: Boolean,
+    attractionGeoPoint: GeoPoint,
+    context: Context,
+    viewModelFB: FireBaseViewModel,
+    onDismiss: () -> Unit
+) {
+    var attractionFormState by remember { mutableStateOf(AttractionFormState()) }
 
-    val pickImageLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                //Log.d("VERRR------>", "result: $result") // passa aqui
-                result.data?.data?.let { uri ->
-                    // Aqui você tem a URI da imagem selecionada
-                    // Agora você pode fazer o upload para o Firestore ou atualizar o estado conforme necessário
-                    locationFormState.imageUri = uri
-                }
-            }
+    val pickImagesLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetMultipleContents()) { results ->
+            val uris = results.mapNotNull { it }
+            attractionFormState.imageUri = uris
+
         }
 
     if (showPopUp) {
@@ -226,11 +235,11 @@ fun ShowPopUpBase(showPopUp: Boolean, onDismiss: () -> Unit) {
                     ) {
 
                         OutlinedInput(
-                            _value = locationFormState.country,
-                            _label = "Country",
+                            _value = attractionFormState.name,
+                            _label = "Name",
                             _iconName = R.drawable.nameicon,
                             onValueChange = { newValue ->
-                                locationFormState.country = newValue
+                                attractionFormState.name = newValue
                             }
                         )
                     }
@@ -245,33 +254,13 @@ fun ShowPopUpBase(showPopUp: Boolean, onDismiss: () -> Unit) {
                     ) {
 
                         OutlinedInput(
-                            _value = locationFormState.region,
+                            _value = attractionFormState.description,
                             _label = "Region",
                             _iconName = R.drawable.nameicon,
                             onValueChange = { newValue ->
-                                locationFormState.region = newValue
+                                attractionFormState.description = newValue
                             }
                         )
-                    }
-
-                    //Description
-                    Row(
-                        modifier = Modifier
-                            .width(300.dp)
-                            .height(60.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-
-                        OutlinedInput(
-                            _value = locationFormState.description,
-                            _label = "Description",
-                            _iconName = R.drawable.descicon,
-                            onValueChange = { newValue ->
-                                locationFormState.description = newValue
-                            }
-                        )
-
                     }
 
                     //Upload Images
@@ -300,12 +289,7 @@ fun ShowPopUpBase(showPopUp: Boolean, onDismiss: () -> Unit) {
                             },
                             onClick = { offset ->
                                 // Iniciar a atividade de escolha de imagem da galeria
-                                pickImageLauncher.launch(
-                                    Intent(
-                                        Intent.ACTION_PICK,
-                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                                    )
-                                )
+                                pickImagesLauncher.launch("image/*")
                             },
                             modifier = Modifier.clickable {
                                 // por aqui a foto que deu upload
@@ -316,7 +300,40 @@ fun ShowPopUpBase(showPopUp: Boolean, onDismiss: () -> Unit) {
                       },
             buttonText = "Add",
             onConfirm = {
-                // Implemente a lógica de confirmação -> enviar para a firebase
+                attractionFormState.coordinates = com.google.firebase.firestore.GeoPoint(
+                    attractionGeoPoint.latitude,
+                    attractionGeoPoint.longitude
+                )
+
+
+                var imageUrls: List<String> = listOf()
+
+                attractionFormState.imageUri.let { uri ->
+                    // Quando o botão de registro é clicado, faz o upload da imagem
+                    viewModelFB.uploadImages(uri) { imageUrl ->
+                        Log.d("D", "Ola")
+                        attractionFormState.image = imageUrl
+
+                        viewModelFB.addAtraction(
+                            attractionFormState.name,
+                            attractionFormState.description,
+                            attractionFormState.coordinates,
+                            attractionFormState.category,
+                            attractionFormState.location,
+                            attractionFormState.image
+                        ) { e ->
+                            if (e == null) {
+                                Log.d("D", "sucesso")
+                                /*Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT).show()*/
+                            } else {
+                                Log.d("D", "sucesso")
+
+                                /*Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()*/
+                            }
+                        }
+                    }
+                }
+
             },
             onDismiss = onDismiss
         )
