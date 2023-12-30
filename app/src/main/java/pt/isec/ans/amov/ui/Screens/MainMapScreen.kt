@@ -27,18 +27,19 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.firestore.GeoPoint
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.dataStructures.Attraction
 import pt.isec.ans.amov.dataStructures.Category
 import pt.isec.ans.amov.dataStructures.Location
 import pt.isec.ans.amov.ui.Components.Buttons.FilterButtonWithPopUp
@@ -56,6 +57,7 @@ import pt.isec.ans.amov.ui.Components.Nav.onSearchTriggered
 import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
+import pt.isec.ans.amov.ui.theme.BlueSoft
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -209,7 +211,7 @@ fun SearchResultsOverlay(
 
     val currentSearchText = searchViewModel.searchBarState.collectAsState()
 
-    val sortOptions = listOf("Option 1", "Option 2", "Option 3") // Dummy sort options
+    val sortOptions = listOf("Categories Name", "Abc", "Zyx", "Distance")
     var selectedSortCriteria by remember { mutableStateOf("") }
 
     var selectedFilterCriteria by remember { mutableStateOf(FilterFields()) }
@@ -241,8 +243,6 @@ fun SearchResultsOverlay(
         }
     }
 
-
-//    val filteredItems = items.filter { it.contains(searchText, ignoreCase = true) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(35.dp, Alignment.Top),
@@ -280,9 +280,11 @@ fun SearchResultsOverlay(
                 ) {
                     FilterButtonWithPopUp(
                         filterOptions = listOf(
-                            { ToggleFilterOption("Approved", selectedFilterCriteria.approved, liableFilterCriteria) },
-                            { SearchDropdownButton(FilterField.CATEGORY, "Category", liableFilterCriteria, listOf("Apple", "Banana", "Cherry")){} }
-                            // ... other filter options ...
+                            //TODO: make the filter options lists
+                            { SearchDropdownButton(FilterField.CATEGORY, "Category", liableFilterCriteria, listOf("Apple", "Banana", "Cherry")){} },
+                            { SearchDropdownButton(FilterField.COUNTRY, "Country", liableFilterCriteria, listOf("Apple", "Banana", "Cherry")){} },
+                            { SearchDropdownButton(FilterField.LOCATION, "Location", liableFilterCriteria, listOf("Apple", "Banana", "Cherry")){} },
+                            { ToggleFilterOption("Approved", selectedFilterCriteria.approved, liableFilterCriteria) }
                         ),
                         liableFilterCriteria,
                         onFilterApplied = { updatedFilters ->
@@ -292,7 +294,6 @@ fun SearchResultsOverlay(
 
 
                     SortButtonWithPopUp(sortOptions) { selectedOption ->
-                        // Update the selected sort criteria here
                         selectedSortCriteria = selectedOption
                     }
                 }
@@ -325,11 +326,111 @@ fun SearchResultsOverlay(
 
                 when {
                     currentSearchText.value.equals("attractions", ignoreCase = true) -> {
-                        items(attractions) { attraction ->
-                            // Replace this with your AttractionCard or equivalent UI representation
-                            Text(attraction)
-                            Spacer(modifier = Modifier.height(20.dp))
+                        items(attractions) { attractionName ->
+                            // Assuming 'locationName' is a unique identifier for the location
+                            var attractionDetails by remember { mutableStateOf<Attraction?>(null) }
+
+
+                            // Fetch location details when the item enters composition
+                            LaunchedEffect(attractionName) {
+                                viewModelFB.getAttractionDetails(
+                                    userGeo = geoPoint,
+                                    name = attractionName,
+                                    onResult = { details ->
+                                        attractionDetails = details
+                                    }
+                                )
+                            }
+
+                            attractionDetails?.let { attraction ->
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                                    verticalAlignment = Alignment.Top,
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .clickable {
+                                                navController.navigate(
+                                                    Screen.InfoAttraction.createRoute(
+                                                        attraction.name
+                                                    )
+                                                )
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        AttractionCard(
+                                            averageRating = attraction.averageRating,
+                                            numRatings = attraction.numReviews,
+                                            distanceInKmFromCurrent = attraction.distanceInKmFromCurrent,
+                                            imageUrl = attraction.imageUrls[0],
+                                            name = attraction.name,
+                                        )
+                                    }
+                                    Column(
+                                        verticalArrangement = Arrangement.SpaceBetween,
+                                        horizontalAlignment = Alignment.End,
+                                    ) {
+                                        //TODO: add the logic to go to the attraction
+                                        RoundIconButton(drawableId = R.drawable.vector)
+
+                                        Column(
+                                            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
+                                            horizontalAlignment = Alignment.End,
+                                            modifier = Modifier
+                                                .height(56.dp)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                          //TODO: add the logic to approve the attraction
+                                                    },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.thumbs_up),
+                                                    contentDescription = "approve icon",
+                                                    contentScale = ContentScale.Fit,
+                                                    modifier = Modifier
+                                                        .padding(1.dp)
+                                                        .width(26.dp)
+                                                        .height(26.dp)
+                                                )
+                                            }
+
+                                            Row(
+                                                horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                            ) {
+                                                Text(
+                                                    text = attraction.numApproved.toString(),
+                                                    style = TextStyle(
+                                                        fontSize = 12.sp,
+                                                        fontFamily = FontFamily(Font(R.font.inter)),
+                                                        fontWeight = FontWeight(600),
+                                                        color = BlueSoft,
+                                                    )
+                                                )
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.check_circle),
+                                                    contentDescription = "approved status",
+                                                    contentScale = ContentScale.Fit,
+                                                    modifier = Modifier
+                                                        .padding(1.dp)
+                                                        .width(14.dp)
+                                                        .height(14.dp),
+                                                    colorFilter = if (attraction.numApproved > 2) ColorFilter.tint(Color(0xFF00B913)) else ColorFilter.tint(Color(0xFFFFB800))
+                                                )
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(50.dp))
+                            }
                         }
+
                     }
                     currentSearchText.value.equals("locations", ignoreCase = true) -> {
 
@@ -358,7 +459,11 @@ fun SearchResultsOverlay(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                navController.navigate(Screen.InfoLocation.createRoute("${location.country}_${location.region}"))
+                                                navController.navigate(
+                                                    Screen.InfoLocation.createRoute(
+                                                        "${location.country}_${location.region}"
+                                                    )
+                                                )
                                             },
                                         contentAlignment = Alignment.Center
                                     ) {
@@ -368,7 +473,8 @@ fun SearchResultsOverlay(
                                             numAttractions = location.numAttractions,
                                             distanceInKmFromCurrent = location.distanceInKmFromCurrent,
                                             description = location.description,
-                                            imageUrl = location.imageUrl
+                                            imageUrl = location.imageUrl,
+                                            numApproved = location.numApproved,
                                         )
                                     }
 
@@ -388,6 +494,7 @@ fun SearchResultsOverlay(
                             LaunchedEffect(categoryName) {
                                 viewModelFB.getCategoryDetails(
                                     name = categoryName,
+                                    userGeo = geoPoint,
                                     onResult = { details ->
                                         categoryDetails = details
                                     }
@@ -403,7 +510,11 @@ fun SearchResultsOverlay(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                navController.navigate(Screen.InfoCategory.createRoute(category.name))
+                                                navController.navigate(
+                                                    Screen.InfoCategory.createRoute(
+                                                        category.name
+                                                    )
+                                                )
                                             },
                                         contentAlignment = Alignment.Center
                                     ) {

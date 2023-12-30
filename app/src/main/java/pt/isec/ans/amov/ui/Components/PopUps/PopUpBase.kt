@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 import androidx.compose.material3.*
 import androidx.compose.material3.Text
@@ -115,12 +116,12 @@ fun PopUpBase(
             modifier = Modifier
                 .width(300.dp)
                 .shadow(
-                    elevation = 4.dp,
-                    spotColor = Color(0x40000000),
-                    ambientColor = Color(0x40000000)
+                    elevation = 12.dp, // Increased from 4.dp to 8.dp for a larger shadow
+                    shape = RoundedCornerShape(4.dp), // Optional: specify if you want rounded corners
+                    spotColor = Color(0xF2000000), // Darker color for more intensity
+                    ambientColor = Color(0xF2000000) // Darker color for more intensity
                 ),
-
-        containerColor = Color(0xFFFFFFFF),
+            containerColor = Color(0xFFFFFFFF),
 
 
         )

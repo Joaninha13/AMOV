@@ -29,6 +29,7 @@ import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
+import pt.isec.ans.amov.ui.theme.WarningsError
 
 
 @Composable
@@ -39,6 +40,7 @@ fun LocationCard(
     distanceInKmFromCurrent: Float,
     description: String,
     imageUrl: String,
+    numApproved: Int,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -94,15 +96,26 @@ fun LocationCard(
                         .width(210.dp)
                 ) {
 
-                    Text(
-                        text = "$country, $region",
-                        style = TextStyle(
-                            fontSize = 18.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_bold)),
-                            fontWeight = FontWeight(600),
-                            color = BlueHighlight,
+                    if (numApproved >= 2) {
+                        Text(
+                            text = "$country, $region",
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily(Font(R.font.inter_bold)),
+                                color = BlueHighlight,
+                            )
                         )
-                    )
+                    }
+                    else {
+                        Text(
+                            text = "$country, $region",
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily(Font(R.font.inter_bold)),
+                                color = WarningsError,
+                            )
+                        )
+                    }
                 }
 
 
@@ -167,6 +180,7 @@ fun LocationCardPreview() {
         numAttractions = 5,
         distanceInKmFromCurrent = 32.4f,
         description = "This is the description of the location yyyyyyyyyyyyyyy sdkjnfi sdujbhfdv iusdabv siour dnvisdubvnsdiubvsdiuvcbsdiu",
-        imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/800px-Image_not_available.png?20210219185637"
+        imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/800px-Image_not_available.png?20210219185637",
+        numApproved = 2
     )
 }
