@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeTheme {
-
                 navController = rememberNavController()
                 SetupNavGraph(navController,viewModelL,viewModelFB)
             }

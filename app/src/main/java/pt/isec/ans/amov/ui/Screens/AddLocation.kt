@@ -200,16 +200,6 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                                 // por aqui a foto que deu upload
                             }
                         )
-
-                        /*Text(
-                            text = "Upload Images",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                //fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
-                                color = BlueSoft,
-                            )
-                        )*/
                     }
 
                 }
@@ -257,9 +247,6 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
 
 @Composable
 fun TextInputs(locationFormState: LocationFormState, onLocationFormState: (LocationFormState) -> Unit) {
-
-    var latitude by remember { mutableStateOf("") }
-    var longitude by remember { mutableStateOf("") }
 
     //Name + Description + Coordinates
     Column(

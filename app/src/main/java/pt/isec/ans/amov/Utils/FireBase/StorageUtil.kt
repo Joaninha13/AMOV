@@ -124,7 +124,7 @@ class StorageUtil {
 
             val category = hashMapOf(
                 "Name" to name,
-                "Descripiton" to desc,
+                "Description" to desc,
                 "Approved" to 0,
                 "Logo" to logo,// mudar isto para guardar o path da imagem guardada no storage
                 "User" to db.document("Users/${AuthUtil.currentUser!!.uid}")
@@ -151,6 +151,46 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
+        fun getAllFromOneCategory(name: String, onResult : (List<String>) -> Unit) {
+
+            val db = Firebase.firestore
+            val doc = db.collection("Category").document(name)
+
+            doc.get().addOnSuccessListener { result ->
+                if (result.exists())
+                    onResult(result.data!!.entries?.sortedBy { it.key }?.map { it.value?.toString() ?: "" } ?: emptyList())
+            }.addOnFailureListener { exception ->
+                onResult(arrayListOf())
+            }
+        }
+        fun updateCategory(categoryName: String, name: String, desc : String, logo: String, onResult : (Throwable?) -> Unit) {
+
+            val db = Firebase.firestore
+            val v = db.collection("Category").document(categoryName)
+
+
+            if (categoryName != name) {
+                addCategory(name, desc, logo) {}
+                deleteCategory(categoryName) {}
+            }
+            else {
+                db.runTransaction { transaction ->
+                    val doc = transaction.get(v)
+                    if (doc.exists()) {
+                        transaction.update(v, "Description", desc)
+                        transaction.update(v, "Logo", logo)
+                        null
+                    } else
+                        throw FirebaseFirestoreException(
+                            "Doesn't exist",
+                            FirebaseFirestoreException.Code.UNAVAILABLE
+                        )
+                }.addOnCompleteListener { result ->
+                    onResult(result.exception)
+                }
+            }
+        }
+
         fun updateApprovedCategory(onResult : (Throwable?) -> Unit, name: String) {
 
             val db = Firebase.firestore
@@ -171,20 +211,21 @@ class StorageUtil {
                 onResult(result.exception)
             }
         }
-        fun deleteCategory(onResult : (Throwable?) -> Unit, name: String) {
+        fun deleteCategory(name: String, onResult : (Throwable?) -> Unit) {
 
             //As categorias e as localizações podem ser eliminadas pelos seus autores, desde que não possuam qualquer local de interesse.
 
             val db = Firebase.firestore
 
-            val docAtt = db.collection("Attractions").whereEqualTo("Category", db.document("Categories/$name"))
+            val docAtt = db.collection("Attractions").whereEqualTo("Category", db.document("Category/$name"))
 
             docAtt.get().addOnSuccessListener { result ->
                 if (result.isEmpty) {
-                    val doc = db.collection("Categories").document(name)
+                    val doc = db.collection("Category").document(name)
                     doc.get().addOnSuccessListener { results ->
-                        if (results.exists())
+                        if (results.exists()) {
                             doc.delete()
+                        }
                     }
                 }
             }
@@ -242,6 +283,48 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
+
+        fun getAllFromOneLocation(name: String, onResult : (List<String>) -> Unit) {
+
+            val db = Firebase.firestore
+            val doc = db.collection("Location").document(name)
+
+            doc.get().addOnSuccessListener { result ->
+                if (result.exists())
+                    onResult(result.data!!.entries?.sortedBy { it.key }?.map { it.value?.toString() ?: "" } ?: emptyList())
+            }.addOnFailureListener { exception ->
+                onResult(arrayListOf())
+            }
+        }
+
+        fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
+
+            val db = Firebase.firestore
+            val v = db.collection("Location").document("${country}_${region}")
+
+            if (locationName != "${country}_${region}") {
+                addLocation(country, region, desc, coordinates, image) {}
+                deleteLocation(locationName) {}
+            } else {
+                db.runTransaction { transaction ->
+                    val doc = transaction.get(v)
+                    if (doc.exists()) {
+                        transaction.update(v, "Description", desc)
+                        transaction.update(v, "Coordinates", coordinates)
+                        transaction.update(v, "Image", image)
+                        null
+                    } else
+                        throw FirebaseFirestoreException(
+                            "Doesn't exist",
+                            FirebaseFirestoreException.Code.UNAVAILABLE
+                        )
+                }.addOnCompleteListener { result ->
+                    onResult(result.exception)
+                }
+            }
+        }
+
+
         fun updateApprovedLocation(onResult : (Throwable?) -> Unit, country: String, region : String) {
 
             val db = Firebase.firestore
@@ -262,17 +345,17 @@ class StorageUtil {
                 onResult(result.exception)
             }
         }
-        fun deleteLocation(onResult : (Throwable?) -> Unit, country: String, region : String) {
+        fun deleteLocation(nameToDelete: String, onResult : (Throwable?) -> Unit) {
 
             //As categorias e as localizações podem ser eliminadas pelos seus autores, desde que não possuam qualquer local de interesse.
 
             val db = Firebase.firestore
 
-            val docAtt = db.collection("Attractions").whereEqualTo("Location", db.document("Location/${country}_${region}"))
+            val docAtt = db.collection("Attractions").whereEqualTo("Location", db.document("Location/$nameToDelete"))
 
             docAtt.get().addOnSuccessListener { result ->
                 if (result.isEmpty) {
-                    val doc = db.collection("Location").document("${country}_${region}")
+                    val doc = db.collection("Location").document(nameToDelete)
                     doc.get().addOnSuccessListener { results ->
                         if (results.exists())
                             doc.delete()
@@ -306,7 +389,24 @@ class StorageUtil {
 
             }
         }
-        fun updateApprovedAttraction(onResult : (Throwable?) -> Unit, name: String) {
+        fun getAllAttractionsDocumentsNames(onResult : (List<String>) -> Unit) {
+
+            val db = Firebase.firestore
+            val doc = db.collection("Attractions")
+
+            doc.get().addOnSuccessListener { result ->
+                val names = ArrayList<String>()
+                for (document in result) {
+                    names.add(document.id)
+                }
+                onResult(names)
+            }.addOnFailureListener { exception ->
+                onResult(arrayListOf())
+            }
+        }
+
+
+        fun updateApprovedAttraction( name: String,onResult : (Throwable?) -> Unit) {
 
             val db = Firebase.firestore
             val v = db.collection("Attractions").document(name)

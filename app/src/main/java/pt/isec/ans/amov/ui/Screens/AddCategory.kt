@@ -188,15 +188,6 @@ fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel
                                 // por aqui a foto que deu upload
                             }
                         )
-                        /*Text(
-                            text = "Upload Logo",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                //fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
-                                color = BlueSoft,
-                            )
-                        )*/
                     }
                 }
 

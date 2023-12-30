@@ -31,7 +31,7 @@ fun SetupNavGraph(
     viewModelL: LocationViewModel,
     viewModelFB: FireBaseViewModel
 ) {
-    NavHost(navController = navController, startDestination = Screen.Home.route)
+    NavHost(navController = navController, startDestination = Screen.EditLocation.route)
     {
         composable(Screen.Home.route) {
             Home(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
@@ -46,13 +46,13 @@ fun SetupNavGraph(
             AddCategory(navController = navController,viewModelFB = viewModelFB)
         }
         composable(Screen.EditAttraction.route) {
-            EditAttraction(navController = navController)
+            EditAttraction(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
         }
         composable(Screen.EditLocation.route) {
-            EditLocation(navController = navController)
+            EditLocation(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = "teste")
         }
         composable(Screen.EditCategory.route) {
-            EditCategory(navController = navController)
+            EditCategory(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = "teste")
         }
         composable(Screen.EditPersonalData.route) {
             EditPersonalData(navController = navController)

@@ -179,8 +179,6 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                         return@GradientButton
                     }
 
-                    var imageUrls: List<String> = listOf()
-
                     attractionFormState.imageUri.let { uri ->
                         // Quando o botão de registro é clicado, faz o upload da imagem
                         viewModelFB.uploadImages(uri) { imageUrl ->
@@ -245,24 +243,6 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
             )
         }
 
-        /*OutlinedTextField(
-                value = attractionFormState.name,
-                onValueChange = { attractionFormState.name = it },
-                label = { Text("Name") },
-                leadingIcon = {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(18.dp)
-                            .height(18.dp),
-                        painter = painterResource(id = R.drawable.nameicon),
-                        contentDescription = "name icon",
-                        contentScale = ContentScale.None,
-                    )
-                }
-
-        }*/
-
         //Description
         Row(
             modifier = Modifier
@@ -280,21 +260,6 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
                     attractionFormState.description = newValue
                 }
             )
-            /*OutlinedTextField(
-                value = attractionFormState.description,
-                label = { Text("Description") },
-                leadingIcon = {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(18.dp)
-                            .height(18.dp),
-                        painter = painterResource(id = R.drawable.descicon),
-                        contentDescription = "description icon",
-                    )
-                },
-                onValueChange = { attractionFormState.description = it }
-            )*/
         }
 
         //latitude
@@ -307,6 +272,7 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
         ){
 
             OutlinedInput(
+                _width = 252.dp,
                 _value = attractionFormState.latitude,
                 _label = "Latitude",
                 _iconName = R.drawable.coordsicon,
@@ -314,24 +280,6 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
                     attractionFormState.latitude = newValue
                 }
             )
-
-            /*OutlinedTextField(
-                modifier = Modifier.width(252.dp),
-                value = attractionFormState.latitude,
-                label = { Text("Coordinates") },
-                leadingIcon = {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(18.dp)
-                            .height(18.dp),
-                        painter = painterResource(id = R.drawable.coordsicon),
-                        contentDescription = "coordinates icon",
-                        contentScale = ContentScale.None
-                    )
-                },
-                onValueChange = { attractionFormState.latitude = it },
-            )*/
 
             //Icon container
             RoundIconButton(
@@ -351,6 +299,7 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
         ) {
 
             OutlinedInput(
+                _width = 252.dp,
                 _value = attractionFormState.longitude,
                 _label = "Name",
                 _iconName = R.drawable.coordsicon,
@@ -358,24 +307,6 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
                     attractionFormState.longitude = newValue
                 }
             )
-
-            /*OutlinedTextField(
-                modifier = Modifier.width(252.dp),
-                value = attractionFormState.longitude,
-                label = { Text("Coordinates") },
-                leadingIcon = {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(18.dp)
-                            .height(18.dp),
-                        painter = painterResource(id = R.drawable.coordsicon),
-                        contentDescription = "coordinates icon",
-                        contentScale = ContentScale.None
-                    )
-                },
-                onValueChange = { attractionFormState.longitude = it },
-            )*/
         }
     }
 
