@@ -42,6 +42,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -223,20 +224,20 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
 
 
                     locationFormState.imageUri?.let { uri ->
-                    // Quando o botão de registro é clicado, faz o upload da imagem
-                    viewModelFB.uploadImage(uri) { imageUrl ->
-                        // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
-                        locationFormState = locationFormState.copy(image = imageUrl)
+                        // Quando o botão de registro é clicado, faz o upload da imagem
+                        viewModelFB.uploadImage(uri) { imageUrl ->
+                            // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
+                            locationFormState = locationFormState.copy(image = imageUrl)
 
-                        // Agora você pode salvar os dados do formulário no Firestore
-                        viewModelFB.addLocation(
-                            locationFormState.country,
-                            locationFormState.region,
-                            locationFormState.description,
-                            locationFormState.coordinates,
-                            locationFormState.image)
+                            // Agora você pode salvar os dados do formulário no Firestore
+                            viewModelFB.addLocation(
+                                locationFormState.country,
+                                locationFormState.region,
+                                locationFormState.description,
+                                locationFormState.coordinates,
+                                locationFormState.image)
+                        }
                     }
-                }
                 }
             }
 

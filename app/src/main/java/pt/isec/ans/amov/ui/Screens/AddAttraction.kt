@@ -184,22 +184,22 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                         viewModelFB.uploadImages(uri) { imageUrl ->
                             attractionFormState.image = imageUrl
 
-                                viewModelFB.addAtraction(
-                                    attractionFormState.name,
-                                    attractionFormState.description,
-                                    attractionFormState.coordinates,
-                                    attractionFormState.category,
-                                    attractionFormState.location,
-                                    attractionFormState.image
-                                ) { e ->
-                                    if (e == null) {
-                                        Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT)
-                                            .show()
-                                    } else {
-                                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT)
-                                            .show()
-                                    }
+                            viewModelFB.addAtraction(
+                                attractionFormState.name,
+                                attractionFormState.description,
+                                attractionFormState.coordinates,
+                                attractionFormState.category,
+                                attractionFormState.location,
+                                attractionFormState.image,
+                            ) { e ->
+                                if (e == null) {
+                                    Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT)
+                                        .show()
+                                } else {
+                                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT)
+                                        .show()
                                 }
+                            }
                         }
                     }
                 }

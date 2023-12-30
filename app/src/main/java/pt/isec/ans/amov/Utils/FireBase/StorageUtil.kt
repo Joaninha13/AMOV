@@ -268,63 +268,25 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
-        fun getAllAttractionsDocumentsNames(onResult : (List<String>) -> Unit) {
+        fun getAllLocationsDocumentsCoordinates(onResult : (List<GeoPoint>) -> Unit) {
 
             val db = Firebase.firestore
-            val doc = db.collection("Attractions")
+            val doc = db.collection("Location")
 
             doc.get().addOnSuccessListener { result ->
-                val names = ArrayList<String>()
+                val coordinates = ArrayList<GeoPoint>()
                 for (document in result) {
-                    names.add(document.id)
+                    val geoPoint = document["Coordinates"] as? GeoPoint
+
+                    if(geoPoint != null){
+                        coordinates.add(GeoPoint(geoPoint.latitude, geoPoint.longitude))
+                    }
                 }
-                onResult(names)
+                onResult(coordinates)
             }.addOnFailureListener { exception ->
                 onResult(arrayListOf())
             }
         }
-
-        fun getAllFromOneLocation(name: String, onResult : (List<String>) -> Unit) {
-
-            val db = Firebase.firestore
-            val doc = db.collection("Location").document(name)
-
-            doc.get().addOnSuccessListener { result ->
-                if (result.exists())
-                    onResult(result.data!!.entries?.sortedBy { it.key }?.map { it.value?.toString() ?: "" } ?: emptyList())
-            }.addOnFailureListener { exception ->
-                onResult(arrayListOf())
-            }
-        }
-
-        fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
-
-            val db = Firebase.firestore
-            val v = db.collection("Location").document("${country}_${region}")
-
-            if (locationName != "${country}_${region}") {
-                addLocation(country, region, desc, coordinates, image) {}
-                deleteLocation(locationName) {}
-            } else {
-                db.runTransaction { transaction ->
-                    val doc = transaction.get(v)
-                    if (doc.exists()) {
-                        transaction.update(v, "Description", desc)
-                        transaction.update(v, "Coordinates", coordinates)
-                        transaction.update(v, "Image", image)
-                        null
-                    } else
-                        throw FirebaseFirestoreException(
-                            "Doesn't exist",
-                            FirebaseFirestoreException.Code.UNAVAILABLE
-                        )
-                }.addOnCompleteListener { result ->
-                    onResult(result.exception)
-                }
-            }
-        }
-
-
         fun updateApprovedLocation(onResult : (Throwable?) -> Unit, country: String, region : String) {
 
             val db = Firebase.firestore
@@ -405,6 +367,45 @@ class StorageUtil {
             }
         }
 
+        fun getAllFromOneLocation(name: String, onResult : (List<String>) -> Unit) {
+
+            val db = Firebase.firestore
+            val doc = db.collection("Location").document(name)
+
+            doc.get().addOnSuccessListener { result ->
+                if (result.exists())
+                    onResult(result.data!!.entries?.sortedBy { it.key }?.map { it.value?.toString() ?: "" } ?: emptyList())
+            }.addOnFailureListener { exception ->
+                onResult(arrayListOf())
+            }
+        }
+
+        fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
+
+            val db = Firebase.firestore
+            val v = db.collection("Location").document("${country}_${region}")
+
+            if (locationName != "${country}_${region}") {
+                addLocation(country, region, desc, coordinates, image) {}
+                deleteLocation(locationName) {}
+            } else {
+                db.runTransaction { transaction ->
+                    val doc = transaction.get(v)
+                    if (doc.exists()) {
+                        transaction.update(v, "Description", desc)
+                        transaction.update(v, "Coordinates", coordinates)
+                        transaction.update(v, "Image", image)
+                        null
+                    } else
+                        throw FirebaseFirestoreException(
+                            "Doesn't exist",
+                            FirebaseFirestoreException.Code.UNAVAILABLE
+                        )
+                }.addOnCompleteListener { result ->
+                    onResult(result.exception)
+                }
+            }
+        }
 
         fun updateApprovedAttraction( name: String,onResult : (Throwable?) -> Unit) {
 
