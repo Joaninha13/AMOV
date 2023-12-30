@@ -367,6 +367,32 @@ class StorageUtil {
             }
         }
 
+        fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
+
+            val db = Firebase.firestore
+            val v = db.collection("Location").document("${country}_${region}")
+
+            if (locationName != "${country}_${region}") {
+                addLocation(country, region, desc, coordinates, image) {}
+                deleteLocation(locationName) {}
+            } else {
+                db.runTransaction { transaction ->
+                    val doc = transaction.get(v)
+                    if (doc.exists()) {
+                        transaction.update(v, "Description", desc)
+                        transaction.update(v, "Coordinates", coordinates)
+                        transaction.update(v, "Image", image)
+                        null
+                    } else
+                        throw FirebaseFirestoreException(
+                            "Doesn't exist",
+                            FirebaseFirestoreException.Code.UNAVAILABLE
+                        )
+                }.addOnCompleteListener { result ->
+                    onResult(result.exception)
+                }
+            }
+        }
 
         fun updateApprovedAttraction( name: String,onResult : (Throwable?) -> Unit) {
 
