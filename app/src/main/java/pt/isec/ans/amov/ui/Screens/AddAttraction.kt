@@ -174,7 +174,17 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
 
                     try {
                         attractionFormState.coordinates = GeoPoint(attractionFormState.latitude.toDouble(), attractionFormState.longitude.toDouble())
-                    } catch (e: NumberFormatException) {
+                    }catch (e: NumberFormatException) {
+                        // Se o usuário não inserir um número válido, aparece uma mensagem em cima a dizer coordenada inválidas
+                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        return@GradientButton
+                    }catch (e: Exception) {
+                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        return@GradientButton
+                    }catch (e: Error) {
+                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        return@GradientButton
+                    }catch (e: Throwable) {
                         Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }
@@ -202,6 +212,10 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                             }
                         }
                     }
+
+                    Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                    navController.popBackStack()
+
                 }
 
             }
@@ -301,7 +315,7 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
             OutlinedInput(
                 _width = 252.dp,
                 _value = attractionFormState.longitude,
-                _label = "Name",
+                _label = "Longitude",
                 _iconName = R.drawable.coordsicon,
                 onValueChange = { newValue ->
                     attractionFormState.longitude = newValue
@@ -336,19 +350,6 @@ fun SecondInputs(attractionFormState: AttractionFormState, viewModelFB: FireBase
             attractionFormState.imageUri = uris
 
         }
-
-    /*val pickImageLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                //Log.d("VERRR------>", "result: $result") // passa aqui
-                result.data?.data?.let { uri ->
-                    // Aqui você tem a URI da imagem selecionada
-                    // Agora você pode fazer o upload para o Firestore ou atualizar o estado conforme necessário
-                    attractionFormState.imageUri = uri
-                }
-            }
-        }*/
-
 
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),

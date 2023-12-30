@@ -2,6 +2,7 @@ package pt.isec.ans.amov.Utils.FireBase
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.GeoPoint
@@ -212,6 +213,58 @@ class StorageUtil {
 
             val db = Firebase.firestore
             val v = db.collection("Category").document(categoryName)
+            val userId = AuthUtil.currentUser!!.uid
+
+            // Verifica se o usuário atual é o mesmo que criou a localização
+            db.collection("Category").document(categoryName).get()
+                .addOnSuccessListener { documentSnapshot ->
+                    val creatorUserId = documentSnapshot.getDocumentReference("User")?.id
+
+                    Log.d("creatorUserId ->>>>>>>>", creatorUserId.toString())
+
+                    if (creatorUserId == userId) {
+                        // O usuário atual é o criador, pode continuar com a edição
+                        if (categoryName != name) {
+                            addCategory(name, desc, logo) {}
+                            deleteCategory(categoryName) {}
+                        } else {
+                            db.runTransaction { transaction ->
+                                val doc = transaction.get(v)
+                                if (doc.exists()) {
+                                    transaction.update(v, "Description", desc)
+                                    transaction.update(v, "Logo", logo)
+                                    transaction.update(v, "Approved", 0)
+                                    null
+                                } else {
+                                    throw FirebaseFirestoreException(
+                                        "Doesn't exist",
+                                        FirebaseFirestoreException.Code.UNAVAILABLE
+                                    )
+                                }
+                            }.addOnCompleteListener { result ->
+                                onResult(result.exception)
+                            }
+                        }
+                    } else {
+                        // O usuário atual não é o criador, rejeita a operação
+                        onResult(SecurityException("User does not have permission to edit this category"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    onResult(exception)
+                }
+        }
+
+        /*fun updateCategory(
+            categoryName: String,
+            name: String,
+            desc: String,
+            logo: String,
+            onResult: (Throwable?) -> Unit
+        ) {
+
+            val db = Firebase.firestore
+            val v = db.collection("Category").document(categoryName)
 
 
             if (categoryName != name) {
@@ -233,12 +286,12 @@ class StorageUtil {
                     onResult(result.exception)
                 }
             }
-        }
+        }*/
 
         fun updateApprovedCategory(onResult: (Throwable?) -> Unit, name: String) {
 
             val db = Firebase.firestore
-            val v = db.collection("Categories").document(name)
+            val v = db.collection("Category").document(name)
 
             db.runTransaction { transaction ->
                 val doc = transaction.get(v)
@@ -255,6 +308,7 @@ class StorageUtil {
                 onResult(result.exception)
             }
         }
+
         fun deleteCategory(name: String, onResult: (Throwable?) -> Unit) {
 
             //As categorias e as localizações podem ser eliminadas pelos seus autores, desde que não possuam qualquer local de interesse.
@@ -298,6 +352,7 @@ class StorageUtil {
                     doc.set(location)
             }
         }
+
         fun getAllLocationsDocumentsNames(onResult: (List<String>) -> Unit) {
 
             val db = Firebase.firestore
@@ -313,6 +368,7 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
+
         fun getAllLocationsDocumentsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
 
             val db = Firebase.firestore
@@ -332,18 +388,21 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
-        fun getAllFromOneLocation(name: String, onResult : (List<String>) -> Unit) {
+
+        fun getAllFromOneLocation(name: String, onResult: (List<String>) -> Unit) {
 
             val db = Firebase.firestore
             val doc = db.collection("Location").document(name)
 
             doc.get().addOnSuccessListener { result ->
                 if (result.exists())
-                    onResult(result.data!!.entries?.sortedBy { it.key }?.map { it.value?.toString() ?: "" } ?: emptyList())
+                    onResult(result.data!!.entries?.sortedBy { it.key }
+                        ?.map { it.value?.toString() ?: "" } ?: emptyList())
             }.addOnFailureListener { exception ->
                 onResult(arrayListOf())
             }
         }
+
         fun getLocationDetails(userGeo: GeoPoint, name: String, onResult: (Location?) -> Unit) {
 
             val db = Firebase.firestore
@@ -386,32 +445,55 @@ class StorageUtil {
             }
         }
 
+
         fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
+
 
             val db = Firebase.firestore
             val v = db.collection("Location").document("${country}_${region}")
+            val userId = AuthUtil.currentUser!!.uid
 
-            if (locationName != "${country}_${region}") {
-                addLocation(country, region, desc, coordinates, image) {}
-                deleteLocation(locationName) {}
-            } else {
-                db.runTransaction { transaction ->
-                    val doc = transaction.get(v)
-                    if (doc.exists()) {
-                        transaction.update(v, "Description", desc)
-                        transaction.update(v, "Coordinates", coordinates)
-                        transaction.update(v, "Image", image)
-                        null
-                    } else
-                        throw FirebaseFirestoreException(
-                            "Doesn't exist",
-                            FirebaseFirestoreException.Code.UNAVAILABLE
-                        )
-                }.addOnCompleteListener { result ->
-                    onResult(result.exception)
+            // Verifica se o usuário atual é o mesmo que criou a localização
+            db.collection("Location").document(locationName).get()
+                .addOnSuccessListener { documentSnapshot ->
+                    val creatorUserId = documentSnapshot.getDocumentReference("User")?.id
+
+                    Log.d("creatorUserId ->>>>>>>>", creatorUserId.toString())
+
+                    if (creatorUserId == userId) {
+                        // O usuário atual é o criador, pode continuar com a edição
+                        if (locationName != "${country}_${region}") {
+                            addLocation(country, region, desc, coordinates, image) {}
+                            deleteLocation(locationName) {}
+                        } else {
+                            db.runTransaction { transaction ->
+                                val doc = transaction.get(v)
+                                if (doc.exists()) {
+                                    transaction.update(v, "Description", desc)
+                                    transaction.update(v, "Coordinates", coordinates)
+                                    transaction.update(v, "Image", image)
+                                    transaction.update(v, "Approved", 0)
+                                    null
+                                } else {
+                                    throw FirebaseFirestoreException(
+                                        "Doesn't exist",
+                                        FirebaseFirestoreException.Code.UNAVAILABLE
+                                    )
+                                }
+                            }.addOnCompleteListener { result ->
+                                onResult(result.exception)
+                            }
+                        }
+                    } else {
+                        // O usuário atual não é o criador, rejeita a operação
+                        onResult(SecurityException("User does not have permission to edit this location"))
+                    }
                 }
-            }
+                .addOnFailureListener { exception ->
+                    onResult(exception)
+                }
         }
+
         fun updateApprovedLocation(onResult : (Throwable?) -> Unit, country: String, region : String) {
 
             val db = Firebase.firestore
@@ -458,11 +540,11 @@ class StorageUtil {
 
             val attraction = hashMapOf(
                 "Name" to name,
-                "Descripiton" to desc,
+                "Description" to desc,
                 "Coordinates" to coordinates,
                 "Approved" to 0,
-                "DelteApproved" to 0,
-                "Category" to db.document("Categories/$category"),
+                "DeleteApproved" to 0,
+                "Category" to db.document("Category/$category"),
                 "Location" to db.document("Location/$Location"),
                 "User" to db.document("Users/${AuthUtil.currentUser!!.uid}"),
                 "Images" to images
@@ -491,6 +573,87 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
+        fun getAttracitonDetails(name: String, onResult: (List<String>) -> Unit) {
+
+            val db = Firebase.firestore
+
+            Log.d("NOMEEEE ->>>>>>>>>>>>>>>", name)
+
+            // Attempt to fetch the single location document based on country and region
+            val doc = db.collection("Attractions").document(name)
+            doc.get().addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val Name = document["Name"] as? String ?: "Unknown"
+                    val Description = document["Description"] as? String ?: "No description available"
+                    val Category = (document["Category"] as? DocumentReference)?.id ?: "Unknown"
+                    val Location = (document["Location"] as? DocumentReference)?.id ?: "Unknown"
+                    val images = document["Images"] as? List<String> ?: emptyList()
+                    val coordinates = document["Coordinates"] as? GeoPoint ?: GeoPoint(0.0, 0.0)
+
+                    val list = listOf(Name, Description, Category, Location, images.toString(), coordinates.toString())
+
+                    Log.d("list ->>>>>>>>>>>>>>>", list.toString())
+
+                    onResult(list)
+                } else {
+                    Log.d("list ->>>>>>>>>>>>>>>", "entrei no document does not exist")
+                    onResult(emptyList())  // Handle case where the document does not exist
+                }
+            }.addOnFailureListener {
+                Log.d("list ->>>>>>>>>>>>>>>", "failure case")
+                onResult(emptyList())  // Handle failure case
+            }
+        }
+
+        fun updateAttraction(attractionName: String,name: String, desc : String, coordinates: GeoPoint, category : String, Location : String, images : List<String>, onResult : (Throwable?) -> Unit) {
+
+            val db = Firebase.firestore
+            val v = db.collection("Attractions").document(attractionName)
+            val userId = AuthUtil.currentUser!!.uid
+
+            // Verifica se o usuário atual é o mesmo que criou a localização
+            db.collection("Attractions").document(attractionName).get()
+                .addOnSuccessListener { documentSnapshot ->
+                    val creatorUserId = documentSnapshot.getDocumentReference("User")?.id
+
+                    Log.d("creatorUserId ->>>>>>>>", creatorUserId.toString())
+
+                    if (creatorUserId == userId) {
+                        // O usuário atual é o criador, pode continuar com a edição
+                        if (attractionName != name) {
+                            addAttraction(name, desc, coordinates, category, Location, images) {}
+                            deleteAttractionFromEdit(attractionName, 3) {}
+                        } else {
+                            db.runTransaction { transaction ->
+                                val doc = transaction.get(v)
+                                if (doc.exists()) {
+                                    transaction.update(v, "Description", desc)
+                                    transaction.update(v, "Coordinates", coordinates)
+                                    transaction.update(v, "Category", db.document("Categories/$category"))
+                                    transaction.update(v, "Location", db.document("Location/$Location"))
+                                    transaction.update(v, "Images", images)
+                                    transaction.update(v, "Approved", 0)
+                                    null
+                                } else {
+                                    throw FirebaseFirestoreException(
+                                        "Doesn't exist",
+                                        FirebaseFirestoreException.Code.UNAVAILABLE
+                                    )
+                                }
+                            }.addOnCompleteListener { result ->
+                                onResult(result.exception)
+                            }
+                        }
+                    } else {
+                        // O usuário atual não é o criador, rejeita a operação
+                        onResult(SecurityException("User does not have permission to edit this attraction"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    onResult(exception)
+                }
+        }
+
         fun updateApprovedAttraction( name: String,onResult : (Throwable?) -> Unit) {
 
             val db = Firebase.firestore
@@ -511,8 +674,9 @@ class StorageUtil {
                 onResult(result.exception)
             }
         }
-        @SuppressLint("SuspiciousIndentation")
-        fun deleteAttraction(onResult : (Throwable?) -> Unit, name: String) {
+
+        @SuppressLint
+        fun deleteAttraction(name: String, onResult : (Throwable?) -> Unit) {
 
             //As Attractions podem ser eliminados pelos seus autores, mas depois de possuírem votações
             //só o poderão ser com a aprovação de remoção por 3 utilizadores
@@ -522,8 +686,8 @@ class StorageUtil {
             db.collection("Attractions").document(name).get().addOnSuccessListener { result ->
                     if (result.exists()) {
                         val approved = result.getLong("Approved")
-                        val delete = result.getLong("DeleteApproved")
-                            if (approved!! >= 2 || delete!! >= 3) {
+                        val isdelete = result.getLong("DeleteApproved")
+                            if (approved!! >= 2 || isdelete!! >= 3) {
                                 val doc = db.collection("Attractions").document(name)
                                 doc.get().addOnSuccessListener { results ->
                                     if (results.exists())
@@ -552,6 +716,46 @@ class StorageUtil {
                 }
 
         }
+
+        fun deleteAttractionFromEdit(name: String, delete: Number,onResult : (Throwable?) -> Unit) {
+
+            //As Attractions podem ser eliminados pelos seus autores, mas depois de possuírem votações
+            //só o poderão ser com a aprovação de remoção por 3 utilizadores
+
+            val db = Firebase.firestore
+
+            db.collection("Attractions").document(name).get().addOnSuccessListener { result ->
+                if (result.exists()) {
+                    if (delete == 3) {
+                        val doc = db.collection("Attractions").document(name)
+                        doc.get().addOnSuccessListener { results ->
+                            if (results.exists())
+                                doc.delete()
+                        }
+                    }
+                    else{
+                        val v = db.collection("Attractions").document(name)
+                        db.runTransaction { transaction ->
+                            val doc = transaction.get(v)
+                            if (doc.exists()) {
+                                val deleteapproved = (doc.getLong("DeleteApproved") ?: 0) + 1
+                                transaction.update(v, "DeleteApproved", deleteapproved)
+                                null
+                            } else
+                                throw FirebaseFirestoreException(
+                                    "Doesn't exist",
+                                    FirebaseFirestoreException.Code.UNAVAILABLE
+                                )
+                        }.addOnCompleteListener{result ->
+                            onResult(result.exception)
+                        }
+
+                    }
+                }
+            }
+
+        }
+
 
 
 

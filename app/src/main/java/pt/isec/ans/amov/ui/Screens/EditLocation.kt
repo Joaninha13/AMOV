@@ -157,11 +157,23 @@ fun EditLocation(
 
                     viewModelFB.getLocations(nameToEdit){ desc ->
                         Log.d("VEERRRRR----->>>>>>", "desc: $desc")
-                        //depois ver como isto é recebido
                         oldLocationFormState.country = desc[2]
                         oldLocationFormState.region = desc[5]
                         oldLocationFormState.description = desc[3]
-                        //oldLocationFormState.coordinates = desc[3] as GeoPoint VER ISTO AMANHA!!!
+                        oldLocationFormState.image = desc[4]
+
+                        val geoPointValues = desc[1]
+                            .replace("GeoPoint { latitude=", "")
+                            .replace(" longitude=", "")
+                            .replace("}", "")
+                            .split(",")
+
+
+                        if (geoPointValues.size == 2) {
+                            oldLocationFormState.latitude = geoPointValues[0].trim()
+                            oldLocationFormState.longitude = geoPointValues[1].trim()
+                        }
+
                     }
 
 
@@ -222,8 +234,17 @@ fun EditLocation(
                 ){
                     try {
                         newLocationFormState.coordinates = GeoPoint(newLocationFormState.latitude.toDouble(), newLocationFormState.longitude.toDouble())
-                    } catch (e: NumberFormatException) {
+                    }catch (e: NumberFormatException) {
                         // Se o usuário não inserir um número válido, aparece uma mensagem em cima a dizer coordenada inválidas
+                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        return@GradientButton
+                    }catch (e: Exception) {
+                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        return@GradientButton
+                    }catch (e: Error) {
+                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        return@GradientButton
+                    }catch (e: Throwable) {
                         Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }
@@ -232,10 +253,6 @@ fun EditLocation(
                         viewModelFB.uploadImage(uri) { imageUrl ->
                             // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
                             newLocationFormState = newLocationFormState.copy(image = imageUrl)
-
-                            // Agora você pode salvar os dados do formulário no Firestore
-                            Log.d("VEERRRRR->>>>>>", "newCategoryFormState: $newLocationFormState")
-                            Log.d("VEERRRRR->>>>>>", "oldCategoryFormState: $oldLocationFormState")
                         }
                     }
 
@@ -247,6 +264,9 @@ fun EditLocation(
                         newLocationFormState.coordinates,
                         newLocationFormState.image
                     )
+
+                    Toast.makeText(context, viewModelFB.error.value ?: "Update Succeed", Toast.LENGTH_LONG).show()
+                    navController.popBackStack()
                 }
             }
             }
