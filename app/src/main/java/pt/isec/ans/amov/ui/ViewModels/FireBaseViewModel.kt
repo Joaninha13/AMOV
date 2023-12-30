@@ -144,13 +144,6 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
-    /*fun getAllAttractions(onResult: (List<String>) -> Unit) {
-        viewModelScope.launch {
-            StorageUtil.getAllAttractionsDocumentsNames { names ->
-                onResult(names)
-            }
-        }
-    }*/
     fun getLocations(name: String, onResult : (List<String>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllFromOneLocation(name) { desc ->
@@ -186,6 +179,21 @@ class FireBaseViewModel : ViewModel() {
             StorageUtil.getAllAttractionsDocumentsNames { names ->
                 onResult(names)
             }
+        }
+    }
+
+    fun getAttractions(name: String, onResult : (List<String>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAttracitonDetails(name) { desc ->
+                onResult(desc)
+            }
+        }
+    }
+
+    fun updateAttractions(attractionName: String,name: String, desc : String, coordinates: GeoPoint, category : String, Location : String, images : List<String>) {
+        viewModelScope.launch { StorageUtil.updateAttraction(attractionName,name, desc, coordinates, category, Location, images){ e ->
+            _error.value = e?.message
+        }
         }
     }
 
