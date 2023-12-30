@@ -158,11 +158,10 @@ fun EditLocation(
                     viewModelFB.getLocations(nameToEdit){ desc ->
                         Log.d("VEERRRRR----->>>>>>", "desc: $desc")
                         //depois ver como isto é recebido
-                        oldLocationFormState.country = desc[4]
-                        oldLocationFormState.region = desc[6]
-                        oldLocationFormState.description = desc[5]
-                        //oldLocationFormState.coordinates = desc[3] as GeoPoint
-                        oldLocationFormState.image = desc[5]
+                        oldLocationFormState.country = desc[2]
+                        oldLocationFormState.region = desc[5]
+                        oldLocationFormState.description = desc[3]
+                        //oldLocationFormState.coordinates = desc[3] as GeoPoint VER ISTO AMANHA!!!
                     }
 
 

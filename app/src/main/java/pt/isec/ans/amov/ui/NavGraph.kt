@@ -49,7 +49,7 @@ fun SetupNavGraph(
             EditAttraction(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
         }
         composable(Screen.EditLocation.route) {
-            EditLocation(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = "teste")
+            EditLocation(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = "olaaaa_adeussd")
         }
         composable(Screen.EditCategory.route) {
             EditCategory(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = "teste")
