@@ -325,7 +325,7 @@ fun ShowPopUpBase(
     if (showPopUp) {
         PopUpBase(
             showDialog = true,
-            title = "Add Location",
+            title = "Add Attraction",
             content = {
                 //First inputs
                 Column(
@@ -448,10 +448,6 @@ fun ShowPopUpBase(
                     attractionGeoPoint.latitude,
                     attractionGeoPoint.longitude
                 )
-
-                attractionFormState.category = "Museus"
-                attractionFormState.location = "teste"
-
 
                 var imageUrls: List<String> = listOf()
 
