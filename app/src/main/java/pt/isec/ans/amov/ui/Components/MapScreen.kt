@@ -2,6 +2,8 @@ package pt.isec.ans.amov.ui.Components
 
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
@@ -137,7 +139,15 @@ fun MapScreen(
                                                 Marker(this).apply {
                                                     position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
                                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                                    icon = ContextCompat.getDrawable(context, R.drawable.house)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.house)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
                                                 }
                                             )
@@ -148,7 +158,15 @@ fun MapScreen(
                                                 Marker(this).apply {
                                                     position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
                                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                                    icon = ContextCompat.getDrawable(context, R.drawable.park)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.park)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
                                                 }
                                             )
@@ -159,7 +177,15 @@ fun MapScreen(
                                                 Marker(this).apply {
                                                     position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
                                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                                    icon = ContextCompat.getDrawable(context, R.drawable.binoculars)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.binoculars)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
                                                 }
                                             )
@@ -170,7 +196,15 @@ fun MapScreen(
                                                 Marker(this).apply {
                                                     position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
                                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                                    icon = ContextCompat.getDrawable(context, R.drawable.monu_2)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.monu_2)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
                                                 }
                                             )
@@ -181,7 +215,15 @@ fun MapScreen(
                                                 Marker(this).apply {
                                                     position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
                                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                                    icon = ContextCompat.getDrawable(context, R.drawable.museum)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.museum)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
                                                 }
                                             )
@@ -192,7 +234,15 @@ fun MapScreen(
                                                 Marker(this).apply {
                                                     position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
                                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                                    icon = ContextCompat.getDrawable(context, R.drawable.amusement)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.amusement)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
                                                 }
                                             )
@@ -203,7 +253,15 @@ fun MapScreen(
                                                 Marker(this).apply {
                                                     position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
                                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                                    icon = ContextCompat.getDrawable(context, R.drawable.restaurant)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.restaurant)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
 
                                                 }
