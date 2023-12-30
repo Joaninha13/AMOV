@@ -37,9 +37,7 @@ import androidx.navigation.NavController
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
-import pt.isec.ans.amov.ui.Components.Buttons.SortButton
 import pt.isec.ans.amov.ui.Components.Buttons.SortButtonWithPopUp
-import pt.isec.ans.amov.ui.Components.Cards.UserLocationCard
 import pt.isec.ans.amov.ui.Components.Cards.UserReviewCard
 import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.theme.BlueHighlight

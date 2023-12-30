@@ -10,9 +10,12 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import pt.isec.ans.amov.dataStructures.Attraction
 import pt.isec.ans.amov.dataStructures.Category
 import pt.isec.ans.amov.dataStructures.Location
+import pt.isec.ans.amov.dataStructures.Review
 import java.util.UUID
+import java.util.concurrent.CountDownLatch
 import kotlin.math.*
 
 class StorageUtil {
@@ -168,7 +171,7 @@ class StorageUtil {
             }
         }
 
-        fun getCategoryDetails(name: String, onResult: (Category?) -> Unit) {
+        fun getCategoryDetails(userGeo: GeoPoint, name: String, onResult: (Category?) -> Unit) {
 
             val db = Firebase.firestore
 
@@ -181,20 +184,23 @@ class StorageUtil {
                         document["Description"] as? String ?: "No description available"
                     val logoUrl = document["Logo"] as? String
                         ?: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/800px-Image_not_available.png?20210219185637"
+                    val userRef = document["User"] as? String ?: "Unknown"
+                    val numApproved = document["Approved"] as? Int ?: 0
 
 
-                    //Change later TODO
-                    val numAttractions = document["NumAttractions"] as? Int ?: 0
+                    getAttractionsByCategory(category = name, userGeo = userGeo) { linkedAttractions ->
+                        val category = Category(
+                            name = fetchedName,
+                            description = description,
+                            logoUrl = logoUrl,
+                            userRef = userRef,
+                            linkedAttractions = linkedAttractions,
+                            numApproved = numApproved,
+                            numAttractions = linkedAttractions.size,
+                        )
 
-
-                    val category = Category(
-                        name = fetchedName,
-                        description = description,
-                        logoUrl = logoUrl,
-                        numAttractions = numAttractions
-                    )
-
-                    onResult(category)
+                        onResult(category)
+                    }
                 } else {
                     onResult(null)  // Handle case where the document does not exist
                 }
@@ -398,16 +404,6 @@ class StorageUtil {
         }
 
         fun getLocationDetails(userGeo: GeoPoint, name: String, onResult: (Location?) -> Unit) {
-            fun calculateDistance(startGeo: GeoPoint, endGeo: GeoPoint): Float {
-                val earthRadius = 6371 // Radius of the earth in km
-                val latDistance = Math.toRadians(endGeo.latitude - startGeo.latitude)
-                val lonDistance = Math.toRadians(endGeo.longitude - startGeo.longitude)
-                val a = sin(latDistance / 2) * sin(latDistance / 2) +
-                        cos(Math.toRadians(startGeo.latitude)) * cos(Math.toRadians(endGeo.latitude)) *
-                        sin(lonDistance / 2) * sin(lonDistance / 2)
-                val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-                return (earthRadius * c).toFloat() // convert the distance from double to float
-            }
 
             val db = Firebase.firestore
 
@@ -418,29 +414,29 @@ class StorageUtil {
                     val fetchedCountry = document["Country"] as? String ?: "Unknown"
                     val fetchedRegion = document["Region"] as? String ?: "Unknown"
 
-                    //Change later TODO
-                    val numAttractions = document["NumAttractions"] as? Int ?: 0
-
-                    val description =
-                        document["Description"] as? String ?: "No description available"
+                    val description = document["Description"] as? String ?: "No description available"
                     val geoPoint = document["Coordinates"] as? GeoPoint ?: GeoPoint(0.0, 0.0)
-                    val imageUrl = document["Image"] as? String
-                        ?: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/800px-Image_not_available.png?20210219185637"
-
+                    val imageUrl = document["Image"] as? String ?: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/800px-Image_not_available.png?20210219185637"
+                    val userRef = document["User"] as? String ?: "Unknown"
+                    val numApproved = document["Approved"] as? Int ?: 0
 
                     val distanceInKmFromCurrent = calculateDistance(userGeo, geoPoint)
+                    getAttractionsByLocation(location = name, userGeo = userGeo) { linkedAttractions ->
+                        val locationDetails = Location(
+                            linkedAttractions = linkedAttractions,
+                            country = fetchedCountry,
+                            region = fetchedRegion,
+                            numAttractions = linkedAttractions.size,
+                            distanceInKmFromCurrent = distanceInKmFromCurrent,
+                            description = description,
+                            coordinates = geoPoint,
+                            imageUrl = imageUrl,
+                            userRef = userRef,
+                            numApproved = numApproved
+                        )
 
-                    val location = Location(
-                        country = fetchedCountry,
-                        region = fetchedRegion,
-                        numAttractions = numAttractions,
-                        distanceInKmFromCurrent = distanceInKmFromCurrent,
-                        description = description,
-                        coordinates = geoPoint,
-                        imageUrl = imageUrl
-                    )
-
-                    onResult(location)
+                        onResult(locationDetails)
+                    }
                 } else {
                     onResult(null)  // Handle case where the document does not exist
                 }
@@ -449,7 +445,9 @@ class StorageUtil {
             }
         }
 
-        fun updateLocation(locationName: String, country: String, region: String, desc: String, coordinates: GeoPoint, image: String, onResult: (Throwable?) -> Unit) {
+
+        fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
+
 
             val db = Firebase.firestore
             val v = db.collection("Location").document("${country}_${region}")
@@ -676,6 +674,7 @@ class StorageUtil {
                 onResult(result.exception)
             }
         }
+
         @SuppressLint
         fun deleteAttraction(name: String, onResult : (Throwable?) -> Unit) {
 
@@ -765,8 +764,185 @@ class StorageUtil {
 
 
 
+        fun getAttractionDetails(userGeo: GeoPoint, name: String, onResult: (Attraction?) -> Unit) {
+
+            val db = Firebase.firestore
+
+            // Attempt to fetch the single location document based on country and region
+            val doc = db.collection("Attractions").document(name)
+            doc.get().addOnSuccessListener { document ->
+                if (document.exists()) {
 
 
+                    val description = document["Description"] as? String ?: "No description available"
+                    val geoPoint = document["Coordinates"] as? GeoPoint ?: GeoPoint(0.0, 0.0)
+                    val userRef = document["User"] as? DocumentReference
+                    val numApproved = document["Approved"] as? Int ?: 0
+                    val category = document["Category"] as? String ?: "Unknown"
+                    val location = document["Location"] as? String ?: "Unknown"
+                    val numDeleteApproved = document["DeleteApproved"] as? Int ?: 0
+
+                    val imageUrls = document["Images"] as? List<String> ?: emptyList()
+
+                    val distanceInKmFromCurrent = calculateDistance(userGeo, geoPoint)
+
+                    getReviewsByAttraction(name) { linkedReviews ->
+                        val attractionDetails = Attraction(
+                            reviews = linkedReviews,
+                            name = name,
+                            numApproved = numApproved,
+                            distanceInKmFromCurrent = distanceInKmFromCurrent,
+                            description = description,
+                            coordinates = geoPoint,
+                            imageUrls = imageUrls,
+                            userRef = userRef,
+                            numDeleteApproved = numDeleteApproved,
+                            category = category,
+                            location = location,
+                            averageRating = String.format("%.1f", linkedReviews.map { it.rating }.average()).toFloat(),
+                            numReviews = linkedReviews.size,
+                        )
+
+                        onResult(attractionDetails)
+                    }
+
+                } else {
+                    onResult(null)  // Handle case where the document does not exist
+                }
+            }.addOnFailureListener {
+                onResult(null)  // Handle failure case
+            }
+        }
+
+
+
+        private fun getReviewsByAttraction(attraction: String, onResult: (List<Review>) -> Unit) {
+            onResult(emptyList())
+//            val db = Firebase.firestore
+//            db.collection("Reviews")
+//                .whereEqualTo("Attraction", attraction)
+//                .get()
+//                .addOnSuccessListener { result ->
+//                    val reviews = mutableListOf<Review>()
+//                    val countDownLatch = CountDownLatch(result.size())
+//                    result.forEach { document ->
+//                        getReviewDetails(document.id) { review ->
+//                            if (review != null) {
+//                                reviews.add(review)
+//                            }
+//                            countDownLatch.countDown()
+//                        }
+//                    }
+//                    countDownLatch.await()
+//                    onResult(reviews)
+//                }
+//                .addOnFailureListener {
+//                    onResult(emptyList())
+//                }
+        }
+
+
+        private fun calculateDistance(startGeo: GeoPoint, endGeo: GeoPoint): Float {
+            val earthRadius = 6371.0 // Radius of the earth in km
+            val latDistance = Math.toRadians(endGeo.latitude - startGeo.latitude)
+            val lonDistance = Math.toRadians(endGeo.longitude - startGeo.longitude)
+            val a = sin(latDistance / 2).pow(2) +
+                    (cos(Math.toRadians(startGeo.latitude)) * cos(Math.toRadians(endGeo.latitude)) *
+                            sin(lonDistance / 2).pow(2))
+            val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+            val distance = earthRadius * c // calculate the distance
+
+            // Round to one decimal place and convert to Float
+            return String.format("%.1f", distance).toFloat()
+        }
+
+
+
+
+        fun getReviewDetails(name: String, onResult: (Review?) -> Unit) {
+
+            val db = Firebase.firestore
+
+            // Attempt to fetch the single location document based on country and region
+            val doc = db.collection("Review").document(name)
+            doc.get().addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val title = document["Title"] as? String ?: "Unknown"
+                    val description =
+                        document["Description"] as? String ?: "No description available"
+                    val imageUrl = document["Image"] as? String
+                        ?: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/800px-Image_not_available.png?20210219185637"
+                    val userRef = document["User"] as? String ?: "Unknown"
+                    val linkedAttractionRef = document["Attraction"] as? String ?: "Unknown"
+                    val rating = document["Rating"] as? Int ?: 0
+
+                    val review = Review(
+                        name = name,
+                        title = title,
+                        description = description,
+                        imageUrl = imageUrl,
+                        userRef = userRef,
+                        rating = rating,
+                        linkedAttractionRef = linkedAttractionRef,
+                    )
+
+                    onResult(review)
+                } else {
+                    onResult(null)  // Handle case where the document does not exist
+                }
+            }.addOnFailureListener {
+                onResult(null)  // Handle failure case
+            }
+        }
+
+
+        private fun getAttractionsByLocation(userGeo: GeoPoint, location: String, onResult: (List<Attraction>) -> Unit) {
+            val db = Firebase.firestore
+            db.collection("Attractions")
+                .whereEqualTo("Location", location)
+                .get()
+                .addOnSuccessListener { result ->
+                    val attractions = mutableListOf<Attraction>()
+                    val countDownLatch = CountDownLatch(result.size())
+                    result.forEach { document ->
+                        getAttractionDetails(userGeo=userGeo, name = document.id) { attraction ->
+                            if (attraction != null) {
+                                attractions.add(attraction)
+                            }
+                            countDownLatch.countDown()
+                        }
+                    }
+                    countDownLatch.await()
+                    onResult(attractions)
+                }
+                .addOnFailureListener {
+                    onResult(emptyList())
+                }
+        }
+
+        private fun getAttractionsByCategory(userGeo: GeoPoint, category: String, onResult: (List<Attraction>) -> Unit) {
+            val db = Firebase.firestore
+            db.collection("Attractions")
+                .whereEqualTo("Category", category)
+                .get()
+                .addOnSuccessListener { result ->
+                    val attractions = mutableListOf<Attraction>()
+                    val countDownLatch = CountDownLatch(result.size())
+                    result.forEach { document ->
+                        getAttractionDetails(userGeo=userGeo, name = document.id) { attraction ->
+                            if (attraction != null) {
+                                attractions.add(attraction)
+                            }
+                            countDownLatch.countDown()
+                        }
+                    }
+                    countDownLatch.await()
+                    onResult(attractions)
+                }
+                .addOnFailureListener {
+                    onResult(emptyList())
+                }
+        }
 
 
 

@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,16 +22,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.google.firebase.firestore.GeoPoint
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.dataStructures.Category
-import pt.isec.ans.amov.dataStructures.Location
+import pt.isec.ans.amov.ui.Components.Buttons.DescriptionButtonWithPopUp
 import pt.isec.ans.amov.ui.Components.Cards.AttractionCard
-import pt.isec.ans.amov.ui.Components.Buttons.SortButton
+import pt.isec.ans.amov.ui.Components.Buttons.SortButtonWithPopUp
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.*
@@ -46,10 +47,23 @@ fun InfoCategory(
 ) {
     var formState by remember { mutableStateOf<Category?>(null) }
 
+    val sortOptions = listOf("Categories Name", "Abc", "Zyx", "Distance")
+    var selectedSortCriteria by remember { mutableStateOf("") }
+
+    val location = viewModelL.currentLocation.observeAsState()
+
+
+    val geoPoint by remember { mutableStateOf(
+        GeoPoint(
+            location.value?.latitude ?: 0.0, location.value?.longitude ?: 0.0
+        )
+    ) }
+
     // Fetch location details when the item enters composition
     LaunchedEffect(categoryId) {
         viewModelFB.getCategoryDetails(
             name = categoryId,
+            userGeo = geoPoint,
             onResult = { details ->
                 formState = details
             }
@@ -94,15 +108,9 @@ fun InfoCategory(
                             )
                         )
                     }
-                    Image(
-                        painter = painterResource(id = R.drawable.info),
-                        contentDescription = "image description",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(16.dp)
-                            .height(16.dp)
-                    )
+                    formState?.let {
+                        DescriptionButtonWithPopUp(description = it.description, author = it.userRef)
+                    }
                 }
                 Box(
                     modifier = Modifier.clickable {
@@ -140,17 +148,9 @@ fun InfoCategory(
                     modifier = Modifier.fillMaxWidth()
                         .height(40.dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.filters),
-                        contentDescription = "filter-icon",
-                        contentScale = ContentScale.None,
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(20.dp)
-                            .height(20.dp)
-                    )
-
-                    SortButton("Sort Attractions")
+                    SortButtonWithPopUp(sortOptions) { selectedOption ->
+                        selectedSortCriteria = selectedOption
+                    }
                 }
             }
 
@@ -164,15 +164,15 @@ fun InfoCategory(
                             contentAlignment = Alignment.Center
                         ) {
                             // Change with the correct listing later
-                            AttractionCard(
-                                attractionId = "1",
-                                navController = navController,
-                                attraction = "Torre Eiffel Tower",
-                                averageRating = 2.3f,
-                                numRatings = 3214,
-                                distanceInKmFromCurrent = 32.4f,
-                                lastComment = "This is the last comment",
-                            )
+//                            AttractionCard(
+//                                attractionId = "1",
+//                                navController = navController,
+//                                attraction = "Torre Eiffel Tower",
+//                                averageRating = 2.3f,
+//                                numRatings = 3214,
+//                                distanceInKmFromCurrent = 32.4f,
+//                                lastComment = "This is the last comment",
+//                            )
                         }
                         Spacer(modifier = Modifier.height(20.dp))
                     }

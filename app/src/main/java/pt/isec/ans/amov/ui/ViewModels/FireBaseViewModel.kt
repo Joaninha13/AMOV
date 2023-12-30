@@ -1,7 +1,6 @@
 package pt.isec.ans.amov.ui.ViewModels
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.MutableState
 
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +11,7 @@ import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import pt.isec.ans.amov.Utils.FireBase.AuthUtil
 import pt.isec.ans.amov.Utils.FireBase.StorageUtil
+import pt.isec.ans.amov.dataStructures.Attraction
 import pt.isec.ans.amov.dataStructures.Category
 import pt.isec.ans.amov.dataStructures.Location
 
@@ -131,11 +131,24 @@ class FireBaseViewModel : ViewModel() {
             }
         }
     }
+    fun getAttractionDetails(onResult: (Attraction) -> Unit, userGeo: GeoPoint, name: String) {
+        viewModelScope.launch {
+            StorageUtil.getAttractionDetails(
+                userGeo = userGeo,
+                name = name,
+            ) { attraction ->
+                if (attraction != null) {
+                    onResult(attraction)
+                }
+            }
+        }
+    }
 
-    fun getCategoryDetails(onResult: (Category) -> Unit, name: String) {
+    fun getCategoryDetails(onResult: (Category) -> Unit, name: String, userGeo: GeoPoint) {
         viewModelScope.launch {
             StorageUtil.getCategoryDetails(
-                name
+                name = name,
+                userGeo = userGeo
             ) { category ->
                 if (category != null) {
                     onResult(category)
