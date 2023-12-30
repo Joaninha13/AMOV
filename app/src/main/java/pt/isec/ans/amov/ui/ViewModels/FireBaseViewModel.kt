@@ -12,6 +12,7 @@ import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import pt.isec.ans.amov.Utils.FireBase.AuthUtil
 import pt.isec.ans.amov.Utils.FireBase.StorageUtil
+import pt.isec.ans.amov.dataStructures.Attraction
 import pt.isec.ans.amov.dataStructures.Category
 import pt.isec.ans.amov.dataStructures.Location
 
@@ -139,6 +140,18 @@ class FireBaseViewModel : ViewModel() {
             ) { category ->
                 if (category != null) {
                     onResult(category)
+                }
+            }
+        }
+    }
+
+    fun getAttractionDetails(attractionGeoPoint: GeoPoint, onResult: (Attraction) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAttractionDetails(
+                attractionGeoPoint
+            ) { attraction ->
+                if (attraction != null) {
+                    onResult(attraction)
                 }
             }
         }

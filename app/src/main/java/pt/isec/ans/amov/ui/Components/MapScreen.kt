@@ -9,20 +9,29 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,16 +41,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.constraintlayout.helper.widget.Carousel
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import coil.compose.rememberImagePainter
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -51,6 +64,7 @@ import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.dataStructures.Attraction
 import pt.isec.ans.amov.ui.Components.Buttons.FilterField
 import pt.isec.ans.amov.ui.Components.Buttons.FilterFields
 import pt.isec.ans.amov.ui.Components.Buttons.SearchDropdownButton
@@ -59,7 +73,7 @@ import pt.isec.ans.amov.ui.Screens.AttractionFormState
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.BlueLighter
-
+import coil.compose.rememberImagePainter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +84,9 @@ fun MapScreen(
     handleButtonToCenterClicked : (Boolean) -> Unit
 ){
     var showPopUp by remember { mutableStateOf(false) }
+    var showMarkerPopUp by remember { mutableStateOf(false) }
+    var attraction by remember { mutableStateOf<Attraction?>(null) }
+
     var autoEnabled by remember{ mutableStateOf(false) }
     var attractionGeoPoint by remember { mutableStateOf(GeoPoint(0.0, 0.0)) }
     val location = viewModelL.currentLocation.observeAsState()
@@ -149,6 +166,18 @@ fun MapScreen(
                                                         )
                                                     )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showMarkerPopUp = true
+                                                        Log.d("Click", "cliquei")
+
+                                                        true
+                                                    }
                                                 }
                                             )
                                         }
@@ -168,6 +197,17 @@ fun MapScreen(
                                                         )
                                                     )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showMarkerPopUp = true
+                                                        Log.d("Click", "cliquei")
+                                                        true
+                                                    }
                                                 }
                                             )
                                         }
@@ -187,6 +227,17 @@ fun MapScreen(
                                                         )
                                                     )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showMarkerPopUp = true
+                                                        Log.d("Click", "cliquei")
+                                                        true
+                                                    }
                                                 }
                                             )
                                         }
@@ -206,6 +257,17 @@ fun MapScreen(
                                                         )
                                                     )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showMarkerPopUp = true
+                                                        Log.d("Click", "cliquei")
+                                                        true
+                                                    }
                                                 }
                                             )
                                         }
@@ -225,6 +287,17 @@ fun MapScreen(
                                                         )
                                                     )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showMarkerPopUp = true
+                                                        Log.d("Click", "cliquei")
+                                                        true
+                                                    }
                                                 }
                                             )
                                         }
@@ -244,6 +317,17 @@ fun MapScreen(
                                                         )
                                                     )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showMarkerPopUp = true
+                                                        Log.d("Click", "cliquei")
+                                                        true
+                                                    }
                                                 }
                                             )
                                         }
@@ -263,7 +347,17 @@ fun MapScreen(
                                                         )
                                                     )
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
 
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showMarkerPopUp = true
+                                                        Log.d("Click", "cliquei")
+                                                        true
+                                                    }
                                                 }
                                             )
                                         }
@@ -275,6 +369,17 @@ fun MapScreen(
                                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                                     icon = ContextCompat.getDrawable(context, R.drawable.location_marker)
                                                     title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showMarkerPopUp = true
+
+                                                        true
+                                                    }
                                                 }
                                             )
                                         }
@@ -344,6 +449,12 @@ fun MapScreen(
 
         ShowPopUpBase(showPopUp, attractionGeoPoint, LocalContext.current, viewModelFB){
             showPopUp = false
+        }
+
+        attraction?.let {
+            ShowMarkerPopUp(showMarkerPopUp, it){
+                showMarkerPopUp = false
+            }
         }
     }
 }
@@ -533,6 +644,102 @@ fun ShowPopUpBase(
 
             },
             onDismiss = onDismiss
+        )
+    }
+}
+
+@Composable
+fun ShowMarkerPopUp(
+    showMarkerPopUp: Boolean,
+    attraction: Attraction,
+    onDismiss: () -> Unit
+) {
+    if (showMarkerPopUp) {
+        Log.d("Click", "entrei aqui")
+
+        PopUpBase(
+            showDialog = true,
+            title = attraction.name,
+            content = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    // Mostra o carrossel de imagens
+                    ImageCarousel(images = attraction.imageUrl, modifier = Modifier.fillMaxWidth().height(200.dp))
+
+                    // Exibe outras informações da atração
+                    Text(text = "Description: ${attraction.description}", modifier = Modifier.padding(vertical = 8.dp))
+                    Text(text = "Category: ${attraction.category}", modifier = Modifier.padding(vertical = 8.dp))
+                }
+            },
+            buttonText = "OK",
+            onConfirm = onDismiss,
+            onDismiss = onDismiss
+        )
+    }
+}
+
+/*@Composable
+fun ShowMarkerPopUp(
+    showMarkerPopUp: Boolean,
+    viewModelFB: FireBaseViewModel,
+    attractionGeoPoint: GeoPoint,
+    onDismiss: () -> Unit
+) {
+    var attraction by remember { mutableStateOf<Attraction?>(null) }
+
+    if(showMarkerPopUp){
+        PopUpBase(
+            showDialog = true,
+            title = "oi",
+            content = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    // Mostra o carrossel de imagens
+                    //ImageCarousel(images = attractionDetails.imageUrl, modifier = Modifier.fillMaxWidth().height(200.dp))
+
+                    // Exibe outras informações da atração
+                    Text(text = "Description:", modifier = Modifier.padding(vertical = 8.dp))
+                }
+            },
+            buttonText = "OK",
+            onConfirm = {},
+            onDismiss = onDismiss
+        )
+    }
+
+
+}*/
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ImageCarousel(images: List<String>, modifier: Modifier = Modifier) {
+    val listState = rememberLazyListState()
+
+    HorizontalPager(
+        state = rememberPagerState(pageCount = { images.size }),
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) { page ->
+        val imageUrl = images[page]
+        Image(
+            painter = rememberImagePainter(
+                data = imageUrl,
+                builder = {
+                    // Optional: Add image transformations
+                    error(Color.Red)
+                }
+            ),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(MaterialTheme.shapes.medium),
+            contentScale = ContentScale.Crop
         )
     }
 }

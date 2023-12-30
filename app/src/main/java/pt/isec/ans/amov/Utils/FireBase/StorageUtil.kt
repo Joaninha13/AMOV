@@ -3,12 +3,14 @@ package pt.isec.ans.amov.Utils.FireBase
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import pt.isec.ans.amov.dataStructures.Attraction
 import pt.isec.ans.amov.dataStructures.Category
 import pt.isec.ans.amov.dataStructures.Location
 import java.util.UUID
@@ -542,6 +544,46 @@ class StorageUtil {
                     onResult(null)
                 }
         }
+
+        fun getAttractionDetails(attractionGeoPoint: GeoPoint, onResult: (Attraction?) -> Unit) {
+            val db = Firebase.firestore
+            val docRef = db.collection("Attractions")
+
+            docRef
+                .whereEqualTo("Coordinates", attractionGeoPoint)
+                .get()
+                .addOnSuccessListener { result ->
+                    if (!result.isEmpty) {
+                        val name = result.documents[0].getString("Name") ?: "Unknown"
+                        val description = result.documents[0].getString("Description") ?: "Unknown"
+                        val categoryRef = result.documents[0].get("Category") as? DocumentReference
+                        val imageUrlList = result.documents[0].get("ImageUrl") as? List<String> ?: emptyList()
+
+                        // Se a categoria for uma referência, você pode buscar os detalhes da categoria
+                        categoryRef?.get()?.addOnSuccessListener { categorySnapshot ->
+                            val categoryName = categorySnapshot.getString("Name") ?: "Unknown"
+
+                            val attraction = Attraction(
+                                name = name,
+                                coordinates = attractionGeoPoint,
+                                description = description,
+                                category = categoryName,
+                                imageUrl = imageUrlList
+                            )
+
+                            onResult(attraction)
+                        }?.addOnFailureListener {
+                            onResult(null)
+                        }
+                    } else {
+                        onResult(null)
+                    }
+                }
+                .addOnFailureListener {
+                    onResult(null)  // Handle failure case
+                }
+        }
+
 
         fun updateApprovedAttraction( name: String,onResult : (Throwable?) -> Unit) {
 
