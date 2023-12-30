@@ -367,6 +367,19 @@ class StorageUtil {
             }
         }
 
+        fun getAllFromOneLocation(name: String, onResult : (List<String>) -> Unit) {
+
+            val db = Firebase.firestore
+            val doc = db.collection("Location").document(name)
+
+            doc.get().addOnSuccessListener { result ->
+                if (result.exists())
+                    onResult(result.data!!.entries?.sortedBy { it.key }?.map { it.value?.toString() ?: "" } ?: emptyList())
+            }.addOnFailureListener { exception ->
+                onResult(arrayListOf())
+            }
+        }
+
         fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
 
             val db = Firebase.firestore
