@@ -557,7 +557,7 @@ class StorageUtil {
                         val name = result.documents[0].getString("Name") ?: "Unknown"
                         val description = result.documents[0].getString("Description") ?: "Unknown"
                         val categoryRef = result.documents[0].get("Category") as? DocumentReference
-                        val imageUrlList = result.documents[0].get("ImageUrl") as? List<String> ?: emptyList()
+                        val imageUrlList = result.documents[0].get("Images") as? List<String> ?: emptyList()
 
                         // Se a categoria for uma referência, você pode buscar os detalhes da categoria
                         categoryRef?.get()?.addOnSuccessListener { categorySnapshot ->
@@ -568,7 +568,7 @@ class StorageUtil {
                                 coordinates = attractionGeoPoint,
                                 description = description,
                                 category = categoryName,
-                                imageUrl = imageUrlList
+                                imageUrlList = imageUrlList
                             )
 
                             onResult(attraction)

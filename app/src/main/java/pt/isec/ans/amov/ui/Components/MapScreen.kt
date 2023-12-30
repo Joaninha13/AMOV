@@ -174,7 +174,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei")
+                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
 
                                                         true
                                                     }
@@ -205,7 +205,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei")
+                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
                                                         true
                                                     }
                                                 }
@@ -235,7 +235,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei")
+                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
                                                         true
                                                     }
                                                 }
@@ -265,7 +265,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei")
+                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
                                                         true
                                                     }
                                                 }
@@ -295,7 +295,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei")
+                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
                                                         true
                                                     }
                                                 }
@@ -325,7 +325,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei")
+                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
                                                         true
                                                     }
                                                 }
@@ -355,7 +355,7 @@ fun MapScreen(
                                                         }
 
                                                         showMarkerPopUp = true
-                                                        Log.d("Click", "cliquei")
+                                                        Log.d("Click", "cliquei ${attraction?.imageUrlList?.size}")
                                                         true
                                                     }
                                                 }
@@ -667,7 +667,7 @@ fun ShowMarkerPopUp(
                         .padding(16.dp)
                 ) {
                     // Mostra o carrossel de imagens
-                    ImageCarousel(images = attraction.imageUrl, modifier = Modifier.fillMaxWidth().height(200.dp))
+                    ImageCarousel(images = attraction.imageUrlList, modifier = Modifier.fillMaxWidth().height(200.dp))
 
                     // Exibe outras informações da atração
                     Text(text = "Description: ${attraction.description}", modifier = Modifier.padding(vertical = 8.dp))
@@ -721,20 +721,17 @@ fun ShowMarkerPopUp(
 fun ImageCarousel(images: List<String>, modifier: Modifier = Modifier) {
     val listState = rememberLazyListState()
 
+    Log.d("Click", "${images.size}")
+
     HorizontalPager(
         state = rememberPagerState(pageCount = { images.size }),
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) { page ->
         val imageUrl = images[page]
+        Log.d("Click", imageUrl)
         Image(
-            painter = rememberImagePainter(
-                data = imageUrl,
-                builder = {
-                    // Optional: Add image transformations
-                    error(Color.Red)
-                }
-            ),
+            painter = rememberImagePainter(imageUrl),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()

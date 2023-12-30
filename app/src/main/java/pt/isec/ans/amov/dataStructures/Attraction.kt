@@ -7,5 +7,5 @@ data class Attraction (
     val coordinates: GeoPoint,
     val description: String,
     val category: String,
-    val imageUrl: List<String>
+    val imageUrlList: List<String>
 )
