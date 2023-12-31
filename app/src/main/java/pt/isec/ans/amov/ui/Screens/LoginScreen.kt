@@ -37,12 +37,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 
 @Composable
-fun LoginScreen(navController: NavHostController, viewModel: FireBaseViewModel, onSuccess : () -> Unit) {
+fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSuccess : () -> Unit) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val error by remember { viewModel.error }
@@ -270,8 +272,7 @@ fun LoginScreen(navController: NavHostController, viewModel: FireBaseViewModel, 
                         }
                     },
                     onClick = { offset ->
-                        // Handle click on "Sign up"
-                        // Navigate to the signup screen or perform any other action
+                        navController.navigate(Screen.RegisterAcc.route)
                     },
                     modifier = Modifier.clickable {
                         // Optional: You can specify additional click behavior here
@@ -303,8 +304,7 @@ fun LoginScreen(navController: NavHostController, viewModel: FireBaseViewModel, 
                         }
                     },
                     onClick = { offset ->
-                        // Handle click on "Sign up"
-                        // Navigate to the signup screen or perform any other action
+                        navController.navigate(Screen.CreditsScreen.route)
                     },
                     modifier = Modifier.clickable {
                         // Optional: You can specify additional click behavior here
