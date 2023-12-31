@@ -62,6 +62,8 @@ class MainActivity : ComponentActivity() {
             verifyOnePermission.launch(Manifest.permission.READ_MEDIA_IMAGES)
         }
 
+        //viewModelL.startLocationUpdates()
+
     }
 
     override fun onResume() {

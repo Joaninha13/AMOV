@@ -25,6 +25,7 @@ import pt.isec.ans.amov.ui.Screens.ViewAccount
 import pt.isec.ans.amov.ui.Screens.ViewAttractions
 import pt.isec.ans.amov.ui.Screens.ViewCategories
 import pt.isec.ans.amov.ui.Screens.ViewLocations
+import pt.isec.ans.amov.ui.Screens.CreditsScreen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 
@@ -121,6 +122,8 @@ fun SetupNavGraph(
         composable(Screen.ViewAccount.route) {
             ViewAccount(navController = navController)
         }
-
+        composable(Screen.CreditsScreen.route) {
+            CreditsScreen(navController = navController)
+        }
     }
 }
