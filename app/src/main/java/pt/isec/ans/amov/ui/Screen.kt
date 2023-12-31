@@ -3,6 +3,10 @@ package pt.isec.ans.amov.ui
 import pt.isec.ans.amov.dataStructures.Location
 
 sealed class Screen(val route: String) {
+
+    object LoginScreen : Screen("loginScreen")
+
+    object RegisterAcc : Screen("registerAcc")
     object Home : Screen("home")
     object AddAttractions : Screen("addAttraction")
     object AddLocations : Screen("addLocation")
@@ -27,7 +31,9 @@ sealed class Screen(val route: String) {
         fun createRoute(categoryId: String) = "infoCategory/$categoryId"
     }
 
-    object Review : Screen("Review")
+    object Review : Screen("Review/{attractionNames}") {
+        fun createRoute(attractionNames: String) = "Review/$attractionNames"
+    }
 
     object ViewAttraction : Screen("viewAttraction")
     object ViewLocation : Screen("viewLocation")

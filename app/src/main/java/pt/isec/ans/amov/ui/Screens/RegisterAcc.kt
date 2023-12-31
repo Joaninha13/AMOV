@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -43,10 +44,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.GradientButton
 import pt.isec.ans.amov.ui.Components.OutlinedInput
+import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueLighter
 import pt.isec.ans.amov.ui.theme.BlueSoft
@@ -60,9 +63,12 @@ data class RegisterAccFormState(
 )
 
 @Composable
-fun RegisterAcc(viewModel: FireBaseViewModel, onSuccess : () -> Unit) {
+fun RegisterAcc(navController: NavHostController, viewModel: FireBaseViewModel) {
     var registerAccFormState by remember { mutableStateOf(RegisterAccFormState()) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -200,9 +206,7 @@ fun RegisterAcc(viewModel: FireBaseViewModel, onSuccess : () -> Unit) {
             )
         ) {
             selectedImageUri?.let { uri ->
-                // Quando o botão de registro é clicado, faz o upload da imagem
                 viewModel.uploadImage(uri) { imageUrl ->
-                    // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
                     registerAccFormState = registerAccFormState.copy(profileImageUrl = imageUrl)
 
                     Log.d("VERRRR ->>", registerAccFormState.profileImageUrl)
@@ -210,8 +214,6 @@ fun RegisterAcc(viewModel: FireBaseViewModel, onSuccess : () -> Unit) {
                     Log.d("VERRRR ->>", registerAccFormState.Email)
                     Log.d("VERRRR ->>", registerAccFormState.Password)
                     Log.d("VERRRR ->>", registerAccFormState.ConfirmPassword)
-
-                    // Agora, registra o usuário com a URL da imagem
 
                     if (registerAccFormState.Password == registerAccFormState.ConfirmPassword) {
                         viewModel.createUserWithEmail(
@@ -224,6 +226,8 @@ fun RegisterAcc(viewModel: FireBaseViewModel, onSuccess : () -> Unit) {
                             registerAccFormState.profileImageUrl
                         )
                     }
+                    Toast.makeText(context, viewModel.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                    navController.navigate(Screen.LoginScreen.route)
                 }
             }
         }

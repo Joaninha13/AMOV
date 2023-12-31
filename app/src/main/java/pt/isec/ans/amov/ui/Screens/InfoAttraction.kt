@@ -41,6 +41,7 @@ import pt.isec.ans.amov.ui.Components.Cards.ReviewCard
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
 import pt.isec.ans.amov.ui.Components.Buttons.SortButton
 import pt.isec.ans.amov.ui.Components.Buttons.SortButtonWithPopUp
+import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.*
@@ -278,7 +279,10 @@ fun InfoAttraction(
                     }
 
                     //TODO: Add Review
-                    SecButton("Contribute Review")
+                    SecButton("Contribute Review", onClick = {
+                        navController.navigate(
+                            Screen.Review.createRoute(formState?.name!!))
+                    })
                 }
             }
 

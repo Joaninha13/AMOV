@@ -255,39 +255,6 @@ class StorageUtil {
                 }
         }
 
-        /*fun updateCategory(
-            categoryName: String,
-            name: String,
-            desc: String,
-            logo: String,
-            onResult: (Throwable?) -> Unit
-        ) {
-
-            val db = Firebase.firestore
-            val v = db.collection("Category").document(categoryName)
-
-
-            if (categoryName != name) {
-                addCategory(name, desc, logo) {}
-                deleteCategory(categoryName) {}
-            } else {
-                db.runTransaction { transaction ->
-                    val doc = transaction.get(v)
-                    if (doc.exists()) {
-                        transaction.update(v, "Description", desc)
-                        transaction.update(v, "Logo", logo)
-                        null
-                    } else
-                        throw FirebaseFirestoreException(
-                            "Doesn't exist",
-                            FirebaseFirestoreException.Code.UNAVAILABLE
-                        )
-                }.addOnCompleteListener { result ->
-                    onResult(result.exception)
-                }
-            }
-        }*/
-
         fun updateApprovedCategory(onResult: (Throwable?) -> Unit, name: String) {
 
             val db = Firebase.firestore
@@ -573,11 +540,9 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
-        fun getAttracitonDetails(name: String, onResult: (List<String>) -> Unit) {
+        fun getAttractionDetails(name: String, onResult: (List<String>) -> Unit) {
 
             val db = Firebase.firestore
-
-            Log.d("NOMEEEE ->>>>>>>>>>>>>>>", name)
 
             // Attempt to fetch the single location document based on country and region
             val doc = db.collection("Attractions").document(name)
@@ -592,15 +557,11 @@ class StorageUtil {
 
                     val list = listOf(Name, Description, Category, Location, images.toString(), coordinates.toString())
 
-                    Log.d("list ->>>>>>>>>>>>>>>", list.toString())
-
                     onResult(list)
                 } else {
-                    Log.d("list ->>>>>>>>>>>>>>>", "entrei no document does not exist")
                     onResult(emptyList())  // Handle case where the document does not exist
                 }
             }.addOnFailureListener {
-                Log.d("list ->>>>>>>>>>>>>>>", "failure case")
                 onResult(emptyList())  // Handle failure case
             }
         }
@@ -675,7 +636,6 @@ class StorageUtil {
             }
         }
 
-        @SuppressLint
         fun deleteAttraction(name: String, onResult : (Throwable?) -> Unit) {
 
             //As Attractions podem ser eliminados pelos seus autores, mas depois de possuírem votações
@@ -757,10 +717,29 @@ class StorageUtil {
         }
 
 
+        //Reviews
+        fun addReviews(title: String, desc: String, image: String, attraction: String, rating: Number, onResult: (Throwable?) -> Unit) {
+            val db = Firebase.firestore
 
+            val review = hashMapOf(
+                "Title" to title,
+                "Description" to desc,
+                "Image" to image,
+                "Attraction" to db.document("Attractions/$attraction"),
+                "User" to db.document("Users/${AuthUtil.currentUser!!.uid}"),
+                "Rating" to "%.1f".format(rating)
+            )
 
+            val doc = db.collection("Reviews").document()
 
-
+            doc.set(review)
+                .addOnSuccessListener {
+                    onResult(null)
+                }
+                .addOnFailureListener { e ->
+                    onResult(e)
+                }
+        }
 
 
 
@@ -799,7 +778,7 @@ class StorageUtil {
                             numDeleteApproved = numDeleteApproved.toInt(),
                             category = category,
                             location = location,
-                            averageRating = String.format("%.1f", linkedReviews.map { it.rating.toInt() }.average()).toFloat(),
+                            averageRating = String.format("%.1f", linkedReviews.map { it.rating.toInt() }.average()).replace(",",".").toFloat(),
                             numReviews = linkedReviews.size,
                         )
 
@@ -814,27 +793,7 @@ class StorageUtil {
             }
         }
 
-
-
-
-
-
-        private fun calculateDistance(startGeo: GeoPoint, endGeo: GeoPoint): Float {
-            val earthRadius = 6371.0 // Radius of the earth in km
-            val latDistance = Math.toRadians(endGeo.latitude - startGeo.latitude)
-            val lonDistance = Math.toRadians(endGeo.longitude - startGeo.longitude)
-            val a = sin(latDistance / 2).pow(2) +
-                    (cos(Math.toRadians(startGeo.latitude)) * cos(Math.toRadians(endGeo.latitude)) *
-                            sin(lonDistance / 2).pow(2))
-            val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-            val distance = earthRadius * c // calculate the distance
-
-            // Round to one decimal place and convert to Float
-            return String.format("%.1f", distance).toFloat()
-        }
-
-
-        private fun getReviewsByAttraction(attraction: String, onResult: (List<Review>) -> Unit) {
+        fun getReviewsByAttraction(attraction: String, onResult: (List<Review>) -> Unit) {
             val db = Firebase.firestore
             db.collection("Reviews")
                 .whereEqualTo("Attraction", db.document("Attractions/$attraction"))
@@ -867,7 +826,6 @@ class StorageUtil {
 
             val db = Firebase.firestore
 
-            // Attempt to fetch the single location document based on country and region
             val doc = db.collection("Review").document(name)
                 .get().addOnSuccessListener { document ->
                 if (document.exists()) {
@@ -898,10 +856,24 @@ class StorageUtil {
             }
         }
 
+        fun calculateDistance(startGeo: GeoPoint, endGeo: GeoPoint): Float {
+            val earthRadius = 6371.0 // Radius of the earth in km
+            val latDistance = Math.toRadians(endGeo.latitude - startGeo.latitude)
+            val lonDistance = Math.toRadians(endGeo.longitude - startGeo.longitude)
+            val a = sin(latDistance / 2).pow(2) +
+                    (cos(Math.toRadians(startGeo.latitude)) * cos(Math.toRadians(endGeo.latitude)) *
+                            sin(lonDistance / 2).pow(2))
+            val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+            val distance = earthRadius * c // calculate the distance
 
-        private fun getAttractionsByLocation(userGeo: GeoPoint, location: String, onResult: (List<Attraction>) -> Unit) {
-            val db = Firebase.firestore
-            db.collection("Attractions")
+
+            // Round to one decimal place and convert to Float
+            return String.format("%.1f", distance).replace(',', '.').toFloat()
+        }
+
+        fun getAttractionsByLocation(userGeo: GeoPoint, location: String, onResult: (List<Attraction>) -> Unit) {
+                val db = Firebase.firestore
+                db.collection("Attractions")
                 .whereEqualTo("Location", location)
                 .get()
                 .addOnSuccessListener { result ->
@@ -923,7 +895,7 @@ class StorageUtil {
                 }
         }
 
-        private fun getAttractionsByCategory(userGeo: GeoPoint, category: String, onResult: (List<Attraction>) -> Unit) {
+        fun getAttractionsByCategory(userGeo: GeoPoint, category: String, onResult: (List<Attraction>) -> Unit) {
             val db = Firebase.firestore
             db.collection("Attractions")
                 .whereEqualTo("Category", category)
@@ -946,9 +918,6 @@ class StorageUtil {
                     onResult(emptyList())
                 }
         }
-
-
-
 
 
     }

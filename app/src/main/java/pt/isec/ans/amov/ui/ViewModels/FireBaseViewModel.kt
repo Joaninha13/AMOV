@@ -197,7 +197,7 @@ class FireBaseViewModel : ViewModel() {
 
     fun getAttractions(name: String, onResult : (List<String>) -> Unit) {
         viewModelScope.launch {
-            StorageUtil.getAttracitonDetails(name) { desc ->
+            StorageUtil.getAttractionDetails(name) { desc ->
                 onResult(desc)
             }
         }
@@ -205,6 +205,13 @@ class FireBaseViewModel : ViewModel() {
 
     fun updateAttractions(attractionName: String,name: String, desc : String, coordinates: GeoPoint, category : String, Location : String, images : List<String>) {
         viewModelScope.launch { StorageUtil.updateAttraction(attractionName,name, desc, coordinates, category, Location, images){ e ->
+            _error.value = e?.message
+        }
+        }
+    }
+
+    fun addReview(title: String, desc: String, image: String, attractionName: String, rating: Number) {
+        viewModelScope.launch { StorageUtil.addReviews(title,desc,image,attractionName,rating){ e ->
             _error.value = e?.message
         }
         }

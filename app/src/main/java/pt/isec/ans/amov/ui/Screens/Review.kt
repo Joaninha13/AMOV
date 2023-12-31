@@ -1,6 +1,13 @@
 package pt.isec.ans.amov.ui.Screens
 
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -29,6 +37,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -51,12 +60,14 @@ data class ReviewFormState(
     var description: String = "",
     var rating: Number = 0,
     var image: String = "",
+    var imageUri: Uri? = null
 )
 @Composable
-fun Review(navController: NavHostController, viewModelL: LocationViewModel, viewModelFB: FireBaseViewModel) {
+fun Review(navController: NavHostController, viewModelL: LocationViewModel, viewModelFB: FireBaseViewModel, attractionNames : String) {
 
     var reviewFormState by remember { mutableStateOf(ReviewFormState()) }
 
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -163,7 +174,24 @@ fun Review(navController: NavHostController, viewModelL: LocationViewModel, view
                             Color(0xFF00B6DE)
                         )
                     )
-                ) {}
+                ) {
+                    reviewFormState.imageUri?.let { uri ->
+                        viewModelFB.uploadImage(uri) { imageUrl ->
+                            reviewFormState = reviewFormState.copy(image = imageUrl)
+
+                            viewModelFB.addReview(
+                                title = reviewFormState.title,
+                                desc = reviewFormState.description,
+                                rating = reviewFormState.rating,
+                                image = reviewFormState.image,
+                                attractionName = attractionNames
+                            )
+                        }
+                    }
+
+                    Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                    navController.popBackStack()
+                }
                 // Child views Frame3.
             }
             // Child views.
@@ -175,6 +203,18 @@ fun Review(navController: NavHostController, viewModelL: LocationViewModel, view
 @Composable
 fun ReviewInputs(reviewFormState: ReviewFormState, onReviewFormState: (ReviewFormState) -> Unit){
 
+
+    val pickImageLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                //Log.d("VERRR------>", "result: $result") // passa aqui
+                result.data?.data?.let { uri ->
+                    // Aqui você tem a URI da imagem selecionada
+                    // Agora você pode fazer o upload para o Firestore ou atualizar o estado conforme necessário
+                    reviewFormState.imageUri = uri
+                }
+            }
+        }
 
     //Title
     Row(
@@ -213,27 +253,30 @@ fun ReviewInputs(reviewFormState: ReviewFormState, onReviewFormState: (ReviewFor
     }
 
     //Rating
+    var rating by remember { mutableStateOf(0F) }
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .width(300.dp)
             .height(60.dp),
-    ) {
-        Text(text = "Rate: ${reviewFormState.rating}")
+        ) {
+            val formattedRating = "%.1f".format(rating)
+            Text(text = "Rating: $formattedRating")
 
-        Slider(
-            value = reviewFormState.rating.toFloat(),
-            onValueChange = {
-                reviewFormState.rating = it
-            },
-        )
-    }
+            Slider(
+                value = rating,
+                valueRange = 0F..3F,
+                onValueChange = {
+                    reviewFormState.rating = it
+                    rating = it
+                },
+            )
+        }
 
     //Image
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
         modifier = Modifier
             .width(240.dp)
             .height(30.dp)
@@ -243,17 +286,17 @@ fun ReviewInputs(reviewFormState: ReviewFormState, onReviewFormState: (ReviewFor
         ClickableText(
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = Color.Blue)) {
-                    append("Upload Image")
+                    append("Upload one Image")
                 }
             },
             onClick = { offset ->
                 // Iniciar a atividade de escolha de imagem da galeria
-                /*pickImageLauncher.launch(
+                pickImageLauncher.launch(
                     Intent(
                         Intent.ACTION_PICK,
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                     )
-                )*/
+                )
             },
             modifier = Modifier.clickable {
                 // por aqui a foto que deu upload
