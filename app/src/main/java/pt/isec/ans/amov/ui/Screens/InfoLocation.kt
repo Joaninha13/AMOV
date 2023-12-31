@@ -93,14 +93,17 @@ fun InfoLocation(
                     horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    val color = if ((formState?.numApproved ?: 0) >= 2) BlueHighlight else WarningsError
+
                     Text(
                         text = (formState?.country ?: "Unknown") + ", " + (formState?.region ?: "Unknown"),
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),
-                            color = BlueHighlight,
+                            color = color,
                         )
                     )
+
                     formState?.let {
                         DescriptionButtonWithPopUp(description = it.description, author = it.userRef)
                     }
@@ -148,7 +151,7 @@ fun InfoLocation(
                 )
             }
 
-
+            /*
             Column(
                 verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
                 horizontalAlignment = Alignment.Start,
@@ -198,7 +201,7 @@ fun InfoLocation(
                     }
                 }
             )
-
+            */
 
 
         }

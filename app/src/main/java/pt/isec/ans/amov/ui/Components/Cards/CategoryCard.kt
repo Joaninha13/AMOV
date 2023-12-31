@@ -24,12 +24,14 @@ import coil.compose.rememberImagePainter
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
+import pt.isec.ans.amov.ui.theme.WarningsError
 
 
 @Composable
 fun CategoryCard(
     name: String,
     numAttractions: Int,
+    numApproved: Int,
     description: String,
     logoUrl: String,
 
@@ -57,15 +59,27 @@ fun CategoryCard(
                     .width(14.dp)
                     .height(14.dp)
             )
-            Text(
-                text = name,
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.inter_bold)),
-                    fontWeight = FontWeight(600),
-                    color = BlueHighlight
+            if (numApproved >= 2) {
+                Text(
+                    text = name,
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.inter_bold)),
+                        color = BlueHighlight,
+                    )
                 )
-            )
+            }
+            else {
+                Text(
+                    text = name,
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.inter_bold)),
+                        color = WarningsError,
+                    )
+                )
+            }
+
         }
         Text(
             text = "$numAttractions attractions",

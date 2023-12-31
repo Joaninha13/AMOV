@@ -97,12 +97,14 @@ fun InfoAttraction(
                     horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    val color = if ((formState?.numApproved ?: 0) >= 2) BlueHighlight else WarningsError
+
                     Text(
                         text = attractionId,
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),
-                            color = BlueHighlight,
+                            color = color,
                         )
                     )
                     formState?.let {
