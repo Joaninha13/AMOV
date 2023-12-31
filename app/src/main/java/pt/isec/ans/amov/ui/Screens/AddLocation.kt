@@ -220,6 +220,15 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                         // Se o usuário não inserir um número válido, aparece uma mensagem em cima a dizer coordenada inválidas
                         Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
                         return@GradientButton
+                    }catch (e: Exception) {
+                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        return@GradientButton
+                    }catch (e: Error) {
+                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        return@GradientButton
+                    }catch (e: Throwable) {
+                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        return@GradientButton
                     }
 
 
@@ -238,6 +247,9 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                                 locationFormState.image)
                         }
                     }
+                    Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                    navController.popBackStack()
+
                 }
             }
 
