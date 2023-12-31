@@ -144,6 +144,19 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
+    fun getLocationDetails(userGeo: GeoPoint, locationGeo: GeoPoint, onResult: (Location) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getLocationDetails(
+                userGeo,
+                locationGeo
+            ) { locations ->
+                if (locations != null) {
+                    onResult(locations)
+                }
+            }
+        }
+    }
+
     fun getCategoryDetails(onResult: (Category) -> Unit, name: String, userGeo: GeoPoint) {
         viewModelScope.launch {
             StorageUtil.getCategoryDetails(
@@ -157,6 +170,25 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
+    fun getAttractionDetails(attractionGeoPoint: GeoPoint, onResult: (Attraction) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAttractionDetails(
+                attractionGeoPoint
+            ) { attraction ->
+                if (attraction != null) {
+                    onResult(attraction)
+                }
+            }
+        }
+    }
+
+    /*fun getAllAttractions(onResult: (List<String>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllAttractionsDocumentsNames { names ->
+                onResult(names)
+            }
+        }
+    }*/
     fun getLocations(name: String, onResult : (List<String>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllFromOneLocation(name) { desc ->
@@ -197,7 +229,7 @@ class FireBaseViewModel : ViewModel() {
 
     fun getAttractions(name: String, onResult : (List<String>) -> Unit) {
         viewModelScope.launch {
-            StorageUtil.getAttracitonDetails(name) { desc ->
+            StorageUtil.getAttractionDetails(name) { desc ->
                 onResult(desc)
             }
         }
@@ -210,6 +242,27 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
+    fun addReview(title: String, desc: String, image: String, attractionName: String, rating: Number) {
+        viewModelScope.launch { StorageUtil.addReviews(title,desc,image,attractionName,rating){ e ->
+            _error.value = e?.message
+        }
+        }
+    }
+
+    fun getAllAttractionsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllAttractionsDocumentsCoordinates { coordinates ->
+                onResult(coordinates)
+            }
+        }
+    }
+    fun getAttractionCategory(attraction: GeoPoint, onResult: (String?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAttractionCategory(attraction) { category ->
+                onResult(category)
+            }
+        }
+    }
 
     //Users
     fun addUser(name: String, image: String) {

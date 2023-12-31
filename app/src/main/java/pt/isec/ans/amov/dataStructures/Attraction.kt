@@ -4,17 +4,18 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.GeoPoint
 
 data class Attraction(
-    val name: String,
-    val numApproved: Int,
-    val numDeleteApproved: Int,
-    val distanceInKmFromCurrent: Float,
-    val category: String,
-    val location: String,
-    val coordinates: GeoPoint,
-    val description: String,
-    val userRef: DocumentReference?,
-    val imageUrls: List<String>,
-    val numReviews: Int,
-    val averageRating: Float,
-    val reviews: List<Review>
+    val name: String = "",
+    val numApproved: Int = 0,
+    val numDeleteApproved: Int = 0,
+    val distanceInKmFromCurrent: Float = 0f,
+    val category: String = "",
+    val location: String = "",
+    val coordinates: GeoPoint = GeoPoint(0.0, 0.0),
+    val description: String = "",
+    val userRef: DocumentReference? = null,
+    val imageUrls: List<String> = emptyList(),
+    val numReviews: Int = 0,
+    val averageRating: Float = 0f,
+    val reviews: List<Review> = emptyList(),
+    val imageUrlList: List<String> = emptyList()
 )

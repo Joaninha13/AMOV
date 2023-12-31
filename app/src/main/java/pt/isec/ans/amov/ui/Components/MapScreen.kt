@@ -1,18 +1,16 @@
 package pt.isec.ans.amov.ui.Components
 
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
-import android.provider.MediaStore
 import android.util.Log
-import android.view.InputDevice
-import android.view.MotionEvent
-import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,12 +19,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,8 +40,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -46,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import coil.compose.rememberImagePainter
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -55,16 +62,16 @@ import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.dataStructures.Attraction
 import pt.isec.ans.amov.ui.Components.Buttons.FilterField
 import pt.isec.ans.amov.ui.Components.Buttons.FilterFields
 import pt.isec.ans.amov.ui.Components.Buttons.SearchDropdownButton
 import pt.isec.ans.amov.ui.Components.PopUps.PopUpBase
 import pt.isec.ans.amov.ui.Screens.AttractionFormState
-import pt.isec.ans.amov.ui.Screens.LocationFormState
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.BlueLighter
-
+import pt.isec.ans.amov.dataStructures.Location
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +82,11 @@ fun MapScreen(
     handleButtonToCenterClicked : (Boolean) -> Unit
 ){
     var showPopUp by remember { mutableStateOf(false) }
+    var showAttractionMarkerPopUp by remember { mutableStateOf(false) }
+    var attraction by remember { mutableStateOf<Attraction?>(null) }
+    var showLocationMarkerPopUp by remember { mutableStateOf(false) }
+    var markedLocation by remember { mutableStateOf<Location?>(null) }
+
     var autoEnabled by remember{ mutableStateOf(false) }
     var attractionGeoPoint by remember { mutableStateOf(GeoPoint(0.0, 0.0)) }
     val location = viewModelL.currentLocation.observeAsState()
@@ -121,6 +133,8 @@ fun MapScreen(
                         controller.setCenter(geoPoint)
                         controller.setZoom(20.0)
                         zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+
+                        //Criar os markers para as Locatizacoes
                         viewModelFB.getAllLocationsCoordinates { pois ->
                             for (poi in pois)
                                 overlays.add(
@@ -128,11 +142,264 @@ fun MapScreen(
                                         position = GeoPoint(poi.latitude, poi.longitude)
                                         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                         icon = ContextCompat.getDrawable(context, R.drawable.location_marker)
-                                        title = "${poi.latitude} ${poi.longitude}"
+                                        //title = "${poi.latitude} ${poi.longitude}"
+
+                                        setOnMarkerClickListener{ _, _ ->
+                                            viewModelFB.getLocationDetails(userGeo = geoPoint.toFirebaseGeoPoint(), locationGeo =  poi) { location ->
+                                                markedLocation = location
+                                            }
+                                            
+                                            showLocationMarkerPopUp = true
+
+                                            true
+                                        }
                                     }
                                 )
-
                         }
+
+                        //Criar os Markers para as Atracoes
+                        viewModelFB.getAllAttractionsCoordinates { attractionsCords ->
+                            for (attractionCords in attractionsCords) {
+                                viewModelFB.getAttractionCategory(attractionCords) { category ->
+                                    when (category) {
+                                        "Alojamentos" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.house)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showAttractionMarkerPopUp = true
+
+
+                                                        true
+                                                    }
+                                                }
+                                            )
+                                        }
+
+                                        "Jardins" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.park)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showAttractionMarkerPopUp = true
+
+                                                        true
+                                                    }
+                                                }
+                                            )
+                                        }
+
+                                        "Miradouros" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.binoculars)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showAttractionMarkerPopUp = true
+
+                                                        true
+                                                    }
+                                                }
+                                            )
+                                        }
+
+                                        "Monumentos&Locais" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.monu_2)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showAttractionMarkerPopUp = true
+
+                                                        true
+                                                    }
+                                                }
+                                            )
+                                        }
+
+                                        "Museu" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.museum)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showAttractionMarkerPopUp = true
+
+                                                        true
+                                                    }
+                                                }
+                                            )
+                                        }
+
+                                        "parque de diversoes" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.amusement)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showAttractionMarkerPopUp = true
+
+                                                        true
+                                                    }
+                                                }
+                                            )
+                                        }
+
+                                        "Restaurantes&Bares" -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = BitmapDrawable(
+                                                        context.resources,
+                                                        Bitmap.createScaledBitmap(
+                                                            (ContextCompat.getDrawable(context, R.drawable.restaurant)?.toBitmap() ?: return@apply),
+                                                            50,
+                                                            50,
+                                                            false
+                                                        )
+                                                    )
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showAttractionMarkerPopUp = true
+
+                                                        true
+                                                    }
+                                                }
+                                            )
+                                        }
+
+                                        else -> {
+                                            overlays.add(
+                                                Marker(this).apply {
+                                                    position = GeoPoint(attractionCords.latitude, attractionCords.longitude)
+                                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                                    icon = ContextCompat.getDrawable(context, R.drawable.location_marker)
+                                                    title = "${attractionCords.latitude} ${attractionCords.longitude}"
+                                                    infoWindow = null
+
+                                                    setOnMarkerClickListener{ _, _ ->
+                                                        viewModelFB.getAttractionDetails(attractionCords) { result ->
+                                                            attraction = result
+                                                        }
+
+                                                        showAttractionMarkerPopUp = true
+
+                                                        true
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        //Overlay para a minha localizacao
                         overlays.add(
                             MyLocationNewOverlay(this).apply {
                                 enableMyLocation()
@@ -185,7 +452,7 @@ fun MapScreen(
                     view.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
                     if(buttonToCenterClicked){
-                        view.controller.animateTo(geoPoint, 15.0, 1500, null)
+                        view.controller.animateTo(geoPoint, 20.0, 1500, null)
                         handleButtonToCenterClicked(false)
                     }
                 }
@@ -194,6 +461,18 @@ fun MapScreen(
 
         ShowPopUpBase(showPopUp, attractionGeoPoint, LocalContext.current, viewModelFB){
             showPopUp = false
+        }
+
+        attraction?.let {
+            ShowAttractionMarkerPopUp(showAttractionMarkerPopUp, it){
+                showAttractionMarkerPopUp = false
+            }
+        }
+
+        markedLocation?.let {
+            ShowLocationMarkerPopUp(showLocationMarkerPopUp, it){
+                showLocationMarkerPopUp = false
+            }
         }
     }
 }
@@ -233,7 +512,7 @@ fun ShowPopUpBase(
     if (showPopUp) {
         PopUpBase(
             showDialog = true,
-            title = "Add Location",
+            title = "Add Attraction",
             content = {
                 //First inputs
                 Column(
@@ -357,10 +636,6 @@ fun ShowPopUpBase(
                     attractionGeoPoint.longitude
                 )
 
-                attractionFormState.category = "Museus"
-                attractionFormState.location = "teste"
-
-
                 var imageUrls: List<String> = listOf()
 
                 attractionFormState.imageUri.let { uri ->
@@ -389,4 +664,104 @@ fun ShowPopUpBase(
             onDismiss = onDismiss
         )
     }
+}
+
+@Composable
+fun ShowAttractionMarkerPopUp(
+    showAttractionMarkerPopUp: Boolean,
+    attraction: Attraction,
+    onDismiss: () -> Unit
+) {
+    if (showAttractionMarkerPopUp) {
+        PopUpBase(
+            showDialog = true,
+            title = attraction.name,
+            content = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    // Mostra o carrossel de imagens
+                    ImageCarousel(images = attraction.imageUrlList, modifier = Modifier.fillMaxWidth().height(200.dp))
+
+                    // Exibe outras informações da atração
+                    Text(text = "Description: ${attraction.description}", modifier = Modifier.padding(vertical = 8.dp))
+                    Text(text = "Category: ${attraction.category}", modifier = Modifier.padding(vertical = 8.dp))
+                }
+            },
+            buttonText = "OK",
+            onConfirm = onDismiss,
+            onDismiss = onDismiss
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ImageCarousel(images: List<String>, modifier: Modifier = Modifier) {
+    val listState = rememberLazyListState()
+
+    Log.d("Click", "${images.size}")
+
+    HorizontalPager(
+        state = rememberPagerState(pageCount = { images.size }),
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) { page ->
+        val imageUrl = images[page]
+        Log.d("Click", imageUrl)
+        Image(
+            painter = rememberImagePainter(imageUrl),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(MaterialTheme.shapes.medium),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@Composable
+fun ShowLocationMarkerPopUp(
+    showLocationMarkerPopUp: Boolean,
+    location: Location,
+    onDismiss: () -> Unit
+) {
+    if (showLocationMarkerPopUp) {
+        PopUpBase(
+            showDialog = true,
+            title = "${location.country}, ${location.region}",
+            content = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Image(
+                        painter = rememberImagePainter(data = location.imageUrl),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(MaterialTheme.shapes.medium),
+                        contentScale = ContentScale.Crop
+                    )
+
+
+                    // Exibe outras informações da localização
+                    Text(text = "Number of Attractions: ${location.numAttractions}", modifier = Modifier.padding(vertical = 8.dp))
+                    Text(text = "Distance from Current: ${location.distanceInKmFromCurrent.toInt()} km", modifier = Modifier.padding(vertical = 8.dp))
+                    Text(text = "Description: ${location.description}", modifier = Modifier.padding(vertical = 8.dp))
+                }
+            },
+            buttonText = "OK",
+            onConfirm = onDismiss,
+            onDismiss = onDismiss
+        )
+    }
+}
+
+fun GeoPoint.toFirebaseGeoPoint(): com.google.firebase.firestore.GeoPoint {
+    return com.google.firebase.firestore.GeoPoint(latitude, longitude)
 }

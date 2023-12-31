@@ -18,11 +18,14 @@ import pt.isec.ans.amov.ui.Screens.Home
 import pt.isec.ans.amov.ui.Screens.InfoAttraction
 import pt.isec.ans.amov.ui.Screens.InfoCategory
 import pt.isec.ans.amov.ui.Screens.InfoLocation
+import pt.isec.ans.amov.ui.Screens.LoginScreen
+import pt.isec.ans.amov.ui.Screens.RegisterAcc
 import pt.isec.ans.amov.ui.Screens.Review
 import pt.isec.ans.amov.ui.Screens.ViewAccount
 import pt.isec.ans.amov.ui.Screens.ViewAttractions
 import pt.isec.ans.amov.ui.Screens.ViewCategories
 import pt.isec.ans.amov.ui.Screens.ViewLocations
+import pt.isec.ans.amov.ui.Screens.CreditsScreen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 
@@ -32,8 +35,15 @@ fun SetupNavGraph(
     viewModelL: LocationViewModel,
     viewModelFB: FireBaseViewModel
 ) {
-    NavHost(navController = navController, startDestination = Screen.Home.route)
+    NavHost(navController = navController, startDestination = Screen.LoginScreen.route)
     {
+
+        composable(Screen.LoginScreen.route) {
+            LoginScreen(navController = navController, viewModel = viewModelFB){ navController.navigate(Screen.Home.route)}
+        }
+        composable(Screen.RegisterAcc.route) {
+            RegisterAcc(navController = navController, viewModel = viewModelFB)
+        }
         composable(Screen.Home.route) {
             Home(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
         }
@@ -92,8 +102,12 @@ fun SetupNavGraph(
             InfoCategory(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, categoryId = categoryId ?: "")
         }
 
-        composable(Screen.Review.route) {
-            Review(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB)
+        composable(
+            route = Screen.Review.route,
+            arguments = listOf(navArgument("attractionNames") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val attractionNames = backStackEntry.arguments?.getString("attractionNames")
+            Review(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, attractionNames = attractionNames ?: "")
         }
 
         composable(Screen.ViewAttraction.route) {
@@ -108,6 +122,8 @@ fun SetupNavGraph(
         composable(Screen.ViewAccount.route) {
             ViewAccount(navController = navController)
         }
-
+        composable(Screen.CreditsScreen.route) {
+            CreditsScreen(navController = navController)
+        }
     }
 }
