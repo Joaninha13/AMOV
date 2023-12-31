@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -60,6 +62,8 @@ data class CategoryFormState(
 @Composable
 fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel) {
     var categoryFormState by remember { mutableStateOf(CategoryFormState()) }
+
+    val context = LocalContext.current
 
     val pickImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
@@ -213,6 +217,9 @@ fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel
                                 image = categoryFormState.logo)
                         }
                     }
+
+                    Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                    navController.popBackStack()
                 }
             }
         }

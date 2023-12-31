@@ -1,7 +1,6 @@
 package pt.isec.ans.amov.ui.ViewModels
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.MutableState
 
 import androidx.compose.runtime.mutableStateOf
@@ -132,6 +131,18 @@ class FireBaseViewModel : ViewModel() {
             }
         }
     }
+    fun getAttractionDetails(onResult: (Attraction) -> Unit, userGeo: GeoPoint, name: String) {
+        viewModelScope.launch {
+            StorageUtil.getAttractionDetails(
+                userGeo = userGeo,
+                name = name,
+            ) { attraction ->
+                if (attraction != null) {
+                    onResult(attraction)
+                }
+            }
+        }
+    }
 
     fun getLocationDetails(userGeo: GeoPoint, locationGeo: GeoPoint, onResult: (Location) -> Unit) {
         viewModelScope.launch {
@@ -146,10 +157,11 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
-    fun getCategoryDetails(onResult: (Category) -> Unit, name: String) {
+    fun getCategoryDetails(onResult: (Category) -> Unit, name: String, userGeo: GeoPoint) {
         viewModelScope.launch {
             StorageUtil.getCategoryDetails(
-                name
+                name = name,
+                userGeo = userGeo
             ) { category ->
                 if (category != null) {
                     onResult(category)
@@ -214,6 +226,29 @@ class FireBaseViewModel : ViewModel() {
             }
         }
     }
+
+    fun getAttractions(name: String, onResult : (List<String>) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAttractionDetails(name) { desc ->
+                onResult(desc)
+            }
+        }
+    }
+
+    fun updateAttractions(attractionName: String,name: String, desc : String, coordinates: GeoPoint, category : String, Location : String, images : List<String>) {
+        viewModelScope.launch { StorageUtil.updateAttraction(attractionName,name, desc, coordinates, category, Location, images){ e ->
+            _error.value = e?.message
+        }
+        }
+    }
+
+    fun addReview(title: String, desc: String, image: String, attractionName: String, rating: Number) {
+        viewModelScope.launch { StorageUtil.addReviews(title,desc,image,attractionName,rating){ e ->
+            _error.value = e?.message
+        }
+        }
+    }
+
     fun getAllAttractionsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllAttractionsDocumentsCoordinates { coordinates ->
