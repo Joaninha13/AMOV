@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -99,17 +100,19 @@ fun InfoCategory(
                             .height(24.dp)
                     )
                     formState?.let {
+                        val color = if ((formState?.numApproved ?: 0) >= 2) BlueHighlight else WarningsError
+
                         Text(
                             text = it.name,
                             style = TextStyle(
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily(Font(R.font.inter_bold)),
-                                color = BlueHighlight,
+                                color = color,
                             )
                         )
                     }
                     formState?.let {
-                        DescriptionButtonWithPopUp(description = it.description, author = it.userRef)
+                        //DescriptionButtonWithPopUp(description = it.description, author = it.userRef)
                     }
                 }
                 Box(
@@ -128,8 +131,33 @@ fun InfoCategory(
                     )
                 }
             }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
+                horizontalAlignment = Alignment.Start,
+            ) {
 
-
+                formState?.let {
+                    Text(
+                        text = it.description,
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_medium)),
+                            color = BlueSoft,
+                        )
+                    )
+                }
+                Text(
+                    text = "Created by ${formState?.userRef?: "Unknown"}",
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily(Font(R.font.inter_medium)),
+                        color = BlueSoft,
+                        textAlign = TextAlign.Right,
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+/*
             Column(
                 verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
                 horizontalAlignment = Alignment.Start,
@@ -178,7 +206,7 @@ fun InfoCategory(
                     }
                 }
             )
-
+        */
 
 
         }

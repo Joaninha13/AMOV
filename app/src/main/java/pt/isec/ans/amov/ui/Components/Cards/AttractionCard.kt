@@ -35,6 +35,7 @@ import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
+import pt.isec.ans.amov.ui.theme.WarningsError
 
 
 @Composable
@@ -45,6 +46,7 @@ fun AttractionCard(
     numRatings: Int,
     distanceInKmFromCurrent: Float,
     imageUrl: String,
+    numApproved: Int,
 
 
     modifier: Modifier = Modifier,
@@ -82,16 +84,27 @@ fun AttractionCard(
                 .height(100.dp)
                 .width(200.dp)
         ) {
-            //Attraction Title
-            Text(
-                text = name,
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.inter_bold)),
-                    fontWeight = FontWeight(600),
-                    color = BlueHighlight,
+
+            if (numApproved >= 2) {
+                Text(
+                    text = name,
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.inter_bold)),
+                        color = BlueHighlight,
+                    )
                 )
-            )
+            }
+            else {
+                Text(
+                    text = name,
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.inter_bold)),
+                        color = WarningsError,
+                    )
+                )
+            }
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.Start)
@@ -156,6 +169,7 @@ fun AttractionCardPreview() {
         averageRating = 4.5f,
         numRatings = 100,
         distanceInKmFromCurrent = 1.5f,
+        numApproved = 1,
         imageUrl = "https://i.natgeofe.com/k/c41b4f59-181c-4747-ad20-ef69987c8d59/eiffel-tower-night_2x3.jpg"
     )
 }

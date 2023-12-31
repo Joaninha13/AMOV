@@ -327,9 +327,27 @@ fun SearchResultsOverlay(
                 when {
                     currentSearchText.value.equals("attractions", ignoreCase = true) -> {
                         items(attractions) { attractionName ->
+                            Text(text = attractionName, style = TextStyle(color = Color.Transparent,))
                             // Assuming 'locationName' is a unique identifier for the location
                             var attractionDetails by remember { mutableStateOf<Attraction?>(null) }
-
+//                            val filteredAndSortedAttractions = remember(attractions, selectedFilterCriteria, selectedSortCriteria) {
+//                                attractions
+//                                    .filter { attraction ->
+//                                        // Apply all necessary filters based on selectedFilterCriteria
+//                                        // For example, if there's a filter for approved attractions:
+//                                        selectedFilterCriteria.approved == null || attraction.isApproved == selectedFilterCriteria.approved
+//                                    }
+//                                    .sortedBy { attraction ->
+//                                        // Apply sorting based on selectedSortCriteria
+//                                        // For example, if sorting by name:
+//                                        when (selectedSortCriteria) {
+//                                            "Abc" -> attraction.name
+//                                            "Zyx" -> attraction.name.reversed() // Just a simplistic example
+//                                            "Distance" -> attraction.distance // Assumes 'distance' is a numeric field
+//                                            else -> attraction.name
+//                                        }
+//                                    }
+//                            }
 
                             // Fetch location details when the item enters composition
                             LaunchedEffect(attractionName) {
@@ -364,6 +382,7 @@ fun SearchResultsOverlay(
                                             distanceInKmFromCurrent = attraction.distanceInKmFromCurrent,
                                             imageUrl = attraction.imageUrls[0],
                                             name = attraction.name,
+                                            numApproved = attraction.numApproved,
                                         )
                                     }
                                     Column(
@@ -383,7 +402,7 @@ fun SearchResultsOverlay(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .clickable {
-                                                          //TODO: add the logic to approve the attraction
+                                                        //TODO: add the logic to approve the attraction
                                                     },
                                                 contentAlignment = Alignment.Center
                                             ) {
@@ -437,6 +456,7 @@ fun SearchResultsOverlay(
 
                         items(locations) { locationName ->
                             // Assuming 'locationName' is a unique identifier for the location
+                            Text(text = locationName, style = TextStyle(color = Color.Transparent,))
                             var locationDetails by remember { mutableStateOf<Location?>(null) }
 
                             // Fetch location details when the item enters composition
@@ -488,6 +508,8 @@ fun SearchResultsOverlay(
                     }
                     currentSearchText.value.equals("categories", ignoreCase = true) -> {
                         items(categories) { categoryName ->
+                            Text(text = categoryName, style = TextStyle(color = Color.Transparent,))
+
                             var categoryDetails by remember { mutableStateOf<Category?>(null) }
 
                             // Fetch location details when the item enters composition
@@ -522,7 +544,8 @@ fun SearchResultsOverlay(
                                             name = category.name,
                                             numAttractions = category.numAttractions,
                                             description = category.description,
-                                            logoUrl = category.logoUrl
+                                            logoUrl = category.logoUrl,
+                                            numApproved = category.numApproved,
                                         )
                                     }
                                 }
