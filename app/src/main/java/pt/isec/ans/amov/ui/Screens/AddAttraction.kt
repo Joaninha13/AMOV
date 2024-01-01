@@ -359,11 +359,9 @@ fun SecondInputs(attractionFormState: AttractionFormState, viewModelFB: FireBase
         //Category
         Row(
             modifier = Modifier
-                .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
                 .width(300.dp)
                 .height(50.dp)
-                .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
-                .padding(start = 10.dp, end = 10.dp),
+                .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp)),
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -376,11 +374,9 @@ fun SecondInputs(attractionFormState: AttractionFormState, viewModelFB: FireBase
         //Location
         Row(
             modifier = Modifier
-                .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
                 .width(300.dp)
                 .height(50.dp)
-                .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
-                .padding(start = 10.dp, end = 10.dp),
+                .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp)),
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -393,7 +389,12 @@ fun SecondInputs(attractionFormState: AttractionFormState, viewModelFB: FireBase
         //Upload Images
         Row(
             modifier = Modifier
-                .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
+                //.border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
+                .border(
+                    width = 1.dp,
+                    color = BlueLighter,
+                    shape = RoundedCornerShape(size = 5.dp)
+                )
                 .width(300.dp)
                 .height(50.dp)
                 .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
