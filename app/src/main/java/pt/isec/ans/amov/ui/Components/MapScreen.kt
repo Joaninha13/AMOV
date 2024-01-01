@@ -79,8 +79,15 @@ fun MapScreen(
     viewModelL: LocationViewModel,
     viewModelFB: FireBaseViewModel,
     buttonToCenterClicked : Boolean,
-    handleButtonToCenterClicked : (Boolean) -> Unit
+    handleButtonToCenterClicked : (Boolean) -> Unit,
+    buttonToAttractionClicked : Boolean,
+    handleButtonToAttractionClicked : (Boolean) -> Unit,
+    attractionClicked: GeoPoint,
+    buttonToLocationClicked: Boolean,
+    handleButtonToLocationClicked : (Boolean) -> Unit,
+    locationClicked: GeoPoint
 ){
+    var mapView by remember { mutableStateOf<MapView?>(null) }
     var showPopUp by remember { mutableStateOf(false) }
     var showAttractionMarkerPopUp by remember { mutableStateOf(false) }
     var attraction by remember { mutableStateOf<Attraction?>(null) }
@@ -101,12 +108,32 @@ fun MapScreen(
     Log.d("MapScreen", "Location: ${location.value}")
     Log.d("MapScreen", "GeoPoint: $geoPoint")
 
-    //if (autoEnabled)
-        LaunchedEffect(key1 = location.value) {
-            geoPoint = GeoPoint(
-                location.value?.latitude ?: 0.0, location.value?.longitude ?: 0.0
-            )
+    LaunchedEffect(key1 = location.value) {
+        geoPoint = GeoPoint(
+            location.value?.latitude ?: 0.0, location.value?.longitude ?: 0.0
+        )
+    }
+
+    LaunchedEffect(buttonToCenterClicked) {
+        if (buttonToCenterClicked) {
+            mapView?.controller?.animateTo(geoPoint, 20.0, 1500, null)
+            handleButtonToCenterClicked(false)
         }
+    }
+
+    LaunchedEffect(buttonToAttractionClicked, attractionClicked) {
+        if (buttonToAttractionClicked) {
+            mapView?.controller?.animateTo(attractionClicked, 20.0, 1500, null)
+            handleButtonToAttractionClicked(false)
+        }
+    }
+
+    LaunchedEffect(buttonToLocationClicked, locationClicked) {
+        if (buttonToLocationClicked) {
+            mapView?.controller?.animateTo(locationClicked, 20.0, 1500, null)
+            handleButtonToLocationClicked(false)
+        }
+    }
 
     Column(
         modifier = Modifier //modifier com m pequeno que é passado por parametro
@@ -122,7 +149,6 @@ fun MapScreen(
                 .clipToBounds()
                 .background(Color(255, 240, 128)),
         ) {
-            var mapView by remember { mutableStateOf<MapView?>(null) }
 
             AndroidView(
                 factory = { context ->
@@ -448,13 +474,20 @@ fun MapScreen(
                     mapView!!
                 },
                 update = { view ->
-                    view.controller.setCenter(geoPoint)
                     view.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
-                    if(buttonToCenterClicked){
+                    view.controller.setCenter(geoPoint)
+
+                    /*if (buttonToCenterClicked) {
                         view.controller.animateTo(geoPoint, 20.0, 1500, null)
                         handleButtonToCenterClicked(false)
-                    }
+                    }*/
+
+                    /*if (buttonToAttractionClicked) {
+                        view.controller.animateTo(attractionClicked, 20.0, 1500, null)
+                        view.controller.setCenter(attractionClicked)
+                        handleButtonToAttractionClicked(false)
+                    }*/
                 }
             )
         }
@@ -563,10 +596,17 @@ fun ShowPopUpBase(
                     //Category
                     Row(
                         modifier = Modifier
-                            .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
+                            .border(
+                                width = 1.dp,
+                                color = BlueLighter,
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
                             .width(300.dp)
                             .height(50.dp)
-                            .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
+                            .background(
+                                color = Color(0xCCFFFFFF),
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
                             .padding(start = 10.dp, end = 10.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                         verticalAlignment = Alignment.CenterVertically,
@@ -580,10 +620,17 @@ fun ShowPopUpBase(
                     //Location
                     Row(
                         modifier = Modifier
-                            .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
+                            .border(
+                                width = 1.dp,
+                                color = BlueLighter,
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
                             .width(300.dp)
                             .height(50.dp)
-                            .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp))
+                            .background(
+                                color = Color(0xCCFFFFFF),
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
                             .padding(start = 10.dp, end = 10.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                         verticalAlignment = Alignment.CenterVertically,
@@ -683,7 +730,9 @@ fun ShowAttractionMarkerPopUp(
                         .padding(16.dp)
                 ) {
                     // Mostra o carrossel de imagens
-                    ImageCarousel(images = attraction.imageUrlList, modifier = Modifier.fillMaxWidth().height(200.dp))
+                    ImageCarousel(images = attraction.imageUrlList, modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp))
 
                     // Exibe outras informações da atração
                     Text(text = "Description: ${attraction.description}", modifier = Modifier.padding(vertical = 8.dp))

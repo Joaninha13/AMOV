@@ -1,6 +1,7 @@
 package pt.isec.ans.amov.ui.Screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -77,6 +78,15 @@ fun MainMapScreen(
     val searchViewModel: SearchViewModel = viewModel() // Scoped to the nearest LifecycleOwner
 
     val (buttonToCenterClicked, setButtonToCenterClicked) = remember { mutableStateOf(false) }
+    val (buttonToAttractionClicked, setButtonToAttractionClicked) = remember { mutableStateOf(false) }
+    val (attractionGeoPointClicked, setAttractionGeoPointClicked) = remember { mutableStateOf<GeoPoint>(
+        GeoPoint(0.0, 0.0)
+    ) }
+    val (buttonToLocationClicked, setButtonToLocationClicked) = remember { mutableStateOf(false) }
+    val (locationGeoPointClicked, setLocationGeoPointClicked) = remember { mutableStateOf<GeoPoint>(
+        GeoPoint(0.0, 0.0)
+    ) }
+
 
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
@@ -90,7 +100,19 @@ fun MainMapScreen(
                 searchViewModel = searchViewModel,
                 navController = navController,
                 viewModelFB = viewModelFB,
-                viewModelL = viewModelL
+                viewModelL = viewModelL,
+                handleButtonToAttractionClicked = { newValue ->
+                    setButtonToAttractionClicked(newValue)
+                },
+                handleAttractionClicked = { newValue ->
+                    setAttractionGeoPointClicked(newValue)
+                },
+                handleButtonToLocationClicked = { newValue ->
+                    setButtonToLocationClicked(newValue)
+                },
+                handleLocationClicked = { newValue ->
+                    setLocationGeoPointClicked(newValue)
+                }
             )
         },
     ) {
@@ -116,7 +138,17 @@ fun MainMapScreen(
                         buttonToCenterClicked,
                         handleButtonToCenterClicked = { newValue ->
                             setButtonToCenterClicked(newValue)
-                        }
+                        },
+                        buttonToAttractionClicked,
+                        handleButtonToAttractionClicked = { newValue ->
+                            setButtonToAttractionClicked(newValue)
+                        },
+                        attractionGeoPointClicked,
+                        buttonToLocationClicked,
+                        handleButtonToLocationClicked = { newValue ->
+                            setButtonToLocationClicked(newValue)
+                        },
+                        locationGeoPointClicked
                     )
 
                     Column(
@@ -172,9 +204,6 @@ fun MainMapScreen(
                                 drawableId = R.drawable.vector,
                                 onClick = {
                                     //TODO quando se carrega aqui leva para a localizaçao do user
-                                    /*coroutineScope.launch {
-                                        setButtonToCenterClicked(true)
-                                    }*/
                                     setButtonToCenterClicked(true)
                                 },
                                 modifier = Modifier
@@ -200,7 +229,11 @@ fun SearchResultsOverlay(
     searchViewModel: SearchViewModel,
     navController: NavController,
     viewModelFB: FireBaseViewModel,
-    viewModelL: LocationViewModel
+    viewModelL: LocationViewModel,
+    handleButtonToAttractionClicked : (Boolean) -> Unit,
+    handleAttractionClicked : (GeoPoint) -> Unit,
+    handleButtonToLocationClicked : (Boolean) -> Unit,
+    handleLocationClicked : (GeoPoint) -> Unit
 ) {
 
     val location = viewModelL.currentLocation.observeAsState()
@@ -474,7 +507,13 @@ fun SearchResultsOverlay(
                                         horizontalAlignment = Alignment.End,
                                     ) {
                                         //TODO: add the logic to go to the attraction
-                                        RoundIconButton(drawableId = R.drawable.vector)
+                                        RoundIconButton(
+                                            drawableId = R.drawable.vector,
+                                            onClick = {
+                                                handleAttractionClicked(GeoPoint(attraction.coordinates.latitude, attraction.coordinates.longitude))
+                                                handleButtonToAttractionClicked(true)
+                                            }
+                                        )
 
                                         Column(
                                             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
@@ -567,7 +606,15 @@ fun SearchResultsOverlay(
                                     }
 
                                     // Your RoundIconButton or other UI components
-                                    RoundIconButton(drawableId = R.drawable.vector)
+                                    RoundIconButton(
+                                        drawableId = R.drawable.vector,
+                                        onClick = {
+                                            Log.d("DDD", location.coordinates.toString())
+                                            handleLocationClicked(GeoPoint(location.coordinates.latitude, location.coordinates.longitude))
+                                            handleButtonToLocationClicked(true)
+                                        }
+
+                                    )
                                 }
 
                                 Spacer(modifier = Modifier.height(20.dp))
