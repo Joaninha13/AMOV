@@ -148,36 +148,6 @@ fun UserAttractionCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     SecButton(_text = "Go to Page", onClick = {navController.navigate(Screen.InfoAttraction.createRoute(attraction))})
-                    DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
-
-                        if (ApprovedsDelete < 3) {
-                            if (!delete) {
-                                delete = true
-                                viewModel.switchAttractionToDelete(attraction) {
-                                    Toast.makeText(
-                                        navController.context,
-                                        "Delete attraction request sent, After 3 Approved to delete the attraction will be deleted",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    return@switchAttractionToDelete
-                                }
-                            }
-                            else{
-                                Toast.makeText(
-                                    navController.context,
-                                    "Can't delete attractions, not approvedYet",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                return@DangerRoundIconButton
-                            }
-                        }
-                        else{
-                            viewModel.deleteAttraction(attraction)
-
-                            Toast.makeText(navController.context, viewModel.error.value ?: "Attraction deleted", Toast.LENGTH_SHORT).show()
-
-                            navController.navigate(Screen.ViewLocation.route)}
-                    })
                 }
 
             }
@@ -193,9 +163,38 @@ fun UserAttractionCard(
             ) {
 
                 //Icon container
-                RoundIconButton(drawableId = R.drawable.vector, onClick = onClick)// por isto para ir para as coordenadas da localização no mapa
-                RoundIconButton(drawableId = R.drawable.edit, onClick = {navController.navigate(Screen.EditAttraction.createRoute(attraction))})
 
+                RoundIconButton(drawableId = R.drawable.edit, onClick = {navController.navigate(Screen.EditAttraction.createRoute(attraction))})
+                DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
+
+                    if (ApprovedsDelete < 3) {
+                        if (!delete) {
+                            delete = true
+                            viewModel.switchAttractionToDelete(attraction) {
+                                Toast.makeText(
+                                    navController.context,
+                                    "Delete attraction request sent, After 3 Approved to delete the attraction will be deleted",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@switchAttractionToDelete
+                            }
+                        }
+                        else{
+                            Toast.makeText(
+                                navController.context,
+                                "Can't delete attractions, not approvedYet",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@DangerRoundIconButton
+                        }
+                    }
+                    else{
+                        viewModel.deleteAttraction(attraction)
+
+                        Toast.makeText(navController.context, viewModel.error.value ?: "Attraction deleted", Toast.LENGTH_SHORT).show()
+
+                        navController.navigate(Screen.ViewLocation.route)}
+                })
             }
 
         }

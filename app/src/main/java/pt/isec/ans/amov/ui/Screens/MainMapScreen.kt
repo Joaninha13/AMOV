@@ -1,7 +1,6 @@
 package pt.isec.ans.amov.ui.Screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,7 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.firestore.GeoPoint
+import org.osmdroid.util.GeoPoint
+
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.dataStructures.Attraction
 import pt.isec.ans.amov.dataStructures.Category
@@ -56,6 +56,7 @@ import pt.isec.ans.amov.ui.Components.Cards.LocationCard
 import pt.isec.ans.amov.ui.Components.Nav.SearchResultItem
 import pt.isec.ans.amov.ui.Components.Nav.SearchViewModel
 import pt.isec.ans.amov.ui.Components.Nav.onSearchTriggered
+import pt.isec.ans.amov.ui.Components.toFirebaseGeoPoint
 import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
@@ -263,7 +264,7 @@ fun SearchResultsOverlay(
                         }
                     },
                     name = categoryName,
-                    userGeo = geoPoint
+                    userGeo = geoPoint.toFirebaseGeoPoint()
                 )
             }
         }
@@ -287,7 +288,7 @@ fun SearchResultsOverlay(
                         }
                     },
                     name = locationName,
-                    userGeo = geoPoint
+                    userGeo = geoPoint.toFirebaseGeoPoint()
                 )
             }
         }
@@ -311,7 +312,7 @@ fun SearchResultsOverlay(
                         }
                     },
                     name = attractionName,
-                    userGeo = geoPoint
+                    userGeo = geoPoint.toFirebaseGeoPoint()
                 )
             }
         }
