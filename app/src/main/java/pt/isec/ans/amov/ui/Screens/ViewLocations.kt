@@ -1,5 +1,6 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,25 +17,51 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.dataStructures.LocationDetails
 import pt.isec.ans.amov.ui.Components.Cards.UserLocationCard
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 
 @Composable
 fun ViewLocations(
-    navController: NavController
+    navController: NavController,
+    viewModel: FireBaseViewModel
 ) {
+    var locationList by remember { mutableStateOf<List<LocationDetails>>(emptyList()) }
+
+    val context = LocalContext.current
+
+    // Buscar categorias quando o Composable for iniciado
+    DisposableEffect(viewModel) {
+        viewModel.getAllLocationsByUser { location, error ->
+            if (error == null) {
+                locationList = location
+            } else {
+                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Cancelar o efeito quando o Composable for removido
+        onDispose { }
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -94,11 +121,15 @@ fun ViewLocations(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(36.dp)
                 ) {
-                    items(10) { index ->
+                    items(locationList.size) { index ->
                         UserLocationCard(
-                            city = "Paris",
-                            country = "France",
-                            numAttractions = 4321,
+                            navController = navController,
+                            viewModel = viewModel,
+                            region = locationList[index].region,
+                            country = locationList[index].country,
+                            image = locationList[index].image,
+                            numAttractions = locationList[index].numAttractions,
+
                         )
                     }
                 }

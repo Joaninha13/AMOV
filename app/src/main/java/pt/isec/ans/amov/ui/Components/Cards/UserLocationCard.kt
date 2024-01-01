@@ -1,5 +1,6 @@
 package pt.isec.ans.amov.ui.Components.Cards
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,11 +11,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -22,18 +23,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.DangerRoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
+import pt.isec.ans.amov.ui.Screen
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
 @Composable
 fun UserLocationCard(
-    city: String,
+    navController: NavController,
+    viewModel: FireBaseViewModel,
+    region: String,
     country: String,
     numAttractions: Int,
+    image : String,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -58,7 +66,7 @@ fun UserLocationCard(
                 .width(100.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.paris_france),
+                painter = rememberImagePainter(image),
                 contentDescription = "image description",
                 contentScale = ContentScale.Crop, // Use ContentScale.Crop
                 modifier = Modifier.fillMaxSize() // This makes the Image fill the container
@@ -85,7 +93,7 @@ fun UserLocationCard(
 
                 //Location Title
                 Text(
-                    text = "$city, $country",
+                    text = "$region, $country",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.inter_semibold)),
@@ -115,8 +123,24 @@ fun UserLocationCard(
                     horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    SecButton(_text = "Go to Page")
-                    DangerRoundIconButton(drawableId = R.drawable.trash)
+                    SecButton(_text = "Go to Page", onClick = {navController.navigate(Screen.InfoLocation.createRoute("${country}_$region"))})
+                    DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
+                        if (numAttractions > 0) {
+                            Toast.makeText(
+                                navController.context,
+                                "Can't delete location with attractions",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@DangerRoundIconButton
+                        }
+                        else{
+                            viewModel.deleteLocation("${country}_$region")
+
+                            Toast.makeText(navController.context, viewModel.error.value ?: "Location deleted", Toast.LENGTH_SHORT).show()
+
+                            navController.navigate(Screen.ViewLocation.route)
+                        }
+                    })
                 }
 
             }
@@ -131,8 +155,8 @@ fun UserLocationCard(
                 ) {
 
                 //Icon container
-                RoundIconButton(drawableId = R.drawable.vector)
-                RoundIconButton(drawableId = R.drawable.edit)
+                RoundIconButton(drawableId = R.drawable.vector, onClick = onClick)// por isto para ir para as coordenadas da localização no mapa
+                RoundIconButton(drawableId = R.drawable.edit, onClick = {navController.navigate(Screen.EditLocation.createRoute("${country}_$region"))})
 
             }
 
@@ -146,9 +170,9 @@ fun UserLocationCard(
 @Preview
 @Composable
 fun UserLocationCardPreview(){
-    UserLocationCard(
+    /*UserLocationCard(
         city = "Paris",
         country = "France",
         numAttractions = 4321
-    )
+    )*/
 }

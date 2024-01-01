@@ -12,8 +12,11 @@ import kotlinx.coroutines.launch
 import pt.isec.ans.amov.Utils.FireBase.AuthUtil
 import pt.isec.ans.amov.Utils.FireBase.StorageUtil
 import pt.isec.ans.amov.dataStructures.Attraction
+import pt.isec.ans.amov.dataStructures.AttractionDetails
 import pt.isec.ans.amov.dataStructures.Category
+import pt.isec.ans.amov.dataStructures.CategoryDetails
 import pt.isec.ans.amov.dataStructures.Location
+import pt.isec.ans.amov.dataStructures.LocationDetails
 
 data class  User (val name: String, val email: String, val picture: String?)
 
@@ -84,6 +87,17 @@ class FireBaseViewModel : ViewModel() {
         }
         }
     }
+    fun getAllCategoriesByUser(onResult: (List<CategoryDetails>, Throwable?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllDetailsFromCategoryByUser{ categoryDetailsList, error ->
+                if (error == null) {
+                    onResult(categoryDetailsList, null)
+                } else {
+                    onResult(emptyList(), error)
+                }
+            }
+        }
+    }
     fun getAllCategories(onResult: (List<String>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllCategorysDocumentsNames { names ->
@@ -100,6 +114,13 @@ class FireBaseViewModel : ViewModel() {
     }
     fun updateCategories(categoryName: String,name: String, desc : String, image: String) {
         viewModelScope.launch { StorageUtil.updateCategory(categoryName,name, desc, image){ e ->
+            _error.value = e?.message
+        }
+        }
+    }
+
+    fun deleteCategory(name: String) {
+        viewModelScope.launch { StorageUtil.deleteCategory(name){ e ->
             _error.value = e?.message
         }
         }
@@ -211,6 +232,25 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
+    fun getAllLocationsByUser(onResult: (List<LocationDetails>, Throwable?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllDetailsFromLocationByUser{ locationDetailsList, error ->
+                if (error == null) {
+                    onResult(locationDetailsList, null)
+                } else {
+                    onResult(emptyList(), error)
+                }
+            }
+        }
+    }
+
+    fun deleteLocation(name: String) {
+        viewModelScope.launch { StorageUtil.deleteLocation(name){ e ->
+            _error.value = e?.message
+        }
+        }
+    }
+
     //Attractions
     fun addAtraction(name: String, desc : String, coordinates: GeoPoint, category : String, Location : String, images : List<String>, onResult : (Throwable?) -> Unit) {
         viewModelScope.launch { StorageUtil.addAttraction(name, desc, coordinates, category, Location, images){ e ->
@@ -227,6 +267,35 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
+    fun getAllAttractionsByUser(onResult: (List<AttractionDetails>, Throwable?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllDetailsFromAttractionByUser{ attractionDetailsList, error ->
+                if (error == null) {
+                    onResult(attractionDetailsList, null)
+                } else {
+                    onResult(emptyList(), error)
+                }
+            }
+        }
+    }
+
+    fun switchAttractionToDelete(name: String, onResult: (Throwable?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.switchToDeleteAttraction(name){ e ->
+                _error.value = e?.message
+                onResult(e)
+            }
+        }
+    }
+
+    fun getToDeleteAttractions(name: String, onResult : (Boolean) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getToDeleteAttraction(name) { desc ->
+                onResult(desc)
+            }
+        }
+    }
+
     fun getAttractions(name: String, onResult : (List<String>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAttractionDetails(name) { desc ->
@@ -237,6 +306,14 @@ class FireBaseViewModel : ViewModel() {
 
     fun updateAttractions(attractionName: String,name: String, desc : String, coordinates: GeoPoint, category : String, Location : String, images : List<String>) {
         viewModelScope.launch { StorageUtil.updateAttraction(attractionName,name, desc, coordinates, category, Location, images){ e ->
+            _error.value = e?.message
+        }
+        }
+    }
+
+
+    fun deleteAttraction(name: String) {
+        viewModelScope.launch { StorageUtil.deleteAttraction(name){ e ->
             _error.value = e?.message
         }
         }

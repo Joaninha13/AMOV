@@ -310,7 +310,8 @@ fun InfoAttraction(
                     //TODO: Add Review
                     SecButton("Contribute Review", onClick = {
                         navController.navigate(
-                            Screen.Review.createRoute(formState?.name!!))
+                            Screen.Review.createRoute(formState?.name!!)
+                        )
                     })
                 }
             }

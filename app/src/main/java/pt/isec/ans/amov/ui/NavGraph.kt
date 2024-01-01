@@ -68,14 +68,14 @@ fun SetupNavGraph(
             arguments = listOf(navArgument("locationId") { type = NavType.StringType })
         ) { backStackEntry ->
             val locationId = backStackEntry.arguments?.getString("locationId")
-            EditAttraction(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = locationId ?: "")
+            EditLocation(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = locationId ?: "")
         }
         composable(
             route = Screen.EditCategory.route,
             arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
         ) { backStackEntry ->
             val categoryId = backStackEntry.arguments?.getString("categoryId")
-            EditAttraction(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = categoryId ?: "")
+            EditCategory(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = categoryId ?: "")
         }
         composable(Screen.EditPersonalData.route) {
             EditPersonalData(navController = navController)
@@ -111,13 +111,13 @@ fun SetupNavGraph(
         }
 
         composable(Screen.ViewAttraction.route) {
-            ViewAttractions(navController = navController)
+            ViewAttractions(navController = navController, viewModel = viewModelFB)
         }
         composable(Screen.ViewLocation.route) {
-            ViewLocations(navController = navController)
+            ViewLocations(navController = navController, viewModel = viewModelFB)
         }
         composable(Screen.ViewCategory.route) {
-            ViewCategories(navController = navController)
+            ViewCategories(navController = navController, viewModel = viewModelFB)
         }
         composable(Screen.ViewAccount.route) {
             ViewAccount(navController = navController)

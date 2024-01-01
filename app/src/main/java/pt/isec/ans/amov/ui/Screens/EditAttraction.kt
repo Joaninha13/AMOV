@@ -147,6 +147,8 @@ fun EditAttraction(
                     horizontalAlignment = Alignment.Start,
                 ) {
 
+                    Log.d("VEERRRRR----->>>>>>", "name: $nameToEdit")
+
                     viewModelFB.getAttractions(nameToEdit){ desc ->
                         Log.d("VEERRRRR----->>>>>>", "desc: $desc")
                         oldAttractionFormState.name = desc[0]

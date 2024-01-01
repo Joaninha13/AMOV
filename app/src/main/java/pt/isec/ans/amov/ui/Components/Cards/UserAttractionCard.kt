@@ -1,5 +1,7 @@
 package pt.isec.ans.amov.ui.Components.Cards
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,23 +24,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.DangerRoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
+import pt.isec.ans.amov.ui.Screen
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
 
 @Composable
 fun UserAttractionCard(
+    navController: NavController,
+    viewModel: FireBaseViewModel,
     attraction: String,
-    averageRating: Float,
+    averageRating: String,
     numRatings: Int,
+    ApprovedsDelete: Int,
+    toDelete: Boolean,
+    image: String,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
 ){
+
+    var delete = toDelete
 
     //Card Row
     Row(
@@ -59,7 +72,7 @@ fun UserAttractionCard(
                 .width(100.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.torre_eiffel),
+                painter = rememberImagePainter(image),
                 contentDescription = "image description",
                 contentScale = ContentScale.Crop, // Use ContentScale.Crop
                 modifier = Modifier.fillMaxSize() // This makes the Image fill the container
@@ -134,8 +147,37 @@ fun UserAttractionCard(
                     horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    SecButton(_text = "Go to Page")
-                    DangerRoundIconButton(drawableId = R.drawable.trash)
+                    SecButton(_text = "Go to Page", onClick = {navController.navigate(Screen.InfoAttraction.createRoute(attraction))})
+                    DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
+
+                        if (ApprovedsDelete < 3) {
+                            if (!delete) {
+                                delete = true
+                                viewModel.switchAttractionToDelete(attraction) {
+                                    Toast.makeText(
+                                        navController.context,
+                                        "Delete attraction request sent, After 3 Approved to delete the attraction will be deleted",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@switchAttractionToDelete
+                                }
+                            }
+                            else{
+                                Toast.makeText(
+                                    navController.context,
+                                    "Can't delete attractions, not approvedYet",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@DangerRoundIconButton
+                            }
+                        }
+                        else{
+                            viewModel.deleteAttraction(attraction)
+
+                            Toast.makeText(navController.context, viewModel.error.value ?: "Attraction deleted", Toast.LENGTH_SHORT).show()
+
+                            navController.navigate(Screen.ViewLocation.route)}
+                    })
                 }
 
             }
@@ -151,8 +193,8 @@ fun UserAttractionCard(
             ) {
 
                 //Icon container
-                RoundIconButton(drawableId = R.drawable.vector)
-                RoundIconButton(drawableId = R.drawable.edit)
+                RoundIconButton(drawableId = R.drawable.vector, onClick = onClick)// por isto para ir para as coordenadas da localização no mapa
+                RoundIconButton(drawableId = R.drawable.edit, onClick = {navController.navigate(Screen.EditAttraction.createRoute(attraction))})
 
             }
 
@@ -165,9 +207,9 @@ fun UserAttractionCard(
 @Preview
 @Composable
 fun UserAttractionCardPreview() {
-    UserAttractionCard(
+    /*UserAttractionCard(
         attraction = "Torre Eiffel Tower",
         averageRating = 2.3f,
         numRatings = 3214
-    )
+    )*/
 }

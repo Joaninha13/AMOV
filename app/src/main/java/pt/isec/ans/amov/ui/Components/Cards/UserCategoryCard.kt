@@ -1,5 +1,6 @@
 package pt.isec.ans.amov.ui.Components.Cards
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,18 +21,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.DangerRoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
+import pt.isec.ans.amov.ui.Screen
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
 @Composable
 fun UserCategoryCard(
-    //attractionIcon: String,
+    navController: NavController,
+    viewModel: FireBaseViewModel,
     categoryName: String,
     numAttractions: Int,
+    Logo: String,
 
     modifier: Modifier = Modifier,
 ){
@@ -67,13 +75,13 @@ fun UserCategoryCard(
                         .padding(1.dp)
                         .width(14.dp)
                         .height(14.dp),
-                    painter = painterResource(id = R.drawable.landmark_1),
+                    painter = rememberImagePainter(Logo),
                     contentDescription = "image description",
                     contentScale = ContentScale.Crop
                 )
 
                 Text(
-                    text = "Monument",
+                    text = categoryName,
                     style = TextStyle(
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -106,7 +114,7 @@ fun UserCategoryCard(
                 horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                SecButton(_text = "Go to Page")
+                SecButton(_text = "Go to Page", onClick = {navController.navigate(Screen.InfoCategory.createRoute(categoryName))})
             }
 
         }
@@ -120,8 +128,25 @@ fun UserCategoryCard(
             horizontalAlignment = Alignment.Start,
         ) {
 
-            RoundIconButton(drawableId = R.drawable.edit)
-            DangerRoundIconButton(drawableId = R.drawable.trash)
+            RoundIconButton(drawableId = R.drawable.edit, onClick = {navController.navigate(Screen.EditCategory.createRoute(categoryName))})
+            DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
+                if (numAttractions > 0) {
+                    Toast.makeText(
+                        navController.context,
+                        "Can't delete Categories with attractions",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@DangerRoundIconButton
+                }
+                else{
+                    viewModel.deleteCategory(categoryName)
+
+                    Toast.makeText(navController.context, viewModel.error.value ?: "Category deleted", Toast.LENGTH_SHORT).show()
+
+                    navController.navigate(Screen.ViewLocation.route)
+                }
+
+            })
         }
     }
 
@@ -130,8 +155,8 @@ fun UserCategoryCard(
 @Preview
 @Composable
 fun UserCategoryCardPreview(){
-    UserCategoryCard(
+    /*UserCategoryCard(
         categoryName = "Monument",
         numAttractions = 4321
-    )
+    )*/
 }

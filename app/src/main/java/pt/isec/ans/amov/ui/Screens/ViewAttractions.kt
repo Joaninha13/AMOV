@@ -1,5 +1,6 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,9 +17,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -27,14 +34,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.dataStructures.AttractionDetails
 import pt.isec.ans.amov.ui.Components.Cards.UserAttractionCard
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 
 
 @Composable
 fun ViewAttractions(
     navController: NavController,
+    viewModel: FireBaseViewModel
 ) {
+
+    var attractionList by remember { mutableStateOf<List<AttractionDetails>>(emptyList()) }
+
+    val context = LocalContext.current
+
+    // Buscar categorias quando o Composable for iniciado
+    DisposableEffect(viewModel) {
+        viewModel.getAllAttractionsByUser { attraction, error ->
+            if (error == null) {
+                attractionList = attraction
+            } else {
+                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Cancelar o efeito quando o Composable for removido
+        onDispose { }
+    }
+
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -86,11 +116,16 @@ fun ViewAttractions(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(36.dp)
                 ) {
-                    items(10) { index ->
+                    items(attractionList.size) { index ->
                         UserAttractionCard(
-                            attraction = "Torre Eiffel",
-                            averageRating = 2.3f,
-                            numRatings = 3214
+                            navController = navController,
+                            viewModel = viewModel,
+                            attraction = attractionList[index].name,
+                            averageRating = attractionList[index].Rating,
+                            numRatings = attractionList[index].numReviews,
+                            ApprovedsDelete = attractionList[index].ApprovedsDelete,
+                            toDelete = attractionList[index].toDelete,
+                            image = attractionList[index].image[0],
                         )
                     }
                 }

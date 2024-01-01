@@ -1,8 +1,10 @@
 package pt.isec.ans.amov.Utils.FireBase
 
 import android.annotation.SuppressLint
+import android.media.Rating
 import android.net.Uri
 import android.util.Log
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.GeoPoint
@@ -11,22 +13,17 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import pt.isec.ans.amov.dataStructures.Attraction
+import pt.isec.ans.amov.dataStructures.AttractionDetails
 import pt.isec.ans.amov.dataStructures.Category
+import pt.isec.ans.amov.dataStructures.CategoryDetails
 import pt.isec.ans.amov.dataStructures.Location
+import pt.isec.ans.amov.dataStructures.LocationDetails
 import pt.isec.ans.amov.dataStructures.Review
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import kotlin.math.*
 
 class StorageUtil {
-
-    //forma de criar os users!
-    /*if (FireAuthUtil.currentUser != null) {
-        db.collection("Users").document(FireAuthUtil.currentUser!!.uid).set(User)
-            .addOnCompleteListener { result ->
-                onResult(result.exception)
-            }
-    }*/
 
     //forma de ir a conteudo de referencias
     /*val db = Firebase.firestore
@@ -123,6 +120,39 @@ class StorageUtil {
 
         //Categorys
         fun addCategory(name: String, desc: String, logo: String, onResult: (Throwable?) -> Unit) {
+            val db = Firebase.firestore
+
+            val category = hashMapOf(
+                "Name" to name,
+                "Description" to desc,
+                "Approved" to 0,
+                "Logo" to logo,
+                "User" to db.document("Users/${AuthUtil.currentUser!!.uid}")
+            )
+
+            val doc = db.collection("Category").document(name)
+            doc.get()
+                .addOnSuccessListener { result ->
+                    if (!result.exists()) {
+                        doc.set(category)
+                            .addOnSuccessListener {
+                                onResult(null)
+                            }
+                            .addOnFailureListener { e ->
+                                onResult(e)
+                            }
+                    } else {
+                        // Categoria com esse nome já existe
+                        val error = Throwable("Category with name '$name' already exists.")
+                        onResult(error)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    // Falha ao obter o documento
+                    onResult(e)
+                }
+        }
+        /*fun addCategory(name: String, desc: String, logo: String, onResult: (Throwable?) -> Unit) {
 
             val db = Firebase.firestore
 
@@ -130,7 +160,7 @@ class StorageUtil {
                 "Name" to name,
                 "Description" to desc,
                 "Approved" to 0,
-                "Logo" to logo,// mudar isto para guardar o path da imagem guardada no storage
+                "Logo" to logo,
                 "User" to db.document("Users/${AuthUtil.currentUser!!.uid}")
             )
 
@@ -138,6 +168,58 @@ class StorageUtil {
             doc.get().addOnSuccessListener { result ->
                 if (!result.exists())
                     doc.set(category)
+            }
+        }*/
+
+        fun getAllDetailsFromCategoryByUser(onResult: (List<CategoryDetails>, Throwable?) -> Unit) {
+            val db = Firebase.firestore
+            val currentUserUid = AuthUtil.currentUser?.uid
+
+            if (currentUserUid != null) {
+                db.collection("Category")
+                    .whereEqualTo("User", db.document("Users/$currentUserUid"))
+                    .get()
+                    .addOnSuccessListener { result ->
+                        val categoryDetailsList = mutableListOf<CategoryDetails>()
+
+                        val attractionsCountPromises = result.documents.map { categoryDocument ->
+                            val categoryId = categoryDocument.id
+                            db.collection("Attractions")
+                                .whereEqualTo("Category", db.document("Category/$categoryId"))
+                                .get()
+                                .addOnSuccessListener { attractionsResult ->
+                                    val numAttractions = attractionsResult.size()
+                                    val numApproved =
+                                        categoryDocument.getLong("Approved")?.toInt() ?: 0
+                                    val name = categoryDocument.getString("Name") ?: ""
+                                    val description =
+                                        categoryDocument.getString("Description") ?: ""
+                                    val logoUrl = categoryDocument.getString("Logo") ?: ""
+
+                                    val categoryDetails = CategoryDetails(
+                                        name,
+                                        numAttractions,
+                                        numApproved,
+                                        description,
+                                        logoUrl
+                                    )
+                                    categoryDetailsList.add(categoryDetails)
+
+                                    if (categoryDetailsList.size == result.size()) {
+                                        Log.d("VERRRR->>>>>>>>>>>>>" , categoryDetailsList.toString())
+                                        onResult(categoryDetailsList, null)
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    onResult(emptyList(), e)
+                                }
+                        }
+
+                        Tasks.whenAllComplete(attractionsCountPromises)
+                    }
+                    .addOnFailureListener { e ->
+                        onResult(emptyList(), e)
+                    }
             }
         }
 
@@ -275,7 +357,6 @@ class StorageUtil {
                 onResult(result.exception)
             }
         }
-
         fun deleteCategory(name: String, onResult: (Throwable?) -> Unit) {
 
             //As categorias e as localizações podem ser eliminadas pelos seus autores, desde que não possuam qualquer local de interesse.
@@ -296,6 +377,7 @@ class StorageUtil {
                 }
             }
         }
+
 
         //Locations
         fun addLocation(country: String, region: String, desc: String, coordinates: GeoPoint, image: String, onResult: (Throwable?) -> Unit) {
@@ -319,7 +401,6 @@ class StorageUtil {
                     doc.set(location)
             }
         }
-
         fun getAllLocationsDocumentsNames(onResult: (List<String>) -> Unit) {
 
             val db = Firebase.firestore
@@ -335,7 +416,57 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
+        fun getAllDetailsFromLocationByUser(onResult: (List<LocationDetails>, Throwable?) -> Unit) {
+            val db = Firebase.firestore
+            val currentUserUid = AuthUtil.currentUser?.uid
 
+            if (currentUserUid != null) {
+                db.collection("Location")
+                    .whereEqualTo("User", db.document("Users/$currentUserUid"))
+                    .get()
+                    .addOnSuccessListener { result ->
+                        val locationDetailsList = mutableListOf<LocationDetails>()
+
+                        val attractionsCountPromises = result.documents.map { locationDocument ->
+                            val locationId = locationDocument.id
+                            db.collection("Attractions")
+                                .whereEqualTo("Location", db.document("Location/$locationId"))
+                                .get()
+                                .addOnSuccessListener { attractionsResult ->
+                                    val numAttractions = attractionsResult.size()
+                                    val numApproved =
+                                        locationDocument.getLong("Approved")?.toInt() ?: 0
+                                    val country = locationDocument.getString("Country") ?: ""
+                                    val region = locationDocument.getString("Region") ?: ""
+                                    val imageUrl =
+                                        locationDocument.getString("Image") ?: ""
+
+                                    val locationDetails = LocationDetails(
+                                        region,
+                                        country,
+                                        numApproved,
+                                        numAttractions,
+                                        imageUrl,
+                                    )
+                                    locationDetailsList.add(locationDetails)
+
+                                    if (locationDetailsList.size == result.size()) {
+                                        onResult(locationDetailsList, null)
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    onResult(emptyList(), e)
+                                }
+                        }
+
+                        Tasks.whenAllComplete(attractionsCountPromises)
+                    }
+                    .addOnFailureListener { e ->
+                        onResult(emptyList(), e)
+                    }
+            }
+
+        }
         fun getAllLocationsDocumentsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
 
             val db = Firebase.firestore
@@ -355,7 +486,6 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
-
         fun getAllFromOneLocation(name: String, onResult: (List<String>) -> Unit) {
 
             val db = Firebase.firestore
@@ -369,7 +499,6 @@ class StorageUtil {
                 onResult(arrayListOf())
             }
         }
-
         fun getLocationDetails(userGeo: GeoPoint, name: String, onResult: (Location?) -> Unit) {
 
             val db = Firebase.firestore
@@ -462,8 +591,6 @@ class StorageUtil {
                     onResult(null)  // Handle failure case
                 }
         }
-
-
         fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
 
 
@@ -511,7 +638,6 @@ class StorageUtil {
                     onResult(exception)
                 }
         }
-
         fun updateApprovedLocation(onResult : (Throwable?) -> Unit, country: String, region : String) {
 
             val db = Firebase.firestore
@@ -551,6 +677,7 @@ class StorageUtil {
             }
         }
 
+
         //Attractions
         fun addAttraction(name: String, desc : String, coordinates: GeoPoint, category : String, Location : String, images : List<String>, onResult : (Throwable?) -> Unit) {
 
@@ -562,6 +689,7 @@ class StorageUtil {
                 "Coordinates" to coordinates,
                 "Approved" to 0,
                 "DeleteApproved" to 0,
+                "ToDelete" to false,
                 "Category" to db.document("Category/$category"),
                 "Location" to db.document("Location/$Location"),
                 "User" to db.document("Users/${AuthUtil.currentUser!!.uid}"),
@@ -595,6 +723,8 @@ class StorageUtil {
 
             val db = Firebase.firestore
 
+            Log.d("name ->>>>>>>>", name)
+
             // Attempt to fetch the single location document based on country and region
             val doc = db.collection("Attractions").document(name)
             doc.get().addOnSuccessListener { document ->
@@ -607,6 +737,8 @@ class StorageUtil {
                     val coordinates = document["Coordinates"] as? GeoPoint ?: GeoPoint(0.0, 0.0)
 
                     val list = listOf(Name, Description, Category, Location, images.toString(), coordinates.toString())
+
+                    Log.d("list ->>>>>>>>", list.toString())
 
                     onResult(list)
                 } else {
@@ -756,7 +888,63 @@ class StorageUtil {
                 }
         }
 
+        fun getAllDetailsFromAttractionByUser(onResult: (List<AttractionDetails>, Throwable?) -> Unit) {
+            val db = Firebase.firestore
+            val userUid = AuthUtil.currentUser?.uid
 
+            if (userUid == null) {
+                // Usuário não autenticado, retornar erro
+                onResult(emptyList(), Throwable("User not authenticated"))
+                return
+            }
+
+            db.collection("Attractions")
+                .whereEqualTo("User", db.document("Users/$userUid"))
+                .get()
+                .addOnSuccessListener { result ->
+                    val attractionDetailsList = mutableListOf<AttractionDetails>()
+
+                    for (document in result) {
+                        val name = document.getString("Name") ?: ""
+                        val attractionId = document.id
+                        val approvedToDelete = document.getLong("DeleteApproved") ?: 0
+                        val toDelete = document.getBoolean("ToDelete") ?: false
+                        val image = document.get("Images") as? List<String> ?: emptyList()
+
+                        Log.d("IMAGEEE ->>>>>>>", image.toString())
+
+                        // Calcular a média das classificações para a atração atual
+                        db.collection("Reviews")
+                            .whereEqualTo("Attraction", db.document("Attractions/$attractionId"))
+                            .get()
+                            .addOnSuccessListener { reviewsResult ->
+                                val numReviews = reviewsResult.size()
+
+                                var totalRating = 0.0
+
+                                for (reviewDocument in reviewsResult) {
+                                    val rating = reviewDocument.get("Rating") as? Number ?: 0
+                                    totalRating += rating.toDouble()
+                                }
+
+                                val averageRating = if (numReviews > 0) totalRating / numReviews else 0.0
+
+                                val attractionDetails = AttractionDetails(name, "%.1f".format(averageRating), numReviews, approvedToDelete.toInt(), toDelete,image)
+                                attractionDetailsList.add(attractionDetails)
+
+                                if (attractionDetailsList.size == result.size()) {
+                                    onResult(attractionDetailsList, null)
+                                }
+                            }
+                            .addOnFailureListener { reviewsException ->
+                                onResult(emptyList(), reviewsException)
+                            }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    onResult(emptyList(), exception)
+                }
+        }
         fun updateApprovedAttraction( name: String,onResult : (Throwable?) -> Unit) {
 
             val db = Firebase.firestore
@@ -775,6 +963,47 @@ class StorageUtil {
                     )
             }.addOnCompleteListener{result ->
                 onResult(result.exception)
+            }
+        }
+
+        fun switchToDeleteAttraction(name: String, onResult : (Throwable?) -> Unit) {
+
+            val db = Firebase.firestore
+            val v = db.collection("Attractions").document(name)
+
+            db.runTransaction { transaction ->
+                val doc = transaction.get(v)
+                if (doc.exists()) {
+                    val todelete = doc.getBoolean("ToDelete") ?: false
+                    transaction.update(v, "ToDelete", !todelete)
+                    null
+                } else
+                    throw FirebaseFirestoreException(
+                        "Doesn't exist",
+                        FirebaseFirestoreException.Code.UNAVAILABLE
+                    )
+            }.addOnCompleteListener{result ->
+                onResult(result.exception)
+            }
+        }
+
+        fun getToDeleteAttraction(name: String, onResult : (Boolean) -> Unit) {
+
+            val db = Firebase.firestore
+            val v = db.collection("Attractions").document(name)
+
+            db.runTransaction { transaction ->
+                val doc = transaction.get(v)
+                if (doc.exists()) {
+                    val todelete = doc.getBoolean("ToDelete") ?: false
+
+                    onResult(todelete)
+                    null
+                } else
+                    throw FirebaseFirestoreException(
+                        "Doesn't exist",
+                        FirebaseFirestoreException.Code.UNAVAILABLE
+                    )
             }
         }
 
@@ -869,7 +1098,7 @@ class StorageUtil {
                 "Image" to image,
                 "Attraction" to db.document("Attractions/$attraction"),
                 "User" to db.document("Users/${AuthUtil.currentUser!!.uid}"),
-                "Rating" to "%.1f".format(rating)
+                "Rating" to rating
             )
 
             val doc = db.collection("Reviews").document()

@@ -155,8 +155,8 @@ fun EditCategory(
                     viewModelFB.getCategories(nameToEdit){ desc ->
                         Log.d("VEERRRRR->>>>>>", "desc: $desc")
                         oldCategoryFormState.name = nameToEdit
-                        oldCategoryFormState.description = desc[0]
-                        oldCategoryFormState.logo = desc[1]
+                        oldCategoryFormState.description = desc[1]
+                        oldCategoryFormState.logo = desc[2]
                     }
 
                     //First Input
