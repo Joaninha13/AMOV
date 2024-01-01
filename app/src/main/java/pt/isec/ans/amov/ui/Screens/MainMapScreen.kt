@@ -1,6 +1,7 @@
 package pt.isec.ans.amov.ui.Screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -52,6 +53,7 @@ import pt.isec.ans.amov.ui.Components.Buttons.ToggleFilterOption
 import pt.isec.ans.amov.ui.Components.Cards.AttractionCard
 import pt.isec.ans.amov.ui.Components.Cards.CategoryCard
 import pt.isec.ans.amov.ui.Components.Cards.LocationCard
+import pt.isec.ans.amov.ui.Components.Nav.SearchResultItem
 import pt.isec.ans.amov.ui.Components.Nav.SearchViewModel
 import pt.isec.ans.amov.ui.Components.Nav.onSearchTriggered
 import pt.isec.ans.amov.ui.Screen
@@ -211,7 +213,7 @@ fun SearchResultsOverlay(
 
     val currentSearchText = searchViewModel.searchBarState.collectAsState()
 
-    val sortOptions = listOf("Categories Name", "Abc", "Zyx", "Distance")
+    val sortOptions = listOf("Categories Name", "Abc", "Zyx")
     var selectedSortCriteria by remember { mutableStateOf("") }
 
     var selectedFilterCriteria by remember { mutableStateOf(FilterFields()) }
@@ -219,29 +221,146 @@ fun SearchResultsOverlay(
 
 
     // State for fetched data
-    var categories by remember { mutableStateOf<List<String>>(emptyList()) }
-    var locations by remember { mutableStateOf<List<String>>(emptyList()) }
-    var attractions by remember { mutableStateOf<List<String>>(emptyList()) }
+    var locationNames by remember { mutableStateOf<List<String>>(emptyList()) }
+    var categoryNames by remember { mutableStateOf<List<String>>(emptyList()) }
+    var attractionNames by remember { mutableStateOf<List<String>>(emptyList()) }
+
 
     LaunchedEffect(currentSearchText.value) {
-        when {
-            currentSearchText.value.equals("attractions", ignoreCase = true) -> {
-                viewModelFB.getAllAttractions { fetchedAttractions ->
-                    attractions = fetchedAttractions
-                }
-            }
-            currentSearchText.value.equals("locations", ignoreCase = true) -> {
-                viewModelFB.getAllLocations { fetchedLocations ->
-                    locations = fetchedLocations
-                }
-            }
-            currentSearchText.value.equals("categories", ignoreCase = true) -> {
-                viewModelFB.getAllCategories { fetchedCategories ->
-                    categories = fetchedCategories
-                }
+        viewModelFB.getAllAttractions { fetchedAttractions ->
+            attractionNames = fetchedAttractions
+        }
+        viewModelFB.getAllLocations { fetchedLocations ->
+            locationNames = fetchedLocations
+        }
+        viewModelFB.getAllCategories { fetchedCategories ->
+            categoryNames = fetchedCategories
+        }
+    }
+
+
+    var listOfLocations by remember { mutableStateOf<List<Location>>(emptyList()) }
+    var listOfAttractions by remember { mutableStateOf<List<Attraction>>(emptyList()) }
+    var listOfCategories by remember { mutableStateOf<List<Category>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(categoryNames) {
+        if (categoryNames.isNotEmpty()) {
+            isLoading = true
+            val fetchedCategories = mutableListOf<Category>()
+            val totalNames = categoryNames.size
+            var loadedCount = 0
+
+            categoryNames.forEach { categoryName ->
+                viewModelFB.getCategoryDetails(
+                    onResult = { category ->
+                        fetchedCategories.add(category)
+                        loadedCount += 1
+                        if (loadedCount == totalNames) {  // Check if all details are fetched
+                            listOfCategories = fetchedCategories
+                            isLoading = false
+                        }
+                    },
+                    name = categoryName,
+                    userGeo = geoPoint
+                )
             }
         }
     }
+
+    LaunchedEffect(locationNames) {
+        if (locationNames.isNotEmpty()) {
+            isLoading = true
+            val fetchedLocations = mutableListOf<Location>()
+            val totalNames = locationNames.size
+            var loadedCount = 0
+
+            locationNames.forEach { locationName ->
+                viewModelFB.getLocationDetails(
+                    onResult = { location ->
+                        fetchedLocations.add(location)
+                        loadedCount += 1
+                        if (loadedCount == totalNames) {  // Check if all details are fetched
+                            listOfLocations = fetchedLocations
+                            isLoading = false  // Update isLoading here if separate for locations
+                        }
+                    },
+                    name = locationName,
+                    userGeo = geoPoint
+                )
+            }
+        }
+    }
+
+    LaunchedEffect(attractionNames) {
+        if (attractionNames.isNotEmpty()) {
+            isLoading = true
+            val fetchedAttractions = mutableListOf<Attraction>()
+            val totalNames = attractionNames.size
+            var loadedCount = 0
+
+            attractionNames.forEach { attractionName ->
+                viewModelFB.getAttractionDetails(
+                    onResult = { attraction ->
+                        fetchedAttractions.add(attraction)
+                        loadedCount += 1
+                        if (loadedCount == totalNames) {  // Check if all details are fetched
+                            listOfAttractions = fetchedAttractions
+                            isLoading = false  // Update isLoading here if separate for attractions
+                        }
+                    },
+                    name = attractionName,
+                    userGeo = geoPoint
+                )
+            }
+        }
+    }
+
+
+    val combinedList by remember(listOfAttractions, listOfLocations, listOfCategories) {
+        derivedStateOf {
+            mutableListOf<SearchResultItem>().apply {
+                addAll(listOfAttractions.map { SearchResultItem.AttractionItem(it) })
+                addAll(listOfLocations.map { SearchResultItem.LocationItem(it) })
+                addAll(listOfCategories.map { SearchResultItem.CategoryItem(it) })
+            }.shuffled()
+        }
+    }
+
+
+    val customCombinedList by remember(combinedList, selectedSortCriteria) {
+        derivedStateOf {
+            when (selectedSortCriteria) {
+                "Categories Name" -> combinedList.sortedBy {
+                    when (it) {
+                        is SearchResultItem.CategoryItem -> it.category.name
+                        else -> ""
+                    }
+                }
+                "Abc" -> combinedList.sortedBy {
+                    when (it) {
+                        is SearchResultItem.AttractionItem -> it.attraction.name
+                        is SearchResultItem.LocationItem -> it.location.region
+                        is SearchResultItem.CategoryItem -> it.category.name
+                    }
+                }
+                "Zyx" -> combinedList.sortedByDescending {
+                    when (it) {
+                        is SearchResultItem.AttractionItem -> it.attraction.name
+                        is SearchResultItem.LocationItem -> it.location.region
+                        is SearchResultItem.CategoryItem -> it.category.name
+                    }
+                }
+
+                else -> combinedList
+            }
+        }
+    }
+
+
+
+
 
 
     Column(
@@ -280,10 +399,8 @@ fun SearchResultsOverlay(
                 ) {
                     FilterButtonWithPopUp(
                         filterOptions = listOf(
-                            //TODO: make the filter options lists
-                            { SearchDropdownButton(FilterField.CATEGORY, "Category", liableFilterCriteria, listOf("Apple", "Banana", "Cherry")){} },
-                            { SearchDropdownButton(FilterField.COUNTRY, "Country", liableFilterCriteria, listOf("Apple", "Banana", "Cherry")){} },
-                            { SearchDropdownButton(FilterField.LOCATION, "Location", liableFilterCriteria, listOf("Apple", "Banana", "Cherry")){} },
+                            { SearchDropdownButton(FilterField.LOCATION, "Location", liableFilterCriteria, locationNames) {} },
+                            { SearchDropdownButton(FilterField.CATEGORY, "Category", liableFilterCriteria, locationNames){} },
                             { ToggleFilterOption("Approved", selectedFilterCriteria.approved, liableFilterCriteria) }
                         ),
                         liableFilterCriteria,
@@ -291,7 +408,6 @@ fun SearchResultsOverlay(
                             selectedFilterCriteria = updatedFilters
                         }
                     )
-
 
                     SortButtonWithPopUp(sortOptions) { selectedOption ->
                         selectedSortCriteria = selectedOption
@@ -326,41 +442,8 @@ fun SearchResultsOverlay(
 
                 when {
                     currentSearchText.value.equals("attractions", ignoreCase = true) -> {
-                        items(attractions) { attractionName ->
-                            Text(text = attractionName, style = TextStyle(color = Color.Transparent,))
-                            // Assuming 'locationName' is a unique identifier for the location
-                            var attractionDetails by remember { mutableStateOf<Attraction?>(null) }
-//                            val filteredAndSortedAttractions = remember(attractions, selectedFilterCriteria, selectedSortCriteria) {
-//                                attractions
-//                                    .filter { attraction ->
-//                                        // Apply all necessary filters based on selectedFilterCriteria
-//                                        // For example, if there's a filter for approved attractions:
-//                                        selectedFilterCriteria.approved == null || attraction.isApproved == selectedFilterCriteria.approved
-//                                    }
-//                                    .sortedBy { attraction ->
-//                                        // Apply sorting based on selectedSortCriteria
-//                                        // For example, if sorting by name:
-//                                        when (selectedSortCriteria) {
-//                                            "Abc" -> attraction.name
-//                                            "Zyx" -> attraction.name.reversed() // Just a simplistic example
-//                                            "Distance" -> attraction.distance // Assumes 'distance' is a numeric field
-//                                            else -> attraction.name
-//                                        }
-//                                    }
-//                            }
+                        items(listOfAttractions) { attraction ->
 
-                            // Fetch location details when the item enters composition
-                            LaunchedEffect(attractionName) {
-                                viewModelFB.getAttractionDetails(
-                                    userGeo = geoPoint,
-                                    name = attractionName,
-                                    onResult = { details ->
-                                        attractionDetails = details
-                                    }
-                                )
-                            }
-
-                            attractionDetails?.let { attraction ->
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                                     verticalAlignment = Alignment.Top,
@@ -448,29 +531,13 @@ fun SearchResultsOverlay(
 
                                 Spacer(modifier = Modifier.height(50.dp))
                             }
-                        }
 
                     }
                     currentSearchText.value.equals("locations", ignoreCase = true) -> {
 
 
-                        items(locations) { locationName ->
-                            // Assuming 'locationName' is a unique identifier for the location
-                            Text(text = locationName, style = TextStyle(color = Color.Transparent,))
-                            var locationDetails by remember { mutableStateOf<Location?>(null) }
+                        items(listOfLocations) { location ->
 
-                            // Fetch location details when the item enters composition
-                            LaunchedEffect(locationName) {
-                                viewModelFB.getLocationDetails(
-                                    userGeo = geoPoint,
-                                    name = locationName,
-                                    onResult = { details ->
-                                        locationDetails = details
-                                    }
-                                )
-                            }
-
-                            locationDetails?.let { location ->
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                                     verticalAlignment = Alignment.Top,
@@ -504,26 +571,11 @@ fun SearchResultsOverlay(
 
                                 Spacer(modifier = Modifier.height(20.dp))
                             }
-                        }
+
                     }
                     currentSearchText.value.equals("categories", ignoreCase = true) -> {
-                        items(categories) { categoryName ->
-                            Text(text = categoryName, style = TextStyle(color = Color.Transparent,))
+                        items(listOfCategories) { category ->
 
-                            var categoryDetails by remember { mutableStateOf<Category?>(null) }
-
-                            // Fetch location details when the item enters composition
-                            LaunchedEffect(categoryName) {
-                                viewModelFB.getCategoryDetails(
-                                    name = categoryName,
-                                    userGeo = geoPoint,
-                                    onResult = { details ->
-                                        categoryDetails = details
-                                    }
-                                )
-                            }
-
-                            categoryDetails?.let { category ->
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                                     verticalAlignment = Alignment.Top,
@@ -551,81 +603,174 @@ fun SearchResultsOverlay(
                                 }
 
                                 Spacer(modifier = Modifier.height(20.dp))
+
                         }
                     }
+                    else -> {
+                        items(customCombinedList) { item ->
+                        when {
+                            item is SearchResultItem.AttractionItem && item.attraction.name.contains(currentSearchText.value, ignoreCase = true) -> {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                                    verticalAlignment = Alignment.Top,
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .clickable {
+                                                navController.navigate(
+                                                    Screen.InfoAttraction.createRoute(
+                                                        item.attraction.name
+                                                    )
+                                                )
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        AttractionCard(
+                                            averageRating = item.attraction.averageRating,
+                                            numRatings = item.attraction.numReviews,
+                                            distanceInKmFromCurrent = item.attraction.distanceInKmFromCurrent,
+                                            imageUrl = item.attraction.imageUrls[0],
+                                            name = item.attraction.name,
+                                            numApproved = item.attraction.numApproved,
+                                        )
+                                    }
+                                    Column(
+                                        verticalArrangement = Arrangement.SpaceBetween,
+                                        horizontalAlignment = Alignment.End,
+                                    ) {
+                                        //TODO: add the logic to go to the attraction
+                                        RoundIconButton(drawableId = R.drawable.vector)
+
+                                        Column(
+                                            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
+                                            horizontalAlignment = Alignment.End,
+                                            modifier = Modifier
+                                                .height(56.dp)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        //TODO: add the logic to approve the attraction
+                                                    },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.thumbs_up),
+                                                    contentDescription = "approve icon",
+                                                    contentScale = ContentScale.Fit,
+                                                    modifier = Modifier
+                                                        .padding(1.dp)
+                                                        .width(26.dp)
+                                                        .height(26.dp)
+                                                )
+                                            }
+
+                                            Row(
+                                                horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                            ) {
+                                                Text(
+                                                    text = item.attraction.numApproved.toString(),
+                                                    style = TextStyle(
+                                                        fontSize = 12.sp,
+                                                        fontFamily = FontFamily(Font(R.font.inter)),
+                                                        fontWeight = FontWeight(600),
+                                                        color = BlueSoft,
+                                                    )
+                                                )
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.check_circle),
+                                                    contentDescription = "approved status",
+                                                    contentScale = ContentScale.Fit,
+                                                    modifier = Modifier
+                                                        .padding(1.dp)
+                                                        .width(14.dp)
+                                                        .height(14.dp),
+                                                    colorFilter = if (item.attraction.numApproved > 2) ColorFilter.tint(Color(0xFF00B913)) else ColorFilter.tint(Color(0xFFFFB800))
+                                                )
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(40.dp))
+                            }
+                            item is SearchResultItem.LocationItem && (item.location.country.contains(currentSearchText.value, ignoreCase = true) || item.location.region.contains(currentSearchText.value, ignoreCase = true)) -> {
+
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                                    verticalAlignment = Alignment.Top,
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                navController.navigate(
+                                                    Screen.InfoLocation.createRoute(
+                                                        "${item.location.country}_${item.location.region}"
+                                                    )
+                                                )
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        LocationCard(
+                                            country = item.location.country,
+                                            region = item.location.region,
+                                            numAttractions = item.location.numAttractions,
+                                            distanceInKmFromCurrent = item.location.distanceInKmFromCurrent,
+                                            description = item.location.description,
+                                            imageUrl = item.location.imageUrl,
+                                            numApproved = item.location.numApproved,
+                                        )
+                                    }
+
+                                    // Your RoundIconButton or other UI components
+                                    RoundIconButton(drawableId = R.drawable.vector)
+                                }
+
+                                Spacer(modifier = Modifier.height(40.dp))
+                            }
+                            item is SearchResultItem.CategoryItem && item.category.name.contains(currentSearchText.value, ignoreCase = true) -> {
+
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                                    verticalAlignment = Alignment.Top,
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                navController.navigate(
+                                                    Screen.InfoCategory.createRoute(
+                                                        item.category.name
+                                                    )
+                                                )
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CategoryCard(
+                                            name = item.category.name,
+                                            numAttractions = item.category.numAttractions,
+                                            description = item.category.description,
+                                            logoUrl = item.category.logoUrl,
+                                            numApproved = item.category.numApproved,
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(40.dp))
+                            }
+                        }
+                    }
+
                 }
-
-
-                /*
-                if (currentSearchText.value.equals("attractions", ignoreCase = true)) {
-                    items(80) { index ->
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            // Change with the correct listing later
-                            AttractionCard(
-                                navController = navController,
-                                attractionId = index.toString(),
-                                attraction = index.toString(),
-                                averageRating = 2.3f,
-                                numRatings = 3214,
-                                distanceInKmFromCurrent = 32.4f,
-                                lastComment = "This is the last comment",
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                } else if (currentSearchText.value.equals("locations", ignoreCase = true)
-                ) {
-                    items(80) { index ->
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            // Change with the correct listing later
-                            LocationCard(
-                                country = "Portugal",
-                                region = "Lisbon",
-                                numAttractions = 4,
-                                distanceInKmFromCurrent = 32.4f,
-                                description = "This is the description of the location"
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                } else if (currentSearchText.value.equals("categories", ignoreCase = true)) {
-
-                } else if (currentSearchText.value.equals("all categories", ignoreCase = true)) {
-
-                } else if (currentSearchText.value.equals("all locations", ignoreCase = true)) {
-
-                } else if (currentSearchText.value.equals("all attractions", ignoreCase = true)) {
-
-                }
-                else {
-                    // Depois tem de se fazer com os dados da firestore
-                    // val filteredItems = attractions.filter { it.contains(searchText, ignoreCase = true) }
-                    items(80) { index ->
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            // Change with the correct listing later
-                            LocationCard(
-                                country = currentSearchText.value,
-                                region = "Lisbon",
-                                numAttractions = 4,
-                                distanceInKmFromCurrent = 32.4f,
-                                description = "This is the description of the location"
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                }
-                */
             }
         })
     }
 }
+
+
+
 

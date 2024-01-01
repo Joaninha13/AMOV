@@ -32,7 +32,6 @@ import pt.isec.ans.amov.ui.theme.BlueSoft
 fun ReviewCard(
     comment: String,
     rating: Int,
-    numApprovals: Int,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -80,7 +79,7 @@ fun ReviewCard(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .width(228.dp)
+                .width(240.dp)
         ) {
             Text(
                 text = "''$comment''",
@@ -96,47 +95,6 @@ fun ReviewCard(
             )
         }
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.End,
-            modifier = Modifier
-                .height(56.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.thumbs_up),
-                contentDescription = "approve icon",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .padding(1.dp)
-                    .width(26.dp)
-                    .height(26.dp)
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = numApprovals.toString(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily(Font(R.font.inter)),
-                        fontWeight = FontWeight(600),
-                        color = BlueSoft,
-                    )
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.check_circle),
-                    contentDescription = "approved status",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .width(14.dp)
-                        .height(14.dp),
-                    colorFilter = if (numApprovals > 2) ColorFilter.tint(Color(0xFF00B913)) else ColorFilter.tint(Color(0xFFFFB800))
-                )
-            }
-        }
     }
 }
 
@@ -146,6 +104,5 @@ fun ReviewCardPreview() {
     ReviewCard(
         comment = "This is the comment of the category yyyyyyyyyyyyyyy sdkjnfi sdujbhfdv iusdabv siour dnvisdubvnsdiubvsdiuvcbsdiu",
         rating = 2,
-        numApprovals = 3,
     )
 }

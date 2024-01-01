@@ -112,6 +112,7 @@ fun SearchItem(
             onValueChange = { newValue ->
                 searchViewModel.setSearchBarState(newValue)
                 onQueryChange(newValue)
+                onSearchTriggered(coroutineScope, modalBottomSheetState)  // Trigger the search on each input
             },
             colors = TextFieldDefaults.colors(
                 focusedTextColor = BlueHighlight,

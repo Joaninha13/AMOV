@@ -30,10 +30,10 @@ fun SortButtonWithPopUp(
     var showPopup by remember { mutableStateOf(false) }
     var selectedSortOption by remember { mutableStateOf("") }
 
-    // When the sort option is selected from the popup, hide the popup and update the selected sort option
+    // Define the handleConfirm function here
     val handleConfirm: () -> Unit = {
         showPopup = false
-        onSortSelected(selectedSortOption)
+        onSortSelected(selectedSortOption) // Updates the selectedSortCriteria in the parent component
     }
 
     // When the button is clicked, show the popup

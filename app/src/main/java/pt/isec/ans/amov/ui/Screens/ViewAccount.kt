@@ -85,16 +85,13 @@ fun ViewAccount(
                         horizontalAlignment = Alignment.Start,
                     ) {
                         Text(
-                            text = "Active Attractions",
+                            text = "User's Name",
                             style = TextStyle(
                                 fontSize = 18.sp,
                                 fontFamily = FontFamily(Font(R.font.inter_bold)),
                                 color = BlueHighlight,
                             )
                         )
-                        SecButton(_text = "Edit Personal Data", onClick = {
-                            navController.navigate(Screen.EditPersonalData.route)
-                        })
                     }
                 }
 

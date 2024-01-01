@@ -1,22 +1,27 @@
 package pt.isec.ans.amov.ui.Screens
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +41,7 @@ import com.google.firebase.firestore.GeoPoint
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.dataStructures.Attraction
 import pt.isec.ans.amov.dataStructures.Location
+import pt.isec.ans.amov.dataStructures.Review
 import pt.isec.ans.amov.ui.Components.Buttons.DescriptionButtonWithPopUp
 import pt.isec.ans.amov.ui.Components.Cards.ReviewCard
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
@@ -56,7 +62,7 @@ fun InfoAttraction(
 ) {
     val location = viewModelL.currentLocation.observeAsState()
 
-    val sortOptions = listOf("Categories Name", "Abc", "Zyx", "Distance")
+    val sortOptions = listOf("Abc", "Zyx")
     var selectedSortCriteria by remember { mutableStateOf("") }
 
 
@@ -69,6 +75,8 @@ fun InfoAttraction(
 
     var formState by remember { mutableStateOf<Attraction?>(null) }
 
+    var reviewsList = remember { mutableStateListOf<Review>() }
+
     // Fetch location details when the item enters composition
     LaunchedEffect(attractionId) {
         viewModelFB.getAttractionDetails(
@@ -76,14 +84,35 @@ fun InfoAttraction(
             name = attractionId,
             onResult = { details ->
                 formState = details
+                details.reviews?.let {
+                    reviewsList.clear()
+                    reviewsList.addAll(it) // Safely adding reviews to the list
+                }
+            },
+        )
+    }
+
+    // State to hold sorted reviews
+    val sortedReviewsList = remember { mutableStateListOf<Review>() }
+
+    // Update sorted list whenever the selected criteria changes
+    LaunchedEffect(selectedSortCriteria) {
+        sortedReviewsList.clear()
+        sortedReviewsList.addAll(
+            when (selectedSortCriteria) {
+                "Abc" -> reviewsList.sortedBy { it.description }
+                "Zyx" -> reviewsList.sortedByDescending { it.description }
+                else -> reviewsList
             }
         )
     }
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
+
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.Start,
@@ -287,25 +316,26 @@ fun InfoAttraction(
             }
 
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                content = {
-                    items(5) { index ->
+
+
+            if (formState != null) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(sortedReviewsList) { review ->
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center
                         ) {
-                            // Change with the correct listing later
                             ReviewCard(
-                                "“The Eiffel tower is iconic and a must see in Paris. I visited it in 1981 and the surrounding areas have been greatly improved and beautified since then making it a pleasing journey to the tower and a place to stroll around.\u2028\u2028It was a freezing cold day on n this visit so ruff up if you go in the winter, also it pays to our purchase your tickets because like so many other majors Tories attractions it is extremely busy even sat this time of year.\u2028\u2028The views are spectacular and with the changing if the leaves in autumn paid is very beautiful.”",
-                                2,
-                                index,
+                                comment = review.description,
+                                rating = review.rating.toInt(),
                             )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
-            )
+            }
 
 
 
