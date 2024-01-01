@@ -165,35 +165,64 @@ fun InfoAttraction(
                     .fillMaxWidth()
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(265.dp, Alignment.CenterHorizontally),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    //Attraction rating
-                    Text(
-                        text = formState?.averageRating.toString(),
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_medium)),
-                            color = BlueSoft,
-                        )
-                    )
 
-                    //Star Icon
-                    Image(
-                        painter = painterResource(id = R.drawable.star),
-                        contentDescription = "Star icon",
-                        contentScale = ContentScale.None
-                    )
-
-                    //Number
-                    Text(
-                        text = "(${formState?.numReviews})",
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            fontFamily = FontFamily(Font(R.font.inter_medium)),
-                            color = BlueSoft,
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ){
+                        //Attraction rating
+                        Text(
+                            text = formState?.averageRating.toString(),
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontFamily = FontFamily(Font(R.font.inter_medium)),
+                                color = BlueSoft,
+                            )
                         )
-                    )
+
+                        //Star Icon
+                        Image(
+                            painter = painterResource(id = R.drawable.star),
+                            contentDescription = "Star icon",
+                            contentScale = ContentScale.None
+                        )
+
+                        //Number
+                        Text(
+                            text = "(${formState?.numReviews})",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontFamily = FontFamily(Font(R.font.inter_medium)),
+                                color = BlueSoft,
+                            )
+                        )
+                    }
+
+                    Column(){
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    //TODO: add the logic to disprove the attraction
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.thumbs_down),
+                                contentDescription = "approve icon",
+                                contentScale = ContentScale.None,
+                                modifier = Modifier
+                                    .padding(1.dp)
+                                    .width(26.dp)
+                                    .height(26.dp)
+                            )
+                        }
+                    }
+
                 }
                 //TODO: Meter Category(agora esta em referencia, tinhamos de passar para nome)
 //                formState?.let {

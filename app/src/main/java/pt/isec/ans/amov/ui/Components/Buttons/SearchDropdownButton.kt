@@ -57,7 +57,7 @@ fun SearchDropdownButton(
     }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
-    Column {
+    Column{
         TextField(
             value = selectedText,
             onValueChange = {
@@ -81,7 +81,10 @@ fun SearchDropdownButton(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+            modifier = Modifier
+                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+                .border(width = 1.dp, color = BlueLighter, shape = RoundedCornerShape(size = 5.dp))
+                .background(color = Color(0xCCFFFFFF), shape = RoundedCornerShape(size = 5.dp)),
         ) {
             items.filter { it.contains(selectedText, ignoreCase = true) }.forEach { label ->
                 DropdownMenuItem(
