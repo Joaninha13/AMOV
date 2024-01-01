@@ -55,7 +55,6 @@ fun InfoLocation(
     var selectedSortCriteria by remember { mutableStateOf("") }
 
 
-
     val geoPoint by remember { mutableStateOf(
         GeoPoint(
             location.value?.latitude ?: 0.0, location.value?.longitude ?: 0.0
