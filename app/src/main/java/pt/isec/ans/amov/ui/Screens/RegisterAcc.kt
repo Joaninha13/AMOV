@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,7 +36,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -85,38 +88,64 @@ fun RegisterAcc(navController: NavHostController, viewModel: FireBaseViewModel) 
                 .height(1000.dp)
                 .padding(start = 60.dp, top = 60.dp, end = 60.dp, bottom = 60.dp)
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
-                horizontalAlignment = Alignment.Start,
+
+            Row(
                 modifier = Modifier
-                    .width(240.dp)
-                    .height(46.dp)
-            ) {
-                Text(
+                    .width(320.dp)
+                    .height(46.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ){
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
+                    horizontalAlignment = Alignment.Start,
                     modifier = Modifier
-                        .width(80.dp)
-                        .height(25.dp),
-                    text = "Sign Up",
-                    style = TextStyle(
-                        fontSize = 21.sp,
-                        fontFamily = FontFamily(Font(R.font.inter)),
-                        fontWeight = FontWeight(800),
-                        color = Color(0xFF000000),
+                        .width(200.dp)
+                        .height(46.dp)
+                ) {
+
+                    Text(
+                        modifier = Modifier
+                            .width(80.dp)
+                            .height(25.dp),
+                        text = "Sign Up",
+                        style = TextStyle(
+                            fontSize = 21.sp,
+                            fontFamily = FontFamily(Font(R.font.inter)),
+                            fontWeight = FontWeight(800),
+                            color = Color(0xFF000000),
+                        )
                     )
-                )
-                Text(
-                    modifier = Modifier
-                        .width(179.dp)
-                        .height(16.dp),
-                    text = "Create a brand new account",
-                    style = TextStyle(
-                        fontSize = 13.sp,
-                        fontFamily = FontFamily(Font(R.font.inter)),
-                        fontWeight = FontWeight(700),
-                        color = Color(0xFFB6B5B5),
+                    Text(
+                        modifier = Modifier
+                            .width(179.dp)
+                            .height(16.dp),
+                        text = "Create a brand new account",
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            fontFamily = FontFamily(Font(R.font.inter)),
+                            fontWeight = FontWeight(700),
+                            color = Color(0xFFB6B5B5),
+                        )
                     )
-                )
-                // Child views Title.
+                    // Child views Title.
+                }
+
+                Box(
+                    modifier = Modifier.clickable {
+                        navController.popBackStack()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .padding(1.dp)
+                            .width(16.dp)
+                            .height(16.dp),
+                        painter = painterResource(id = R.drawable.cancellationx1),
+                        contentDescription = "Cancel",
+                        contentScale = ContentScale.None
+                    )
+                }
             }
 
             Column(
