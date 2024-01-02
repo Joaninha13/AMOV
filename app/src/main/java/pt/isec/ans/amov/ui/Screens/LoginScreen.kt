@@ -23,7 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.ui.Components.Buttons.GradientButton
 import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 
@@ -131,12 +134,12 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                     .height(218.dp)
             ) {
                 Column(
-                verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
+                    horizontalAlignment = Alignment.Start,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
-            ) {
+                ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(1.dp, Alignment.Top),
                         horizontalAlignment = Alignment.Start,
@@ -151,33 +154,37 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                                 .fillMaxWidth()
                                 .height(70.dp)
                         ) {
-                            Image(
-                                modifier = Modifier
-                                    .padding(1.dp)
-                                    .height(50.dp)
-                                    .width(20.dp),
-                                painter = painterResource(id = R.drawable.email),
-                                contentDescription = "image description",
-                                contentScale = ContentScale.None
-                            )
                             OutlinedTextField(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(55.dp),
                                 value = email.value,
                                 onValueChange = { email.value = it },
-                                label = { Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(50.dp),
-                                    text = "Email",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        fontFamily = FontFamily(Font(R.font.inter)),
-                                        fontWeight = FontWeight(400),
-                                        color =  Color(0xFF9C9C9C),
+                                label = {
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(50.dp),
+                                        text = "Email",
+                                        style = TextStyle(
+                                            fontSize = 16.sp,
+                                            fontFamily = FontFamily(Font(R.font.inter)),
+                                            fontWeight = FontWeight(400),
+                                            color = Color(0xFF9C9C9C),
+                                        )
                                     )
-                                ) }
+                                },
+                                leadingIcon = {
+                                    Image(
+                                        modifier = Modifier
+                                            .padding(1.dp)
+                                            .width(18.dp)
+                                            .height(18.dp),
+                                        painter = painterResource(id = R.drawable.email),
+                                        contentDescription = "name icon",
+                                        contentScale = ContentScale.None,
+                                    )
+                                },
                             )
                             // Child views row.
                         }
@@ -189,15 +196,6 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                             .fillMaxWidth()
                             .height(70.dp)
                     ) {
-                        Image(
-                            modifier = Modifier
-                                .padding(1.dp)
-                                .height(50.dp)
-                                .width(20.dp),
-                            painter = painterResource(id = R.drawable.pass),
-                            contentDescription = "image description",
-                            contentScale = ContentScale.None
-                        )
 
                         OutlinedTextField(
                             modifier = Modifier
@@ -205,18 +203,31 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                                 .height(55.dp),
                             value = password.value,
                             onValueChange = { password.value = it },
-                            label = { Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                text = "Password",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    fontFamily = FontFamily(Font(R.font.inter)),
-                                    fontWeight = FontWeight(400),
-                                    color = Color(0xFF9C9C9C),
+                            label = {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp),
+                                    text = "Password",
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        fontFamily = FontFamily(Font(R.font.inter)),
+                                        fontWeight = FontWeight(400),
+                                        color = Color(0xFF9C9C9C),
+                                    )
                                 )
-                            ) }
+                            },
+                            leadingIcon = {
+                                Image(
+                                    modifier = Modifier
+                                        .padding(1.dp)
+                                        .width(18.dp)
+                                        .height(18.dp),
+                                    painter = painterResource(id = R.drawable.pass),
+                                    contentDescription = "name icon",
+                                    contentScale = ContentScale.None,
+                                )
+                            },
                         )
                         // Child views row.
                     }
@@ -230,16 +241,27 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             ) {
-                Button(
+                /*Button(
                     onClick = {viewModel.signInWithEmail(email.value, password.value)},
                     modifier = Modifier
-                        .width(120.dp)) {
+                        .width(120.dp)
+                ) {
                         Text(text = "Login")
-                    }
+
                     // Child views row.
-                }
+                }*/
+                GradientButton(
+                    _text = "Login",
+                    _gradient = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF0B374B),
+                            Color(0xFF00B6DE)
+                        )
+                    )
+                ) { viewModel.signInWithEmail(email.value, password.value) }
                 // Child views 5.
             }
+        }
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
             horizontalAlignment = Alignment.Start,
@@ -247,6 +269,7 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                 .width(240.dp)
                 .height(58.dp)
         ) {
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -265,15 +288,26 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                 )
                 ClickableText(
                     text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color.Blue)) {
+                        //withStyle(style = SpanStyle(color = Color.Blue)) {
                             append("Sign up")
-                        }
+                        //}
                     },
+                    style = TextStyle(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFF0B374B),
+                                Color(0xFF00B6DE)
+                            ),
+                            tileMode = TileMode.Mirror
+                        ),
+                        fontSize = 16.sp
+                    ),
                     onClick = { offset ->
                         navController.navigate(Screen.RegisterAcc.route)
                     },
                 )
             }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -293,10 +327,20 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                 )
                 ClickableText(
                     text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color.Blue)) {
-                            append("Take a look")
-                        }
+                        //withStyle(style = SpanStyle(color = Color.Blue)) {
+                        append("Take a look")
+                        //}
                     },
+                    style = TextStyle(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFF0B374B),
+                                Color(0xFF00B6DE)
+                            ),
+                            tileMode = TileMode.Mirror
+                        ),
+                        fontSize = 16.sp
+                    ),
                     onClick = { offset ->
                         navController.navigate(Screen.CreditsScreen.route)
                     },

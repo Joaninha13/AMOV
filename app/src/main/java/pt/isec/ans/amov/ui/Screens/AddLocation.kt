@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -185,10 +186,20 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                     ) {
                         ClickableText(
                             text = buildAnnotatedString {
-                                withStyle(style = SpanStyle(color = Color.Blue)) {
-                                    append("Upload Image")
-                                }
+                                //withStyle(style = SpanStyle(color = Color.Blue)) {
+                                append("Upload Image")
+                                //}
                             },
+                            style = TextStyle(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color(0xFF0B374B),
+                                        Color(0xFF00B6DE)
+                                    ),
+                                    tileMode = TileMode.Mirror
+                                ),
+                                fontSize = 16.sp
+                            ),
                             onClick = { offset ->
                                 // Iniciar a atividade de escolha de imagem da galeria
                                 pickImageLauncher.launch(

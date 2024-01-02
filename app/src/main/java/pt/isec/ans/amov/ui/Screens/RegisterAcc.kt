@@ -26,6 +26,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -75,134 +78,142 @@ fun RegisterAcc(navController: NavHostController, viewModel: FireBaseViewModel) 
 
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color(0xFFFFFFFF))
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
+
         Column(
-            verticalArrangement = Arrangement.spacedBy(50.dp, Alignment.Top),
-            horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .width(360.dp)
-                .height(1000.dp)
-                .padding(start = 60.dp, top = 60.dp, end = 60.dp, bottom = 60.dp)
+                .background(color = Color(0xFFFFFFFF))
+                .padding(start = 20.dp, top = 35.dp, end = 20.dp, bottom = 20.dp),
         ) {
-
-            Row(
+            Column(
+                verticalArrangement = Arrangement.spacedBy(50.dp, Alignment.Top),
+                horizontalAlignment = Alignment.Start,
                 modifier = Modifier
                     .width(320.dp)
-                    .height(46.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ){
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
-                    horizontalAlignment = Alignment.Start,
+                    .height(1000.dp)
+                    .padding(start = 40.dp, top = 60.dp, bottom = 60.dp)
+            ) {
+
+                Row(
                     modifier = Modifier
-                        .width(200.dp)
-                        .height(46.dp)
-                ) {
-
-                    Text(
+                        .width(320.dp)
+                        .height(46.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ){
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
+                        horizontalAlignment = Alignment.Start,
                         modifier = Modifier
-                            .width(80.dp)
-                            .height(25.dp),
-                        text = "Sign Up",
-                        style = TextStyle(
-                            fontSize = 21.sp,
-                            fontFamily = FontFamily(Font(R.font.inter)),
-                            fontWeight = FontWeight(800),
-                            color = Color(0xFF000000),
-                        )
-                    )
-                    Text(
-                        modifier = Modifier
-                            .width(179.dp)
-                            .height(16.dp),
-                        text = "Create a brand new account",
-                        style = TextStyle(
-                            fontSize = 13.sp,
-                            fontFamily = FontFamily(Font(R.font.inter)),
-                            fontWeight = FontWeight(700),
-                            color = Color(0xFFB6B5B5),
-                        )
-                    )
-                    // Child views Title.
-                }
+                            .width(200.dp)
+                            .height(46.dp)
+                    ) {
 
-                Box(
-                    modifier = Modifier.clickable {
-                        navController.popBackStack()
+                        Text(
+                            modifier = Modifier
+                                .width(80.dp)
+                                .height(25.dp),
+                            text = "Sign Up",
+                            style = TextStyle(
+                                fontSize = 21.sp,
+                                fontFamily = FontFamily(Font(R.font.inter)),
+                                fontWeight = FontWeight(800),
+                                color = Color(0xFF000000),
+                            )
+                        )
+                        Text(
+                            modifier = Modifier
+                                .width(179.dp)
+                                .height(16.dp),
+                            text = "Create a brand new account",
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                fontFamily = FontFamily(Font(R.font.inter)),
+                                fontWeight = FontWeight(700),
+                                color = Color(0xFFB6B5B5),
+                            )
+                        )
+                        // Child views Title.
                     }
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(16.dp)
-                            .height(16.dp),
-                        painter = painterResource(id = R.drawable.cancellationx1),
-                        contentDescription = "Cancel",
-                        contentScale = ContentScale.None
-                    )
-                }
-            }
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(25.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .height(325.dp)
-                    //.fillMaxSize(),
-            ) {
-
-                TextInputs(registerAccFormState, { registerAccFormState = it }, { uri ->
-                    selectedImageUri = uri
-                })
-
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                GradientButton(
-                    _text = "Submit",
-                    _gradient = Brush.horizontalGradient(
-                        colors = listOf(
-                            Color(0xFF0B374B),
-                            Color(0xFF00B6DE)
+                    Box(
+                        modifier = Modifier.clickable {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(1.dp)
+                                .width(16.dp)
+                                .height(16.dp),
+                            painter = painterResource(id = R.drawable.cancellationx1),
+                            contentDescription = "Cancel",
+                            contentScale = ContentScale.None
                         )
-                    )
-                ) {
-                    selectedImageUri?.let { uri ->
-                        viewModel.uploadImage(uri) { imageUrl ->
-                            registerAccFormState = registerAccFormState.copy(profileImageUrl = imageUrl)
+                    }
+                }
 
-                            if (registerAccFormState.Password == registerAccFormState.ConfirmPassword) {
-                                viewModel.createUserWithEmail(
-                                    registerAccFormState.Email,
-                                    registerAccFormState.Password,
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(25.dp, Alignment.CenterVertically),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .height(325.dp)
+                    //.fillMaxSize(),
+                ) {
+
+                    TextInputs(registerAccFormState, { registerAccFormState = it }, { uri ->
+                        selectedImageUri = uri
+                    })
+
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalAlignment = Alignment.Top,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    GradientButton(
+                        _text = "Submit",
+                        _gradient = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF0B374B),
+                                Color(0xFF00B6DE)
+                            )
+                        )
+                    ) {
+                        selectedImageUri?.let { uri ->
+                            viewModel.uploadImage(uri) { imageUrl ->
+                                registerAccFormState = registerAccFormState.copy(profileImageUrl = imageUrl)
+
+                                if (registerAccFormState.Password == registerAccFormState.ConfirmPassword) {
+                                    viewModel.createUserWithEmail(
+                                        registerAccFormState.Email,
+                                        registerAccFormState.Password,
+                                        registerAccFormState.name,
+                                        registerAccFormState.profileImageUrl
+                                    )
+                                } else {
+                                    Toast.makeText(context, "Passwords don't match", Toast.LENGTH_LONG).show()
+                                    return@uploadImage
+                                }
+                                Toast.makeText(context, viewModel.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+
+                                /*viewModel.addUser(
                                     registerAccFormState.name,
                                     registerAccFormState.profileImageUrl
-                                )
-                            } else {
-                                Toast.makeText(context, "Passwords don't match", Toast.LENGTH_LONG).show()
-                                return@uploadImage
+                                )*/
+
+                                navController.navigate(Screen.LoginScreen.route)
                             }
-                            Toast.makeText(context, viewModel.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
-
-                            /*viewModel.addUser(
-                                registerAccFormState.name,
-                                registerAccFormState.profileImageUrl
-                            )*/
-
-                            navController.navigate(Screen.LoginScreen.route)
                         }
                     }
                 }
+
             }
 
         }
@@ -311,17 +322,37 @@ fun TextInputs(registerAccFormState: RegisterAccFormState, onRegisterAccFormStat
 
         Row(
             modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = BlueLighter,
+                    shape = RoundedCornerShape(size = 5.dp)
+                )
                 .width(300.dp)
-                .height(60.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .height(60.dp)
+                .background(
+                    color = Color(0xCCFFFFFF),
+                    shape = RoundedCornerShape(size = 5.dp)
+                )
+                .padding(start = 10.dp, end = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ClickableText(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.Blue)) {
-                        append("Upload Profile Image")
-                    }
+                    //withStyle(style = SpanStyle(color = Color.Blue)) {
+                    append("Upload Profile Image")
+                    //}
                 },
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFF0B374B),
+                            Color(0xFF00B6DE)
+                        ),
+                        tileMode = TileMode.Mirror
+                    ),
+                    fontSize = 16.sp
+                ),
                 onClick = { offset ->
                     // Iniciar a atividade de escolha de imagem da galeria
                     pickImageLauncher.launch(
