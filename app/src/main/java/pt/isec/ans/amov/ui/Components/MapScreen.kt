@@ -242,9 +242,7 @@ fun MapScreen(
                                             name = category
                                         )
 
-
                                     }
-
 
                                 }
                             }
@@ -299,9 +297,9 @@ fun MapScreen(
                     mapView!!
                 },
                 update = { view ->
+                    Log.d("OLAA", "aqui")
                     view.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
                     view.controller.setCenter(geoPoint)
-
                 }
             )
         }
@@ -410,18 +408,12 @@ fun ShowPopUpBase(
                     //Category
                     Row(
                         modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = BlueLighter,
-                                shape = RoundedCornerShape(size = 5.dp)
-                            )
-                            .width(300.dp)
+                            .fillMaxWidth()
                             .height(50.dp)
                             .background(
                                 color = Color(0xCCFFFFFF),
                                 shape = RoundedCornerShape(size = 5.dp)
-                            )
-                            .padding(start = 10.dp, end = 10.dp),
+                            ),
                         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -434,18 +426,12 @@ fun ShowPopUpBase(
                     //Location
                     Row(
                         modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = BlueLighter,
-                                shape = RoundedCornerShape(size = 5.dp)
-                            )
-                            .width(300.dp)
+                            .fillMaxWidth()
                             .height(50.dp)
                             .background(
                                 color = Color(0xCCFFFFFF),
                                 shape = RoundedCornerShape(size = 5.dp)
-                            )
-                            .padding(start = 10.dp, end = 10.dp),
+                            ),
                         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -497,8 +483,6 @@ fun ShowPopUpBase(
                     attractionGeoPoint.longitude
                 )
 
-                var imageUrls: List<String> = listOf()
-
                 attractionFormState.imageUri.let { uri ->
                     // Quando o botão de registro é clicado, faz o upload da imagem
                     viewModelFB.uploadImages(uri) { imageUrl ->
@@ -510,17 +494,21 @@ fun ShowPopUpBase(
                             attractionFormState.coordinates,
                             attractionFormState.category,
                             attractionFormState.location,
-                            attractionFormState.image
+                            attractionFormState.image,
                         ) { e ->
                             if (e == null) {
-                                Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT)
+                                    .show()
                             } else {
-                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         }
                     }
                 }
 
+                Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                onDismiss()
             },
             onDismiss = onDismiss
         )

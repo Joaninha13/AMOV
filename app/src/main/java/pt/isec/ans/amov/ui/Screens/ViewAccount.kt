@@ -3,6 +3,7 @@ package pt.isec.ans.amov.ui.Screens
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -40,6 +43,7 @@ import androidx.navigation.NavController
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.dataStructures.AttractionDetails
 import pt.isec.ans.amov.dataStructures.ReviewsDetails
+import pt.isec.ans.amov.ui.Components.Buttons.GradientButton
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.RoundImageUser
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
@@ -107,62 +111,85 @@ fun ViewAccount(
 
         //Page Column
         Column(
-            verticalArrangement = Arrangement.spacedBy(50.dp, Alignment.Top),
+            verticalArrangement = Arrangement.spacedBy(40.dp, Alignment.Top),
             horizontalAlignment = Alignment.Start,
             modifier = Modifier.padding(start = 20.dp, top = 35.dp, end = 20.dp)
         ) {
 
-            //Title + Button row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-
-                //Title
+            Column(
+                verticalArrangement = Arrangement.spacedBy(5.dp)
+            ){
+                //Title + Button row
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    RoundImageUser(
-                        drawable = Photo,
-                        onClick = {
-                            viewModel.signOut()
-                            navController.navigate(Screen.LoginScreen.route)
-                                  },
-                        modifier = Modifier
-                            .size(50.dp)
-                    )
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
-                        horizontalAlignment = Alignment.Start,
+
+                    //Title
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = UserName,
-                            style = TextStyle(
-                                fontSize = 18.sp,
-                                fontFamily = FontFamily(Font(R.font.inter_bold)),
-                                color = BlueHighlight,
+                        RoundImageUser(
+                            drawable = Photo,
+                            /*onClick = {
+                                viewModel.signOut()
+                                navController.navigate(Screen.LoginScreen.route)
+                            },*/
+                            modifier = Modifier
+                                .size(50.dp)
+                        )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
+                            horizontalAlignment = Alignment.Start,
+                        ) {
+                            Text(
+                                text = UserName,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily(Font(R.font.inter_bold)),
+                                    color = BlueHighlight,
+                                )
                             )
+                        }
+                    }
+
+                    //Close Button
+                    Box(
+                        modifier = Modifier.clickable {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(1.dp)
+                                .width(16.dp)
+                                .height(16.dp),
+                            painter = painterResource(id = R.drawable.cancellationx1),
+                            contentDescription = "Cancel",
+                            contentScale = ContentScale.None
                         )
                     }
                 }
 
-                //Close Button
-                Box(
-                    modifier = Modifier.clickable {
-                        navController.popBackStack()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    GradientButton(
+                        _text = "Log Out",
+                        _gradient = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF0B374B),
+                                Color(0xFF00B6DE)
+                            )
+                        )
+                    ){
+                        viewModel.signOut()
+                        navController.navigate(Screen.LoginScreen.route)
                     }
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .padding(1.dp)
-                            .width(16.dp)
-                            .height(16.dp),
-                        painter = painterResource(id = R.drawable.cancellationx1),
-                        contentDescription = "Cancel",
-                        contentScale = ContentScale.None
-                    )
                 }
             }
 
