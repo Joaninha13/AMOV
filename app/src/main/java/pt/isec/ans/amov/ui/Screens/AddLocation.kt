@@ -107,8 +107,7 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
             Column(
                 modifier = Modifier
                     .width(320.dp)
-                    .height(676.dp)
-                    .border(1.dp, Color.Black),
+                    .height(676.dp),
                 verticalArrangement = Arrangement.spacedBy(40.dp, Alignment.Top),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
