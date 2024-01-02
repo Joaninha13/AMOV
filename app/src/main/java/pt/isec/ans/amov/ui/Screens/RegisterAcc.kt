@@ -209,24 +209,24 @@ fun RegisterAcc(navController: NavHostController, viewModel: FireBaseViewModel) 
                 viewModel.uploadImage(uri) { imageUrl ->
                     registerAccFormState = registerAccFormState.copy(profileImageUrl = imageUrl)
 
-                    Log.d("VERRRR ->>", registerAccFormState.profileImageUrl)
-                    Log.d("VERRRR ->>", registerAccFormState.name)
-                    Log.d("VERRRR ->>", registerAccFormState.Email)
-                    Log.d("VERRRR ->>", registerAccFormState.Password)
-                    Log.d("VERRRR ->>", registerAccFormState.ConfirmPassword)
-
                     if (registerAccFormState.Password == registerAccFormState.ConfirmPassword) {
                         viewModel.createUserWithEmail(
                             registerAccFormState.Email,
                             registerAccFormState.Password,
-                        )
-
-                        viewModel.addUser(
                             registerAccFormState.name,
                             registerAccFormState.profileImageUrl
                         )
+                    } else {
+                        Toast.makeText(context, "Passwords don't match", Toast.LENGTH_LONG).show()
+                        return@uploadImage
                     }
                     Toast.makeText(context, viewModel.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+
+                    /*viewModel.addUser(
+                        registerAccFormState.name,
+                        registerAccFormState.profileImageUrl
+                    )*/
+
                     navController.navigate(Screen.LoginScreen.route)
                 }
             }

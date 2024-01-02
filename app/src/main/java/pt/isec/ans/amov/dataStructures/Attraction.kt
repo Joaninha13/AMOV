@@ -12,7 +12,7 @@ data class Attraction(
     val location: String = "",
     val coordinates: GeoPoint = GeoPoint(0.0, 0.0),
     val description: String = "",
-    val userRef: DocumentReference? = null,
+    val userRef: String = "",
     val imageUrls: List<String> = emptyList(),
     val numReviews: Int = 0,
     val averageRating: Float = 0f,

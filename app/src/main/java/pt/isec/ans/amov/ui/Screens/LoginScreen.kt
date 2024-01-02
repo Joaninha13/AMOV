@@ -160,7 +160,6 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                                 contentDescription = "image description",
                                 contentScale = ContentScale.None
                             )
-                            //substituir texto por outlines
                             OutlinedTextField(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -199,7 +198,6 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                             contentDescription = "image description",
                             contentScale = ContentScale.None
                         )
-                        //substituir texto por outlines
 
                         OutlinedTextField(
                             modifier = Modifier
@@ -274,10 +272,6 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                     onClick = { offset ->
                         navController.navigate(Screen.RegisterAcc.route)
                     },
-                    modifier = Modifier.clickable {
-                        // Optional: You can specify additional click behavior here
-                        // For example, to navigate to another screen
-                    }
                 )
             }
             Row(
@@ -306,15 +300,10 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                     onClick = { offset ->
                         navController.navigate(Screen.CreditsScreen.route)
                     },
-                    modifier = Modifier.clickable {
-                        // Optional: You can specify additional click behavior here
-                        // For example, to navigate to another screen
-                    }
                 )
             }
             // Child views.
         }
-
             // Child views 3.
         }
     }

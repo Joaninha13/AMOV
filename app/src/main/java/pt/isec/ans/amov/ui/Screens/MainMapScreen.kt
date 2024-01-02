@@ -2,6 +2,7 @@ package pt.isec.ans.amov.ui.Screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -372,14 +373,14 @@ fun SearchResultsOverlay(
                         else -> ""
                     }
                 }
-                "Abc" -> combinedList.sortedBy {
+                "Ascendant" -> combinedList.sortedBy {
                     when (it) {
                         is SearchResultItem.AttractionItem -> it.attraction.name
                         is SearchResultItem.LocationItem -> it.location.region
                         is SearchResultItem.CategoryItem -> it.category.name
                     }
                 }
-                "Zyx" -> combinedList.sortedByDescending {
+                "Descendant" -> combinedList.sortedByDescending {
                     when (it) {
                         is SearchResultItem.AttractionItem -> it.attraction.name
                         is SearchResultItem.LocationItem -> it.location.region
@@ -514,7 +515,6 @@ fun SearchResultsOverlay(
                                                 handleButtonToAttractionClicked(true)
                                             }
                                         )
-
                                         Column(
                                             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
                                             horizontalAlignment = Alignment.End,
@@ -525,7 +525,9 @@ fun SearchResultsOverlay(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .clickable {
-                                                        //TODO: add the logic to approve the attraction
+                                                        viewModelFB.addApprovedAttraction(attraction.name){
+                                                            Toast.makeText(navController.context,viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                                        }
                                                     },
                                                 contentAlignment = Alignment.Center
                                             ) {
@@ -579,12 +581,10 @@ fun SearchResultsOverlay(
                         items(listOfLocations) { location ->
 
                                 Row(
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                                     verticalAlignment = Alignment.Top,
                                 ) {
                                     Box(
                                         modifier = Modifier
-                                            .fillMaxWidth()
                                             .clickable {
                                                 navController.navigate(
                                                     Screen.InfoLocation.createRoute(
@@ -604,17 +604,75 @@ fun SearchResultsOverlay(
                                             numApproved = location.numApproved,
                                         )
                                     }
+                                    Column(
+                                        verticalArrangement = Arrangement.SpaceBetween,
+                                        horizontalAlignment = Alignment.End,
+                                    ) {
+                                        // Your RoundIconButton or other UI components
+                                        RoundIconButton(
+                                            drawableId = R.drawable.vector,
+                                            onClick = {
+                                                Log.d("DDD", location.coordinates.toString())
+                                                handleLocationClicked(GeoPoint(location.coordinates.latitude, location.coordinates.longitude))
+                                                handleButtonToLocationClicked(true)
+                                            }
+                                        )
+                                        Column(
+                                            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
+                                            horizontalAlignment = Alignment.End,
+                                            modifier = Modifier
+                                                .height(56.dp)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        viewModelFB.addApprovedLocations("${location.country}_${location.region}") {
+                                                            Toast.makeText(navController.context, viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                                        }
+                                                    },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.thumbs_up),
+                                                    contentDescription = "approve icon",
+                                                    contentScale = ContentScale.Fit,
+                                                    modifier = Modifier
+                                                        .padding(1.dp)
+                                                        .width(26.dp)
+                                                        .height(26.dp)
+                                                )
+                                            }
 
-                                    // Your RoundIconButton or other UI components
-                                    RoundIconButton(
-                                        drawableId = R.drawable.vector,
-                                        onClick = {
-                                            Log.d("DDD", location.coordinates.toString())
-                                            handleLocationClicked(GeoPoint(location.coordinates.latitude, location.coordinates.longitude))
-                                            handleButtonToLocationClicked(true)
+                                            Row(
+                                                horizontalArrangement = Arrangement.spacedBy(
+                                                    5.dp,
+                                                    Alignment.CenterHorizontally
+                                                ),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                            ) {
+                                                Text(
+                                                    text = location.numApproved.toString(),
+                                                    style = TextStyle(
+                                                        fontSize = 12.sp,
+                                                        fontFamily = FontFamily(Font(R.font.inter)),
+                                                        fontWeight = FontWeight(600),
+                                                        color = BlueSoft,
+                                                    )
+                                                )
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.check_circle),
+                                                    contentDescription = "approved status",
+                                                    contentScale = ContentScale.Fit,
+                                                    modifier = Modifier
+                                                        .padding(1.dp)
+                                                        .width(14.dp)
+                                                        .height(14.dp),
+                                                    colorFilter = if (location.numApproved >= 3) ColorFilter.tint(Color(0xFF00B913)) else ColorFilter.tint(Color(0xFFFFB800))
+                                                )
+                                            }
                                         }
-
-                                    )
+                                    }
                                 }
 
                                 Spacer(modifier = Modifier.height(20.dp))
@@ -630,7 +688,6 @@ fun SearchResultsOverlay(
                                 ) {
                                     Box(
                                         modifier = Modifier
-                                            .fillMaxWidth()
                                             .clickable {
                                                 navController.navigate(
                                                     Screen.InfoCategory.createRoute(
@@ -647,6 +704,64 @@ fun SearchResultsOverlay(
                                             logoUrl = category.logoUrl,
                                             numApproved = category.numApproved,
                                         )
+                                    }
+                                    Column(
+                                        verticalArrangement = Arrangement.SpaceBetween,
+                                        horizontalAlignment = Alignment.End,
+                                    ) {
+
+                                        Column(
+                                            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
+                                            horizontalAlignment = Alignment.End,
+                                            modifier = Modifier
+                                                .height(56.dp)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        viewModelFB.addApprovedCategories(category.name) {
+                                                            Toast.makeText(navController.context, viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                                        }
+                                                    },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.thumbs_up),
+                                                    contentDescription = "approve icon",
+                                                    contentScale = ContentScale.Fit,
+                                                    modifier = Modifier
+                                                        .padding(1.dp)
+                                                        .width(26.dp)
+                                                        .height(26.dp)
+                                                )
+                                            }
+
+                                            Row(
+                                                horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                            ) {
+                                                Text(
+                                                    text = category.numApproved.toString(),
+                                                    style = TextStyle(
+                                                        fontSize = 12.sp,
+                                                        fontFamily = FontFamily(Font(R.font.inter)),
+                                                        fontWeight = FontWeight(600),
+                                                        color = BlueSoft,
+                                                    )
+                                                )
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.check_circle),
+                                                    contentDescription = "approved status",
+                                                    contentScale = ContentScale.Fit,
+                                                    modifier = Modifier
+                                                        .padding(1.dp)
+                                                        .width(14.dp)
+                                                        .height(14.dp),
+                                                    colorFilter = if (category.numApproved >= 3) ColorFilter.tint(Color(0xFF00B913)) else ColorFilter.tint(Color(0xFFFFB800))
+                                                )
+                                            }
+                                        }
                                     }
                                 }
 
@@ -700,6 +815,9 @@ fun SearchResultsOverlay(
                                                     .fillMaxWidth()
                                                     .clickable {
                                                         //TODO: add the logic to approve the attraction
+                                                        viewModelFB.addApprovedAttraction(item.attraction.name){
+                                                            Toast.makeText(navController.context,viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                                        }
                                                     },
                                                 contentAlignment = Alignment.Center
                                             ) {

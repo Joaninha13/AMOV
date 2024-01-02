@@ -17,6 +17,7 @@ import pt.isec.ans.amov.dataStructures.Category
 import pt.isec.ans.amov.dataStructures.CategoryDetails
 import pt.isec.ans.amov.dataStructures.Location
 import pt.isec.ans.amov.dataStructures.LocationDetails
+import pt.isec.ans.amov.dataStructures.ReviewsDetails
 
 data class  User (val name: String, val email: String, val picture: String?)
 
@@ -40,13 +41,11 @@ class FireBaseViewModel : ViewModel() {
         get() = _user
 
     //Auth
-    fun createUserWithEmail(email: String, password: String) {
+    fun createUserWithEmail(email: String, password: String, name: String, photo: String) {
         if (email.isBlank() || password.isBlank())
             return
 
-        viewModelScope.launch { AuthUtil.createUserWithEmail(email, password){ e ->
-            if (e == null)
-                _user.value = AuthUtil.currentUser?.toUser()
+        viewModelScope.launch { AuthUtil.createUserWithEmail(email, password,name, photo){ e ->
 
             _error.value = e?.message
         } }
@@ -69,6 +68,14 @@ class FireBaseViewModel : ViewModel() {
         _user.value = null
     }
 
+    fun getUserDetails(onResult: (String,String) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getUserDetails { name, image ->
+                onResult(name, image)
+            }
+        }
+    }
+
 
     //Images
     fun uploadImage(imageUri: Uri, onSuccess: (String) -> Unit) {
@@ -87,6 +94,31 @@ class FireBaseViewModel : ViewModel() {
         }
         }
     }
+
+    fun getNumCategoriesByUser(onResult: (Int) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getNumCategoriesByUser { num ->
+                onResult(num)
+            }
+        }
+    }
+
+    fun getNumLocationsByUser(onResult: (Int) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getNumLocationsByUser { num ->
+                onResult(num)
+            }
+        }
+    }
+
+    fun getNumAttractionsByUser(onResult: (Int) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getNumAttractionsByUser { num ->
+                onResult(num)
+            }
+        }
+    }
+
     fun getAllCategoriesByUser(onResult: (List<CategoryDetails>, Throwable?) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllDetailsFromCategoryByUser{ categoryDetailsList, error ->
@@ -190,6 +222,20 @@ class FireBaseViewModel : ViewModel() {
             }
         }
     }
+
+    fun getCategoryDetails(onResult: (Category) -> Unit, name: String) {
+        viewModelScope.launch {
+            StorageUtil.getCategoryDetails(
+                name = name,
+            ) { category ->
+                if (category != null) {
+                    onResult(category)
+                }
+            }
+        }
+    }
+
+
 
     fun getAttractionDetails(attractionGeoPoint: GeoPoint, onResult: (Attraction) -> Unit) {
         viewModelScope.launch {
@@ -326,6 +372,25 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
+    fun getAllReviewsByUser(onResult: (List<ReviewsDetails>, Throwable?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getAllDetailsFromReviewsByUser{ reviewsDetailsList, error ->
+                if (error == null) {
+                    onResult(reviewsDetailsList, null)
+                } else {
+                    onResult(emptyList(), error)
+                }
+            }
+        }
+    }
+
+    fun deleteReview(reviewId: String) {
+        viewModelScope.launch { StorageUtil.deleteReview(reviewId){ e ->
+            _error.value = e?.message
+        }
+        }
+    }
+
     fun getAllAttractionsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllAttractionsDocumentsCoordinates { coordinates ->
@@ -340,6 +405,51 @@ class FireBaseViewModel : ViewModel() {
             }
         }
     }
+
+    fun addApprovedAttraction(attraction: String, onResult: (Throwable?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.addApprovedAttractions(attraction) { e ->
+                _error.value = e?.message
+                onResult(e)
+            }
+        }
+    }
+
+    fun addApprovedToDeleteAttraction(attraction: String, onResult: (Throwable?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.addApprovedToDeleteAttractions(attraction) { e ->
+                _error.value = e?.message
+                onResult(e)
+            }
+        }
+    }
+
+    fun getToDeleteBoolean(attraction: String, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.getToDeleteBoolean(attraction) { to ->
+                onResult(to)
+            }
+        }
+    }
+
+    fun addApprovedLocations(Location: String, onResult: (Throwable?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.addApprovedLocations(Location) { e ->
+                _error.value = e?.message
+                onResult(e)
+            }
+        }
+    }
+
+    fun addApprovedCategories(Category: String, onResult: (Throwable?) -> Unit) {
+        viewModelScope.launch {
+            StorageUtil.addApprovedCategories(Category) { e ->
+                _error.value = e?.message
+                onResult(e)
+            }
+        }
+    }
+
 
     //Users
     fun addUser(name: String, image: String) {

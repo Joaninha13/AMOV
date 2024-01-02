@@ -13,9 +13,22 @@ class AuthUtil {
         val currentUser : FirebaseUser?
             get() = auth.currentUser
 
-        fun createUserWithEmail(email: String, password: String,onResult : (Throwable?) -> Unit) {
+        fun createUserWithEmail(email: String, password: String, name: String, photo: String,onResult : (Throwable?) -> Unit) {
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { result ->
+
+                    val db = Firebase.firestore
+                    val User = hashMapOf(
+                        "Name" to name,
+                        "Photo" to photo,
+                    )
+
+                    if (AuthUtil.currentUser != null) {
+                        db.collection("Users").document(currentUser!!.uid).set(User)
+                            .addOnCompleteListener { results ->
+                                onResult(result.exception)
+                            }
+                    }
                   onResult(result.exception)
                 }
         }

@@ -44,7 +44,7 @@ fun InfoCategory(
 ) {
     var formState by remember { mutableStateOf<Category?>(null) }
 
-    val sortOptions = listOf("Categories Name", "Abc", "Zyx", "Distance")
+    val sortOptions = listOf("Categories Name", "Ascendant", "Descendant", "Distance")
     var selectedSortCriteria by remember { mutableStateOf("") }
 
     val location = viewModelL.currentLocation.observeAsState()
@@ -60,7 +60,6 @@ fun InfoCategory(
     LaunchedEffect(categoryId) {
         viewModelFB.getCategoryDetails(
             name = categoryId,
-            userGeo = geoPoint,
             onResult = { details ->
                 formState = details
             }

@@ -1,5 +1,6 @@
 package pt.isec.ans.amov.ui.Components.Cards
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,17 +24,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.Buttons.DangerRoundIconButton
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
 
 @Composable
 fun UserReviewCard(
+    navController: NavController,
+    viewModel: FireBaseViewModel,
+    reviewId: String = "",
+    attraction: String = "",
     comment: String,
+    title: String = "",
     rating: Int,
-    numApprovals: Int,
 
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
@@ -75,30 +82,6 @@ fun UserReviewCard(
                         .height(14.dp)
                 )
             }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = numApprovals.toString(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily(Font(R.font.inter)),
-                        fontWeight = FontWeight(600),
-                        color = BlueSoft,
-                    )
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.check_circle),
-                    contentDescription = "approved status",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .width(14.dp)
-                        .height(14.dp),
-                    colorFilter = if (numApprovals > 2) ColorFilter.tint(Color(0xFF00B913)) else ColorFilter.tint(Color(0xFFFFB800))
-                )
-            }
         }
 
         Row(
@@ -106,8 +89,11 @@ fun UserReviewCard(
             modifier = Modifier
                 .width(228.dp)
         ) {
+            //
             Text(
-                text = "''$comment''",
+                text = "'Attraction:${attraction}\n" +
+                        "Title:${title}\n" +
+                        "Comentary:$comment'",
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontFamily = FontFamily(Font(R.font.inter)),
@@ -126,7 +112,10 @@ fun UserReviewCard(
             modifier = Modifier
                 .height(56.dp)
         ) {
-            DangerRoundIconButton(drawableId = R.drawable.trash)
+            DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
+                viewModel.deleteReview(reviewId)
+                Toast.makeText(navController.context, "Review deleted", Toast.LENGTH_SHORT).show()
+            })
         }
     }
 }
@@ -134,9 +123,9 @@ fun UserReviewCard(
 @Preview
 @Composable
 fun UserReviewCardPreview() {
-    UserReviewCard(
+    /*UserReviewCard(
         comment = "This is the comment of the category yyyyyyyyyyyyyyy sdkjnfi sdujbhfdv iusdabv siour dnvisdubvnsdiubvsdiuvcbsdiu",
         rating = 2,
         numApprovals = 3,
-    )
+    )*/
 }

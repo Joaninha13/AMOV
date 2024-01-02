@@ -1,7 +1,12 @@
 package pt.isec.ans.amov.ui.Components.Buttons
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -9,15 +14,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import pt.isec.ans.amov.R
 
 @Composable
-fun RoundIconButton(
-    drawableId: Int,
+fun RoundImageUser(
+    drawable: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
 ) {
@@ -36,7 +40,7 @@ fun RoundIconButton(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
     ) {
         Image(
-            painter = painterResource(id = drawableId),
+            painter = rememberImagePainter(drawable),
             contentDescription = "Icon",
             modifier = Modifier
                 .fillMaxSize()
@@ -47,6 +51,6 @@ fun RoundIconButton(
 
 @Preview
 @Composable
-fun RoundIconButtonPreview() {
-    RoundIconButton(drawableId = R.drawable.edit)
+fun RoundImageUserPreview() {
+    //RoundIconButton()
 }

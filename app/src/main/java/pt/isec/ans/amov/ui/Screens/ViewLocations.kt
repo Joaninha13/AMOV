@@ -87,7 +87,7 @@ fun ViewLocations(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Active Locations",
+                        text = "Locations",
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -129,7 +129,7 @@ fun ViewLocations(
                             country = locationList[index].country,
                             image = locationList[index].image,
                             numAttractions = locationList[index].numAttractions,
-
+                            numApproved = locationList[index].numApproved,
                         )
                     }
                 }

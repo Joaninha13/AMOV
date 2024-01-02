@@ -49,7 +49,7 @@ fun LocationCard(
     //Card Row
     Row(
         modifier = Modifier
-            .width(330.dp)
+            .width(320.dp)
             .height(100.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
@@ -125,7 +125,7 @@ fun LocationCard(
 
 
                     Text(
-                        text = "$distanceInKmFromCurrent. km",
+                        text = "$distanceInKmFromCurrent km",
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontFamily = FontFamily(Font(R.font.inter_medium)),

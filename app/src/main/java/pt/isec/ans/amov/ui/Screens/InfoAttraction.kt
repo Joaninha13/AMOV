@@ -2,6 +2,7 @@ package pt.isec.ans.amov.ui.Screens
 
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -62,10 +63,14 @@ fun InfoAttraction(
 ) {
     val location = viewModelL.currentLocation.observeAsState()
 
-    val sortOptions = listOf("Abc", "Zyx")
+    val sortOptions = listOf("Ascendant", "Descendant")
     var selectedSortCriteria by remember { mutableStateOf("") }
 
+    var visible by remember { mutableStateOf(true) }
 
+    viewModelFB.getToDeleteBoolean(attractionId) {
+        visible = it
+    }
 
     val geoPoint by remember { mutableStateOf(
         GeoPoint(
@@ -100,8 +105,8 @@ fun InfoAttraction(
         sortedReviewsList.clear()
         sortedReviewsList.addAll(
             when (selectedSortCriteria) {
-                "Abc" -> reviewsList.sortedBy { it.description }
-                "Zyx" -> reviewsList.sortedByDescending { it.description }
+                "Ascendant" -> reviewsList.sortedBy { it.title }
+                "Descendant" -> reviewsList.sortedByDescending { it.title }
                 else -> reviewsList
             }
         )
@@ -203,23 +208,28 @@ fun InfoAttraction(
                     }
 
                     Column(){
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    //TODO: add the logic to disprove the attraction
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.thumbs_down),
-                                contentDescription = "approve icon",
-                                contentScale = ContentScale.None,
+                        if (visible) {
+                            Box(
                                 modifier = Modifier
-                                    .padding(1.dp)
-                                    .width(26.dp)
-                                    .height(26.dp)
-                            )
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        //TODO: add the logic to disprove the attraction
+                                        viewModelFB.addApprovedToDeleteAttraction(attractionId) {
+                                            Toast.makeText(navController.context, viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.thumbs_down),
+                                    contentDescription = "approve icon",
+                                    contentScale = ContentScale.None,
+                                    modifier = Modifier
+                                        .padding(1.dp)
+                                        .width(26.dp)
+                                        .height(26.dp)
+                                )
+                            }
                         }
                     }
 

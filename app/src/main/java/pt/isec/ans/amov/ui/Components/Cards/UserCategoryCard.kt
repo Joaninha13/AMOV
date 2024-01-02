@@ -32,6 +32,7 @@ import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
+import pt.isec.ans.amov.ui.theme.Red
 
 @Composable
 fun UserCategoryCard(
@@ -39,6 +40,7 @@ fun UserCategoryCard(
     viewModel: FireBaseViewModel,
     categoryName: String,
     numAttractions: Int,
+    numApproved: Int,
     Logo: String,
 
     modifier: Modifier = Modifier,
@@ -86,7 +88,7 @@ fun UserCategoryCard(
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
                         fontWeight = FontWeight(600),
-                        color = BlueHighlight,
+                        color = if (numApproved < 3) Red else BlueHighlight,
                     )
                 )
 
@@ -142,8 +144,6 @@ fun UserCategoryCard(
                     viewModel.deleteCategory(categoryName)
 
                     Toast.makeText(navController.context, viewModel.error.value ?: "Category deleted", Toast.LENGTH_SHORT).show()
-
-                    navController.navigate(Screen.ViewLocation.route)
                 }
 
             })

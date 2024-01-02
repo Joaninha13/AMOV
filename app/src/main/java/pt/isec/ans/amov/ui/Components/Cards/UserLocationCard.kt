@@ -35,6 +35,7 @@ import pt.isec.ans.amov.ui.Screen
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
+import pt.isec.ans.amov.ui.theme.Red
 
 @Composable
 fun UserLocationCard(
@@ -43,6 +44,7 @@ fun UserLocationCard(
     region: String,
     country: String,
     numAttractions: Int,
+    numApproved: Int,
     image : String,
 
     modifier: Modifier = Modifier,
@@ -100,7 +102,7 @@ fun UserLocationCard(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.inter_semibold)),
                         fontWeight = FontWeight(600),
-                        color = BlueHighlight,
+                        color = if (numApproved < 3) Red else BlueHighlight,
                     )
                 )
 
@@ -126,6 +128,21 @@ fun UserLocationCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     SecButton(_text = "Go to Page", onClick = {navController.navigate(Screen.InfoLocation.createRoute("${country}_$region"))})
+                    DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
+                        if (numAttractions > 0) {
+                            Toast.makeText(
+                                navController.context,
+                                "Can't delete location with attractions",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@DangerRoundIconButton
+                        }
+                        else{
+                            viewModel.deleteLocation("${country}_$region")
+
+                            Toast.makeText(navController.context, viewModel.error.value ?: "Location deleted", Toast.LENGTH_SHORT).show()
+                        }
+                    })
                 }
 
             }
@@ -140,24 +157,8 @@ fun UserLocationCard(
                 ) {
 
                 //Icon container
+                RoundIconButton(drawableId = R.drawable.vector, onClick = onClick)// por isto para ir para as coordenadas da localização no mapa
                 RoundIconButton(drawableId = R.drawable.edit, onClick = {navController.navigate(Screen.EditLocation.createRoute("${country}_$region"))})
-                DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
-                    if (numAttractions > 0) {
-                        Toast.makeText(
-                            navController.context,
-                            "Can't delete location with attractions",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@DangerRoundIconButton
-                    }
-                    else{
-                        viewModel.deleteLocation("${country}_$region")
-
-                        Toast.makeText(navController.context, viewModel.error.value ?: "Location deleted", Toast.LENGTH_SHORT).show()
-
-                        navController.navigate(Screen.ViewLocation.route)
-                    }
-                })
 
             }
 
@@ -171,12 +172,9 @@ fun UserLocationCard(
 @Preview
 @Composable
 fun UserLocationCardPreview(){
-    UserLocationCard(
+    /*UserLocationCard(
+        city = "Paris",
         country = "France",
-        numAttractions = 4321,
-        region = "Paris",
-        image = "https://www.planetware.com/photos-large/F/france-paris-eiffel-tower.jpg",
-        navController = rememberNavController(),
-        viewModel = FireBaseViewModel(),
-    )
+        numAttractions = 4321
+    )*/
 }

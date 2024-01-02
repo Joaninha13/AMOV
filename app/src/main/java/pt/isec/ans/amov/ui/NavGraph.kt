@@ -1,7 +1,6 @@
 package pt.isec.ans.amov.ui
 
 import androidx.compose.runtime.Composable
-
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,7 +12,6 @@ import pt.isec.ans.amov.ui.Screens.AddLocation
 import pt.isec.ans.amov.ui.Screens.EditAttraction
 import pt.isec.ans.amov.ui.Screens.EditCategory
 import pt.isec.ans.amov.ui.Screens.EditLocation
-import pt.isec.ans.amov.ui.Screens.EditPersonalData
 import pt.isec.ans.amov.ui.Screens.Home
 import pt.isec.ans.amov.ui.Screens.InfoAttraction
 import pt.isec.ans.amov.ui.Screens.InfoCategory
@@ -77,9 +75,6 @@ fun SetupNavGraph(
             val categoryId = backStackEntry.arguments?.getString("categoryId")
             EditCategory(navController = navController, viewModelL = viewModelL, viewModelFB = viewModelFB, nameToEdit = categoryId ?: "")
         }
-        composable(Screen.EditPersonalData.route) {
-            EditPersonalData(navController = navController)
-        }
         composable(
             route = Screen.InfoAttraction.route,
             arguments = listOf(navArgument("attractionId") { type = NavType.StringType })
@@ -120,7 +115,7 @@ fun SetupNavGraph(
             ViewCategories(navController = navController, viewModel = viewModelFB)
         }
         composable(Screen.ViewAccount.route) {
-            ViewAccount(navController = navController)
+            ViewAccount(navController = navController, viewModel = viewModelFB)
         }
         composable(Screen.CreditsScreen.route) {
             CreditsScreen(navController = navController)

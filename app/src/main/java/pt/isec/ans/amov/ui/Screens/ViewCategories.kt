@@ -91,7 +91,7 @@ fun ViewCategories(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Active Categories",
+                        text = "Categories",
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -132,6 +132,7 @@ fun ViewCategories(
                             categoryName = categoryList[index].name,
                             numAttractions = categoryList[index].numAttractions,
                             Logo = categoryList[index].logoUrl,
+                            numApproved = categoryList[index].numApproved
                         )
                     }
                 }

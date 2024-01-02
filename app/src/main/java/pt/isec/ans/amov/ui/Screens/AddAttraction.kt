@@ -150,7 +150,7 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                 ) {
 
                     //First 3 inputs
-                    TextInputs(attractionFormState) { updatedState ->
+                    TextInputs(attractionFormState, viewModelL) { updatedState ->
                         attractionFormState = updatedState
                     }
 
@@ -227,7 +227,9 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
 }
 
 @Composable
-fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateChange: (AttractionFormState) -> Unit) {
+fun TextInputs(attractionFormState: AttractionFormState, viewModelL: LocationViewModel, onAttractionFormStateChange: (AttractionFormState) -> Unit) {
+
+    var enables by remember { mutableStateOf(false) }
 
     //Name + Description + Coordinates
     Column(
@@ -288,19 +290,40 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
             OutlinedInput(
                 _width = 252.dp,
                 _value = attractionFormState.latitude,
-                _label = "Latitude",
+                _label = if (!enables) "Latitude" else attractionFormState.latitude,
                 _iconName = R.drawable.coordsicon,
                 onValueChange = { newValue ->
                     attractionFormState.latitude = newValue
                 }
             )
 
-            //Icon container
-            RoundIconButton(
-                drawableId = R.drawable.vector,
+            Box(
                 modifier = Modifier
-                    .size(40.dp)
-            )
+                    .border(
+                        width = 2.dp,
+                        color = BlueLighter,
+                        shape = RoundedCornerShape(size = 50.dp)
+                    )
+                    .size(31.dp)
+                    .padding(5.dp)
+                    .clickable(onClick = {
+                        viewModelL.currentLocation.observeForever { location ->
+                            attractionFormState.latitude = location.latitude.toString()
+                            attractionFormState.longitude = location.longitude.toString()
+                        }
+                        enables = !enables
+                    }),
+                contentAlignment = Alignment.Center,
+            ) {
+                //Icon container
+                Image(
+                    modifier = Modifier
+                        .size(18.dp),
+                    painter = painterResource(id = R.drawable.vector),
+                    contentDescription = "Vector",
+                    contentScale = ContentScale.None
+                )
+            }
 
         }
         //longitude
@@ -315,7 +338,7 @@ fun TextInputs(attractionFormState: AttractionFormState, onAttractionFormStateCh
             OutlinedInput(
                 _width = 252.dp,
                 _value = attractionFormState.longitude,
-                _label = "Longitude",
+                _label = if (!enables) "Longitude" else attractionFormState.longitude,
                 _iconName = R.drawable.coordsicon,
                 onValueChange = { newValue ->
                     attractionFormState.longitude = newValue

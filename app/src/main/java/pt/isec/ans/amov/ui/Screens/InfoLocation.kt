@@ -51,7 +51,7 @@ fun InfoLocation(
 
     val location = viewModelL.currentLocation.observeAsState()
 
-    val sortOptions = listOf("Categories Name", "Abc", "Zyx", "Distance")
+    val sortOptions = listOf("Location Name", "Ascendant", "Descendant", "Distance")
     var selectedSortCriteria by remember { mutableStateOf("") }
 
 

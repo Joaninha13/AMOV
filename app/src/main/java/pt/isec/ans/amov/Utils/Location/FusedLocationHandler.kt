@@ -9,6 +9,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority.*
+import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 
 class FusedLocationHandler(private val locationProvider: FusedLocationProviderClient) :
     LocationHandler {

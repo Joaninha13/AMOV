@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -160,7 +161,7 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                 ) {
 
                     //First inputs
-                    TextInputs(locationFormState) { updatedState ->
+                    TextInputs(locationFormState, viewModelL) { updatedState ->
                         locationFormState = updatedState
                     }
 
@@ -259,7 +260,9 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
 }
 
 @Composable
-fun TextInputs(locationFormState: LocationFormState, onLocationFormState: (LocationFormState) -> Unit) {
+fun TextInputs(locationFormState: LocationFormState, viewModelL: LocationViewModel,onLocationFormState: (LocationFormState) -> Unit) {
+
+    var enables by remember { mutableStateOf(false) }
 
     //Name + Description + Coordinates
     Column(
@@ -339,7 +342,7 @@ fun TextInputs(locationFormState: LocationFormState, onLocationFormState: (Locat
             OutlinedInput(
                 _width = 252.dp,
                 _value = locationFormState.latitude,
-                _label = "latitude",
+                _label = if (!enables) "latitude" else locationFormState.latitude,
                 _iconName = R.drawable.coordsicon,
                 onValueChange = { newValue ->
                     locationFormState.latitude = newValue
@@ -354,7 +357,14 @@ fun TextInputs(locationFormState: LocationFormState, onLocationFormState: (Locat
                             shape = RoundedCornerShape(size = 50.dp)
                         )
                         .size(31.dp)
-                        .padding(5.dp),
+                        .padding(5.dp)
+                        .clickable(onClick = {
+                            viewModelL.currentLocation.observeForever { location ->
+                                locationFormState.latitude = location.latitude.toString()
+                                locationFormState.longitude = location.longitude.toString()
+                            }
+                            enables = !enables
+                        }),
                     contentAlignment = Alignment.Center,
                 ) {
                     // Icon
@@ -380,11 +390,11 @@ fun TextInputs(locationFormState: LocationFormState, onLocationFormState: (Locat
             OutlinedInput(
                 _width = 252.dp,
                 _value = locationFormState.longitude,
-                _label = "longitude",
+                _label = if (!enables) "longitude" else locationFormState.longitude ,
                 _iconName = R.drawable.coordsicon,
                 onValueChange = { newValue ->
                     locationFormState.longitude = newValue
-                }
+                },
             )
         }
     }

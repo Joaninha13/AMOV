@@ -1,5 +1,7 @@
 package pt.isec.ans.amov.ui.Screens
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,21 +38,67 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import pt.isec.ans.amov.R
+import pt.isec.ans.amov.dataStructures.AttractionDetails
+import pt.isec.ans.amov.dataStructures.ReviewsDetails
 import pt.isec.ans.amov.ui.Components.Buttons.RoundIconButton
+import pt.isec.ans.amov.ui.Components.Buttons.RoundImageUser
 import pt.isec.ans.amov.ui.Components.Buttons.SecButton
 import pt.isec.ans.amov.ui.Components.Buttons.SortButtonWithPopUp
 import pt.isec.ans.amov.ui.Components.Cards.UserReviewCard
 import pt.isec.ans.amov.ui.Screen
+import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.theme.BlueHighlight
 import pt.isec.ans.amov.ui.theme.BlueSoft
 
 
 @Composable
 fun ViewAccount(
-    navController: NavController
+    navController: NavController,
+    viewModel: FireBaseViewModel
 ) {
     val sortOptions = listOf("Option 1", "Option 2", "Option 3") // Dummy sort options
     var selectedSortCriteria by remember { mutableStateOf("") }
+
+    var reviewList by remember { mutableStateOf<List<ReviewsDetails>>(emptyList()) }
+    val context = LocalContext.current
+
+    var UserName by remember { mutableStateOf("") }
+    var Photo by remember { mutableStateOf("") }
+    var numCat by remember { mutableStateOf(0) }
+    var numLoc by remember { mutableStateOf(0) }
+    var numAtt by remember { mutableStateOf(0) }
+
+    viewModel.getNumCategoriesByUser { num ->
+        numCat = num
+    }
+    viewModel.getNumLocationsByUser { num ->
+        numLoc = num
+    }
+    viewModel.getNumAttractionsByUser { num ->
+        numAtt = num
+    }
+
+    viewModel.getUserDetails{ name, photo ->
+         UserName = name
+         Photo = photo
+    }
+
+    Log.d("ViewAccount", "ViewAccount: $UserName")
+    Log.d("ViewAccount", "ViewAccount: $Photo")
+
+    // Buscar categorias quando o Composable for iniciado
+    DisposableEffect(viewModel) {
+        viewModel.getAllReviewsByUser { review, error ->
+            if (error == null) {
+                reviewList = review
+            } else {
+                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Cancelar o efeito quando o Composable for removido
+        onDispose { }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -75,8 +124,12 @@ fun ViewAccount(
                     horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    RoundIconButton(
-                        drawableId = R.drawable.account,
+                    RoundImageUser(
+                        drawable = Photo,
+                        onClick = {
+                            viewModel.signOut()
+                            navController.navigate(Screen.LoginScreen.route)
+                                  },
                         modifier = Modifier
                             .size(50.dp)
                     )
@@ -85,7 +138,7 @@ fun ViewAccount(
                         horizontalAlignment = Alignment.Start,
                     ) {
                         Text(
-                            text = "User's Name",
+                            text = UserName,
                             style = TextStyle(
                                 fontSize = 18.sp,
                                 fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -155,7 +208,7 @@ fun ViewAccount(
                                     )
                                 )
                                 Text(
-                                    text = "3",
+                                    text = numAtt.toString(),
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         textAlign = TextAlign.Center,
@@ -193,7 +246,7 @@ fun ViewAccount(
                                     )
                                 )
                                 Text(
-                                    text = "3",
+                                    text = numLoc.toString(),
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         textAlign = TextAlign.Center,
@@ -231,7 +284,7 @@ fun ViewAccount(
                                     )
                                 )
                                 Text(
-                                    text = "3",
+                                    text = numCat.toString(),
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         textAlign = TextAlign.Center,
@@ -271,7 +324,7 @@ fun ViewAccount(
                             )
                         )
                         Text(
-                            text = "(43)",
+                            text = reviewList.size.toString(),
                             style = TextStyle(
                                 fontSize = 14.sp,
                                 fontFamily = FontFamily(Font(R.font.inter_semibold)),
@@ -292,11 +345,15 @@ fun ViewAccount(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(20) { index ->
+                        items(reviewList.size) { index ->
                             UserReviewCard(
-                                comment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                                rating = 2,
-                                numApprovals = index,
+                                navController = navController,
+                                viewModel = viewModel,
+                                reviewId = reviewList[index].reviewId,
+                                attraction = reviewList[index].attractionId,
+                                title = reviewList[index].title,
+                                comment = reviewList[index].comment,
+                                rating = reviewList[index].rating,
                             )
                         }
                     }
@@ -313,5 +370,5 @@ fun ViewAccount(
 @Preview
 @Composable
 fun ViewAccountPreview() {
-    ViewAccount(navController = NavController(LocalContext.current))
+    //ViewAccount(navController = NavController(LocalContext.current))
 }

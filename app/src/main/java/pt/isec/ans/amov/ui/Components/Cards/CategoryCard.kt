@@ -42,7 +42,7 @@ fun CategoryCard(
         verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
-            .width(340.dp)
+            .width(300.dp)
             .height(95.dp)
             .padding(top = 5.dp, bottom = 5.dp)
     ) {

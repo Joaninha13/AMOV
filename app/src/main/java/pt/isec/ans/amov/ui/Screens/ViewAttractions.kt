@@ -60,7 +60,6 @@ fun ViewAttractions(
             }
         }
 
-        // Cancelar o efeito quando o Composable for removido
         onDispose { }
     }
 
@@ -84,7 +83,7 @@ fun ViewAttractions(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Active Attractions",
+                        text = "Attractions",
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -126,6 +125,7 @@ fun ViewAttractions(
                             ApprovedsDelete = attractionList[index].ApprovedsDelete,
                             toDelete = attractionList[index].toDelete,
                             image = attractionList[index].image[0],
+                            numApproved = attractionList[index].numApproved,
                         )
                     }
                 }
