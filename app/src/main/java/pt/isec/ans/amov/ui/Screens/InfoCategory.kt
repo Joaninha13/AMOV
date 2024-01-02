@@ -4,7 +4,6 @@ package pt.isec.ans.amov.ui.Screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,9 +29,6 @@ import coil.compose.rememberImagePainter
 import com.google.firebase.firestore.GeoPoint
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.dataStructures.Category
-import pt.isec.ans.amov.ui.Components.Buttons.DescriptionButtonWithPopUp
-import pt.isec.ans.amov.ui.Components.Cards.AttractionCard
-import pt.isec.ans.amov.ui.Components.Buttons.SortButtonWithPopUp
 import pt.isec.ans.amov.ui.ViewModels.FireBaseViewModel
 import pt.isec.ans.amov.ui.ViewModels.LocationViewModel
 import pt.isec.ans.amov.ui.theme.*
