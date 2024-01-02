@@ -225,9 +225,8 @@ fun InfoAttraction(
                                     contentDescription = "approve icon",
                                     contentScale = ContentScale.None,
                                     modifier = Modifier
-                                        .padding(1.dp)
-                                        .width(26.dp)
-                                        .height(26.dp)
+                                        .width(40.dp)
+                                        .height(40.dp)
                                 )
                             }
                         }

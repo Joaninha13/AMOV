@@ -14,9 +14,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -80,7 +82,7 @@ fun RegisterAcc(navController: NavHostController, viewModel: FireBaseViewModel) 
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .width(360.dp)
-                .height(604.dp)
+                .height(1000.dp)
                 .padding(start = 60.dp, top = 60.dp, end = 60.dp, bottom = 60.dp)
         ) {
             Column(
@@ -116,121 +118,66 @@ fun RegisterAcc(navController: NavHostController, viewModel: FireBaseViewModel) 
                 )
                 // Child views Title.
             }
+
             Column(
-                verticalArrangement = Arrangement.spacedBy(50.dp, Alignment.CenterVertically),
+                verticalArrangement = Arrangement.spacedBy(25.dp, Alignment.CenterVertically),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .height(325.dp)
+                    //.fillMaxSize(),
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.Top),
-                    horizontalAlignment = Alignment.Start,
-                    modifier = Modifier
-                        .fillMaxSize(),
-                ) {
 
-                    TextInputs(registerAccFormState, { registerAccFormState = it }, { uri ->
-                        selectedImageUri = uri
-                    })
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .border(
-                                BorderStroke(1.dp, Color(0x330B394C)),
-                                shape = RoundedCornerShape(size = 5.dp)
-                            )
-                            .width(200.dp)
-                            .height(30.dp)
-                            .background(
-                                color = Color(0xCCFFFFFF),
-                                shape = RoundedCornerShape(size = 5.dp)
-                            )
-                            .padding(start = 10.dp, end = 10.dp)
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .width(159.dp)
-                                .height(19.dp),
-                            text = "Upload Profile Image",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
-                                color = Color(0x800B394C),
-                            )
-                        )
-                        // Child views.
-                    }
-                    // Child views Frame56.
-                }
-                // Child views Frame4.
+                TextInputs(registerAccFormState, { registerAccFormState = it }, { uri ->
+                    selectedImageUri = uri
+                })
+
             }
+
             Row(
                 modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = BlueLighter,
-                        shape = RoundedCornerShape(size = 5.dp)
-                    )
-                    .width(300.dp)
-                    .height(30.dp)
-                    .background(
-                        color = Color(0xCCFFFFFF),
-                        shape = RoundedCornerShape(size = 5.dp)
-                    )
-                    .padding(start = 10.dp, end = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically,
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.Center,
             ) {
-
-                Text(
-                    text = "Upload Logo",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        //fontFamily = FontFamily(Font(R.font.inter)),
-                        fontWeight = FontWeight(500),
-                        color = BlueSoft,
-                    )
-                )
-            }
-        }
-
-        GradientButton(
-            _text = "Submit",
-            _gradient = Brush.horizontalGradient(
-                colors = listOf(
-                    Color(0xFF0B374B),
-                    Color(0xFF00B6DE)
-                )
-            )
-        ) {
-            selectedImageUri?.let { uri ->
-                viewModel.uploadImage(uri) { imageUrl ->
-                    registerAccFormState = registerAccFormState.copy(profileImageUrl = imageUrl)
-
-                    if (registerAccFormState.Password == registerAccFormState.ConfirmPassword) {
-                        viewModel.createUserWithEmail(
-                            registerAccFormState.Email,
-                            registerAccFormState.Password,
-                            registerAccFormState.name,
-                            registerAccFormState.profileImageUrl
+                GradientButton(
+                    _text = "Submit",
+                    _gradient = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF0B374B),
+                            Color(0xFF00B6DE)
                         )
-                    } else {
-                        Toast.makeText(context, "Passwords don't match", Toast.LENGTH_LONG).show()
-                        return@uploadImage
+                    )
+                ) {
+                    selectedImageUri?.let { uri ->
+                        viewModel.uploadImage(uri) { imageUrl ->
+                            registerAccFormState = registerAccFormState.copy(profileImageUrl = imageUrl)
+
+                            if (registerAccFormState.Password == registerAccFormState.ConfirmPassword) {
+                                viewModel.createUserWithEmail(
+                                    registerAccFormState.Email,
+                                    registerAccFormState.Password,
+                                    registerAccFormState.name,
+                                    registerAccFormState.profileImageUrl
+                                )
+                            } else {
+                                Toast.makeText(context, "Passwords don't match", Toast.LENGTH_LONG).show()
+                                return@uploadImage
+                            }
+                            Toast.makeText(context, viewModel.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+
+                            /*viewModel.addUser(
+                                registerAccFormState.name,
+                                registerAccFormState.profileImageUrl
+                            )*/
+
+                            navController.navigate(Screen.LoginScreen.route)
+                        }
                     }
-                    Toast.makeText(context, viewModel.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
-
-                    /*viewModel.addUser(
-                        registerAccFormState.name,
-                        registerAccFormState.profileImageUrl
-                    )*/
-
-                    navController.navigate(Screen.LoginScreen.route)
                 }
             }
+
         }
+
     }
 }
 
