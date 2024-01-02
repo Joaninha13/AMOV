@@ -107,7 +107,8 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
             Column(
                 modifier = Modifier
                     .width(320.dp)
-                    .height(676.dp),
+                    .height(676.dp)
+                    .border(1.dp, Color.Black),
                 verticalArrangement = Arrangement.spacedBy(40.dp, Alignment.Top),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -156,7 +157,7 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                 Column(
                     modifier = Modifier
                         .width(320.dp)
-                        .height(600.dp)
+                        .height(500.dp)
                         .padding(start = 10.dp, end = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(60.dp, Alignment.Top),
                     horizontalAlignment = Alignment.Start,
