@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -83,7 +84,7 @@ fun ViewAttractions(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Attractions",
+                        text = stringResource(id = R.string.attractions),
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily(Font(R.font.inter_bold)),

@@ -93,6 +93,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
 
     fun getNumCategoriesByUser(onResult: (Int) -> Unit) {
@@ -149,6 +150,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
 
     fun deleteCategory(name: String) {
@@ -156,6 +158,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
 
     //Locations
@@ -164,6 +167,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
     fun getAllLocations(onResult: (List<String>) -> Unit) {
         viewModelScope.launch {
@@ -249,13 +253,6 @@ class FireBaseViewModel : ViewModel() {
         }
     }
 
-    /*fun getAllAttractions(onResult: (List<String>) -> Unit) {
-        viewModelScope.launch {
-            StorageUtil.getAllAttractionsDocumentsNames { names ->
-                onResult(names)
-            }
-        }
-    }*/
     fun getLocations(name: String, onResult : (List<String>) -> Unit) {
         viewModelScope.launch {
             StorageUtil.getAllFromOneLocation(name) { desc ->
@@ -268,6 +265,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
 
     fun getAllLocationsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
@@ -295,6 +293,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
 
     //Attractions
@@ -304,6 +303,7 @@ class FireBaseViewModel : ViewModel() {
             onResult(e)
         }
         }
+        _error.value = null
     }
     fun getAllAttractions(onResult: (List<String>) -> Unit) {
         viewModelScope.launch {
@@ -332,6 +332,7 @@ class FireBaseViewModel : ViewModel() {
                 onResult(e)
             }
         }
+        _error.value = null
     }
 
     fun getToDeleteAttractions(name: String, onResult : (Boolean) -> Unit) {
@@ -355,6 +356,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
 
 
@@ -363,6 +365,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
 
     fun addReview(title: String, desc: String, image: String, attractionName: String, rating: Number) {
@@ -370,6 +373,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
 
     fun getAllReviewsByUser(onResult: (List<ReviewsDetails>, Throwable?) -> Unit) {
@@ -389,6 +393,7 @@ class FireBaseViewModel : ViewModel() {
             _error.value = e?.message
         }
         }
+        _error.value = null
     }
 
     fun getAllAttractionsCoordinates(onResult: (List<GeoPoint>) -> Unit) {
@@ -413,6 +418,7 @@ class FireBaseViewModel : ViewModel() {
                 onResult(e)
             }
         }
+        _error.value = null
     }
 
     fun addApprovedToDeleteAttraction(attraction: String, onResult: (Throwable?) -> Unit) {
@@ -422,6 +428,7 @@ class FireBaseViewModel : ViewModel() {
                 onResult(e)
             }
         }
+        _error.value = null
     }
 
     fun getToDeleteBoolean(attraction: String, onResult: (Boolean) -> Unit) {
@@ -439,6 +446,7 @@ class FireBaseViewModel : ViewModel() {
                 onResult(e)
             }
         }
+        _error.value = null
     }
 
     fun addApprovedCategories(Category: String, onResult: (Throwable?) -> Unit) {
@@ -448,25 +456,7 @@ class FireBaseViewModel : ViewModel() {
                 onResult(e)
             }
         }
+        _error.value = null
     }
-
-
-    //Users
-    fun addUser(name: String, image: String) {
-        viewModelScope.launch { StorageUtil.addUser(name, image){ e ->
-            _error.value = e?.message
-        }
-        }
-    }
-
-    /*fun updateDataUserInFirestore() {
-        viewModelScope.launch { StorageUtil.updateDataInFirestoreTrans{ e ->
-            _error.value = e?.message
-        } }
-    }
-
-    fun startObserver() {
-       viewModelScope.launch { StorageUtil.startObserver() }
-    }*/
 
 }

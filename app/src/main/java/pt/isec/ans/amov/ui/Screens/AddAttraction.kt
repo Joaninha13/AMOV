@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -115,7 +116,7 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                         modifier = Modifier
                             .width(248.dp)
                             .height(29.dp),
-                        text = "Contribute Attraction",
+                        text = stringResource(R.string.contribute_attraction),
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontWeight = FontWeight(600),
@@ -163,7 +164,7 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                 }
 
                 GradientButton(
-                    _text = "Submit",
+                    _text = stringResource(R.string.add_succeed),
                     _gradient = Brush.horizontalGradient(
                         colors = listOf(
                             Color(0xFF0B374B),
@@ -171,22 +172,20 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                         )
                     ),
                 ) {
-                    Log.d("VERRR------>", "category: ${attractionFormState.category}")
-
                     try {
                         attractionFormState.coordinates = GeoPoint(attractionFormState.latitude.toDouble(), attractionFormState.longitude.toDouble())
                     }catch (e: NumberFormatException) {
                         // Se o usuário não inserir um número válido, aparece uma mensagem em cima a dizer coordenada inválidas
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Exception) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Error) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Throwable) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }
 
@@ -204,7 +203,7 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                                 attractionFormState.image,
                             ) { e ->
                                 if (e == null) {
-                                    Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT)
+                                    Toast.makeText(context, context.getString(R.string.attraction_added), Toast.LENGTH_SHORT)
                                         .show()
                                 } else {
                                     Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT)
@@ -213,16 +212,10 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                             }
                         }
                     }
-
-                    Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, viewModelFB.error.value ?: context.getString(R.string.add_succeed), Toast.LENGTH_LONG).show()
                     navController.popBackStack()
-
                 }
-
             }
-
-
-
         }
     }
 }
@@ -252,7 +245,7 @@ fun TextInputs(attractionFormState: AttractionFormState, viewModelL: LocationVie
 
             OutlinedInput(
                 _value = attractionFormState.name,
-                _label = "Name",
+                _label = stringResource(R.string.name),
                 _iconName = R.drawable.nameicon,
                 onValueChange = { newValue ->
                     attractionFormState.name = newValue
@@ -271,7 +264,7 @@ fun TextInputs(attractionFormState: AttractionFormState, viewModelL: LocationVie
 
             OutlinedInput(
                 _value = attractionFormState.description,
-                _label = "Description",
+                _label = stringResource(R.string.description),
                 _iconName = R.drawable.descicon,
                 onValueChange = { newValue ->
                     attractionFormState.description = newValue
@@ -427,11 +420,7 @@ fun SecondInputs(attractionFormState: AttractionFormState, viewModelFB: FireBase
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ClickableText(
-                text = buildAnnotatedString {
-                    //withStyle(style = SpanStyle(color = Color.Blue)) {
-                    append("Upload Image")
-                    //}
-                },
+                text = buildAnnotatedString { append(stringResource(R.string.upload_image))},
                 style = TextStyle(
                     brush = Brush.linearGradient(
                         colors = listOf(

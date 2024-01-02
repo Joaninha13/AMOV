@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -127,12 +128,12 @@ fun UserLocationCard(
                     horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    SecButton(_text = "Go to Page", onClick = {navController.navigate(Screen.InfoLocation.createRoute("${country}_$region"))})
+                    SecButton(_text = stringResource(R.string.go_to_page), onClick = {navController.navigate(Screen.InfoLocation.createRoute("${country}_$region"))})
                     DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
                         if (numAttractions > 0) {
                             Toast.makeText(
                                 navController.context,
-                                "Can't delete location with attractions",
+                                navController.context.getString(R.string.can_t_delete_location_with_attractions),
                                 Toast.LENGTH_SHORT
                             ).show()
                             return@DangerRoundIconButton
@@ -140,7 +141,7 @@ fun UserLocationCard(
                         else{
                             viewModel.deleteLocation("${country}_$region")
 
-                            Toast.makeText(navController.context, viewModel.error.value ?: "Location deleted", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(navController.context, viewModel.error.value ?: navController.context.getString(R.string.location_deleted), Toast.LENGTH_SHORT).show()
                         }
                     })
                 }

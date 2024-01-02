@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -110,7 +111,7 @@ fun EditAttraction(
                         modifier = Modifier
                             .width(248.dp)
                             .height(29.dp),
-                        text = "Edit Attraction",
+                        text = stringResource(R.string.edit_attraction),
                         style = TextStyle(
                             fontSize = 24.sp,
                             //fontFamily = FontFamily(Font(R.font.inter)), esta linha da erro porque nao tem o ficheiro inter
@@ -147,21 +148,12 @@ fun EditAttraction(
                     horizontalAlignment = Alignment.Start,
                 ) {
 
-                    Log.d("VEERRRRR----->>>>>>", "name: $nameToEdit")
-
                     viewModelFB.getAttractions(nameToEdit){ desc ->
-                        Log.d("VEERRRRR----->>>>>>", "desc: $desc")
                         oldAttractionFormState.name = desc[0]
                         oldAttractionFormState.description = desc[1]
                         oldAttractionFormState.category = desc[2]
                         oldAttractionFormState.location = desc[3]
-                            oldAttractionFormState.image = listOf(desc[4])
-
-                        Log.d("VEERRRRR----->>>>>>", "name: ${oldAttractionFormState.image}")
-
-
-                        Log.d("VEERRRRR----->>>>>>", "category: ${oldAttractionFormState.category}")
-                        Log.d("VEERRRRR----->>>>>>", "location: ${oldAttractionFormState.location}")
+                        oldAttractionFormState.image = listOf(desc[4])
 
 
                         val geoPointValues = desc[5]
@@ -192,7 +184,7 @@ fun EditAttraction(
                 }
 
                 GradientButton(
-                    _text = "Save",
+                    _text = stringResource(R.string.save),
                     _gradient = Brush.horizontalGradient(
                         colors = listOf(
                             Color(0xFF0B374B),
@@ -204,16 +196,16 @@ fun EditAttraction(
                         newAttractionFormState.coordinates = GeoPoint(newAttractionFormState.latitude.toDouble(), newAttractionFormState.longitude.toDouble())
                     }catch (e: NumberFormatException) {
                         // Se o usuário não inserir um número válido, aparece uma mensagem em cima a dizer coordenada inválidas
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Exception) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Error) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Throwable) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }
                     newAttractionFormState.imageUri.let { uri ->
@@ -233,7 +225,7 @@ fun EditAttraction(
                         images = newAttractionFormState.image
                     )
 
-                    Toast.makeText(context, viewModelFB.error.value ?: "Update Succeed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, viewModelFB.error.value ?: context.getString(R.string.update_succeed), Toast.LENGTH_LONG).show()
                     navController.popBackStack()
                 }
 

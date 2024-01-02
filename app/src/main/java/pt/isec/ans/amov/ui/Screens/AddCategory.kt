@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -114,7 +115,7 @@ fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel
                         modifier = Modifier
                             .width(248.dp)
                             .height(29.dp),
-                        text = "Contribute Category",
+                        text = stringResource(R.string.contribute_category),
                         style = TextStyle(
                             fontSize = 24.sp,
                             //fontFamily = FontFamily(Font(R.font.inter)), esta linha da erro porque nao tem o ficheiro inter
@@ -177,7 +178,7 @@ fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel
                         ClickableText(
                             text = buildAnnotatedString {
                                 //withStyle(style = SpanStyle(color = Color.Blue)) {
-                                append("Upload Logo")
+                                append(stringResource(R.string.upload_logo))
                                 //}
                             },
                             style = TextStyle(
@@ -207,7 +208,7 @@ fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel
                 }
 
                 GradientButton(
-                    _text = "Submit",
+                    _text = stringResource(R.string.submit),
                     _gradient = Brush.horizontalGradient(
                         colors = listOf(
                             Color(0xFF0B374B),
@@ -229,7 +230,7 @@ fun AddCategory(navController: NavHostController, viewModelFB: FireBaseViewModel
                         }
                     }
 
-                    Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, viewModelFB.error.value ?: context.getString(R.string.add_succeed), Toast.LENGTH_LONG).show()
                     navController.popBackStack()
                 }
             }
@@ -259,7 +260,7 @@ fun TextInputs(categoryFormState: CategoryFormState, onCategoryFormState: (Categ
 
             OutlinedInput(
                 _value = categoryFormState.name,
-                _label = "Name",
+                _label = stringResource(R.string.name),
                 _iconName = R.drawable.nameicon,
                 onValueChange = { newValue ->
                     categoryFormState.name = newValue
@@ -278,7 +279,7 @@ fun TextInputs(categoryFormState: CategoryFormState, onCategoryFormState: (Categ
 
             OutlinedInput(
                 _value = categoryFormState.description,
-                _label = "Description",
+                _label = stringResource(R.string.description),
                 _iconName = R.drawable.descicon,
                 onValueChange = { newValue ->
                     categoryFormState.description = newValue

@@ -32,6 +32,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -248,7 +249,7 @@ fun SearchResultsOverlay(
 
     val currentSearchText = searchViewModel.searchBarState.collectAsState()
 
-    val sortOptions = listOf("Categories Name", "Abc", "Zyx")
+    val sortOptions = listOf("Categories Name",  stringResource(R.string.ascendant),  stringResource(R.string.descendant))
     var selectedSortCriteria by remember { mutableStateOf("") }
 
     var selectedFilterCriteria by remember { mutableStateOf(FilterFields()) }
@@ -373,14 +374,14 @@ fun SearchResultsOverlay(
                         else -> ""
                     }
                 }
-                "Ascendant" -> combinedList.sortedBy {
+                navController.context.getString(R.string.ascendant) -> combinedList.sortedBy {
                     when (it) {
                         is SearchResultItem.AttractionItem -> it.attraction.name
                         is SearchResultItem.LocationItem -> it.location.region
                         is SearchResultItem.CategoryItem -> it.category.name
                     }
                 }
-                "Descendant" -> combinedList.sortedByDescending {
+                navController.context.getString(R.string.descendant) -> combinedList.sortedByDescending {
                     when (it) {
                         is SearchResultItem.AttractionItem -> it.attraction.name
                         is SearchResultItem.LocationItem -> it.location.region
@@ -420,7 +421,7 @@ fun SearchResultsOverlay(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Results",
+                    text = stringResource(R.string.results),
                     style = TextStyle(
                         fontSize = 20.sp,
                         fontFamily = FontFamily(Font(R.font.inter_bold)),
@@ -525,8 +526,14 @@ fun SearchResultsOverlay(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .clickable {
-                                                        viewModelFB.addApprovedAttraction(attraction.name){
-                                                            Toast.makeText(navController.context,viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                                        viewModelFB.addApprovedAttraction(attraction.name) {
+                                                            Toast
+                                                                .makeText(
+                                                                    navController.context,
+                                                                    viewModelFB.error.value,
+                                                                    Toast.LENGTH_SHORT
+                                                                )
+                                                                .show()
                                                         }
                                                     },
                                                 contentAlignment = Alignment.Center
@@ -576,7 +583,6 @@ fun SearchResultsOverlay(
 
                     }
                     currentSearchText.value.equals("locations", ignoreCase = true) -> {
-
 
                         items(listOfLocations) { location ->
 
@@ -628,7 +634,13 @@ fun SearchResultsOverlay(
                                                     .fillMaxWidth()
                                                     .clickable {
                                                         viewModelFB.addApprovedLocations("${location.country}_${location.region}") {
-                                                            Toast.makeText(navController.context, viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                                            Toast
+                                                                .makeText(
+                                                                    navController.context,
+                                                                    viewModelFB.error.value,
+                                                                    Toast.LENGTH_SHORT
+                                                                )
+                                                                .show()
                                                         }
                                                     },
                                                 contentAlignment = Alignment.Center
@@ -721,7 +733,13 @@ fun SearchResultsOverlay(
                                                     .fillMaxWidth()
                                                     .clickable {
                                                         viewModelFB.addApprovedCategories(category.name) {
-                                                            Toast.makeText(navController.context, viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                                            Toast
+                                                                .makeText(
+                                                                    navController.context,
+                                                                    viewModelFB.error.value,
+                                                                    Toast.LENGTH_SHORT
+                                                                )
+                                                                .show()
                                                         }
                                                     },
                                                 contentAlignment = Alignment.Center
@@ -815,8 +833,14 @@ fun SearchResultsOverlay(
                                                     .fillMaxWidth()
                                                     .clickable {
                                                         //TODO: add the logic to approve the attraction
-                                                        viewModelFB.addApprovedAttraction(item.attraction.name){
-                                                            Toast.makeText(navController.context,viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                                        viewModelFB.addApprovedAttraction(item.attraction.name) {
+                                                            Toast
+                                                                .makeText(
+                                                                    navController.context,
+                                                                    viewModelFB.error.value,
+                                                                    Toast.LENGTH_SHORT
+                                                                )
+                                                                .show()
                                                         }
                                                     },
                                                 contentAlignment = Alignment.Center

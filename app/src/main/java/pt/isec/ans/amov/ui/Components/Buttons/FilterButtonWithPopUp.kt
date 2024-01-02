@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import pt.isec.ans.amov.R
 import pt.isec.ans.amov.ui.Components.OutlinedInput
@@ -59,8 +60,8 @@ fun FilterButtonWithPopUp(
     if (showPopup) {
         PopUpBase(
             showDialog = showPopup,
-            title = "Filter Options",
-            buttonText = "Done",
+            title = stringResource(R.string.filter_options),
+            buttonText = stringResource(R.string.done),
             onDismiss = { showPopup = false },
             onConfirm = {
                 showPopup = false

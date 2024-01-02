@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -119,7 +120,7 @@ fun Review(navController: NavHostController, viewModelL: LocationViewModel, view
                                 modifier = Modifier
                                     .width(174.dp)
                                     .height(29.dp),
-                                text = "Writing Review",
+                                text = stringResource(R.string.writing_review),
                                 style = TextStyle(
                                     fontSize = 24.sp,
                                     fontFamily = FontFamily(Font(R.font.inter)),
@@ -167,7 +168,7 @@ fun Review(navController: NavHostController, viewModelL: LocationViewModel, view
                 }
 
                 GradientButton(
-                    _text = "Submit",
+                    _text = stringResource(R.string.submit),
                     _gradient = Brush.horizontalGradient(
                         colors = listOf(
                             Color(0xFF0B374B),
@@ -189,7 +190,7 @@ fun Review(navController: NavHostController, viewModelL: LocationViewModel, view
                         }
                     }
 
-                    Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, viewModelFB.error.value ?: context.getString(R.string.add_succeed), Toast.LENGTH_LONG).show()
                     navController.popBackStack()
                 }
                 // Child views Frame3.
@@ -207,10 +208,7 @@ fun ReviewInputs(reviewFormState: ReviewFormState, onReviewFormState: (ReviewFor
     val pickImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                //Log.d("VERRR------>", "result: $result") // passa aqui
                 result.data?.data?.let { uri ->
-                    // Aqui você tem a URI da imagem selecionada
-                    // Agora você pode fazer o upload para o Firestore ou atualizar o estado conforme necessário
                     reviewFormState.imageUri = uri
                 }
             }
@@ -226,7 +224,7 @@ fun ReviewInputs(reviewFormState: ReviewFormState, onReviewFormState: (ReviewFor
     ) {
         OutlinedInput(
             _value = reviewFormState.title,
-            _label = "Title",
+            _label = stringResource(R.string.title),
             _iconName = R.drawable.descicon,
             onValueChange = { newValue ->
                 reviewFormState.title = newValue
@@ -244,7 +242,7 @@ fun ReviewInputs(reviewFormState: ReviewFormState, onReviewFormState: (ReviewFor
     ) {
         OutlinedInput(
             _value = reviewFormState.description,
-            _label = "Description",
+            _label = stringResource(R.string.description),
             _iconName = R.drawable.descicon,
             onValueChange = { newValue ->
                 reviewFormState.description = newValue
@@ -286,11 +284,10 @@ fun ReviewInputs(reviewFormState: ReviewFormState, onReviewFormState: (ReviewFor
         ClickableText(
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = Color.Blue)) {
-                    append("Upload one Image")
+                    append(stringResource(R.string.upload_one_image))
                 }
             },
             onClick = { offset ->
-                // Iniciar a atividade de escolha de imagem da galeria
                 pickImageLauncher.launch(
                     Intent(
                         Intent.ACTION_PICK,
@@ -298,9 +295,6 @@ fun ReviewInputs(reviewFormState: ReviewFormState, onReviewFormState: (ReviewFor
                     )
                 )
             },
-            modifier = Modifier.clickable {
-                // por aqui a foto que deu upload
-            }
         )
 
     }

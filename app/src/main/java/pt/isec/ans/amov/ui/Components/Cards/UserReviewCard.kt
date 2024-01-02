@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -114,7 +115,7 @@ fun UserReviewCard(
         ) {
             DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
                 viewModel.deleteReview(reviewId)
-                Toast.makeText(navController.context, "Review deleted", Toast.LENGTH_SHORT).show()
+                Toast.makeText(navController.context, navController.context.getString(R.string.review_deleted), Toast.LENGTH_SHORT).show()
             })
         }
     }

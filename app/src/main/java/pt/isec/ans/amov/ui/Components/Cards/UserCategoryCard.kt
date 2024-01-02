@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -116,7 +117,7 @@ fun UserCategoryCard(
                 horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                SecButton(_text = "Go to Page", onClick = {navController.navigate(Screen.InfoCategory.createRoute(categoryName))})
+                SecButton(_text = stringResource(R.string.go_to_page), onClick = {navController.navigate(Screen.InfoCategory.createRoute(categoryName))})
             }
 
         }
@@ -135,7 +136,7 @@ fun UserCategoryCard(
                 if (numAttractions > 0) {
                     Toast.makeText(
                         navController.context,
-                        "Can't delete Categories with attractions",
+                        navController.context.getString(R.string.can_t_delete_categories_with_attractions),
                         Toast.LENGTH_SHORT
                     ).show()
                     return@DangerRoundIconButton
@@ -143,7 +144,7 @@ fun UserCategoryCard(
                 else{
                     viewModel.deleteCategory(categoryName)
 
-                    Toast.makeText(navController.context, viewModel.error.value ?: "Category deleted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(navController.context, viewModel.error.value ?: navController.context.getString(R.string.category_deleted), Toast.LENGTH_SHORT).show()
                 }
 
             })

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -51,7 +52,7 @@ fun InfoLocation(
 
     val location = viewModelL.currentLocation.observeAsState()
 
-    val sortOptions = listOf("Location Name", "Ascendant", "Descendant", "Distance")
+    val sortOptions = listOf("Location Name", stringResource(R.string.ascendant),  stringResource(R.string.descendant),  stringResource(R.string.distance))
     var selectedSortCriteria by remember { mutableStateOf("") }
 
 
@@ -149,60 +150,6 @@ fun InfoLocation(
                     modifier = Modifier.fillMaxSize()
                 )
             }
-
-            /*
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
-                horizontalAlignment = Alignment.Start,
-            ) {
-                Text(
-                    text = "Related Attractions (" + formState?.numAttractions + ")",
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                        fontFamily = FontFamily(Font(R.font.inter_semibold)),
-                        color = BlueHighlight,
-                    )
-                )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
-                ) {
-                    SortButtonWithPopUp(sortOptions) { selectedOption ->
-                        selectedSortCriteria = selectedOption
-                    }
-                }
-            }
-
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                content = {
-                    items(5) { index ->
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            // Change with the correct listing later
-//                            AttractionCard(
-//                                attractionId = "1",
-//                                navController = navController,
-//                                attraction = "Torre Eiffel Tower",
-//                                averageRating = 2.3f,
-//                                numRatings = 3214,
-//                                distanceInKmFromCurrent = 32.4f,
-//                                lastComment = "This is the last comment",
-//                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                }
-            )
-            */
-
-
         }
     }
 }

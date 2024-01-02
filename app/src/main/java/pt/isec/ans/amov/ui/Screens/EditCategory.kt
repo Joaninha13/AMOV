@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -115,7 +116,7 @@ fun EditCategory(
                         modifier = Modifier
                             .width(248.dp)
                             .height(29.dp),
-                        text = "Edit Category",
+                        text = stringResource(R.string.edit_category),
                         style = TextStyle(
                             fontSize = 24.sp,
                             //fontFamily = FontFamily(Font(R.font.inter)), esta linha da erro porque nao tem o ficheiro inter
@@ -153,7 +154,6 @@ fun EditCategory(
                 ) {
 
                     viewModelFB.getCategories(nameToEdit){ desc ->
-                        Log.d("VEERRRRR->>>>>>", "desc: $desc")
                         oldCategoryFormState.name = nameToEdit
                         oldCategoryFormState.description = desc[1]
                         oldCategoryFormState.logo = desc[2]
@@ -185,11 +185,10 @@ fun EditCategory(
                         ClickableText(
                             text = buildAnnotatedString {
                                 withStyle(style = SpanStyle(color = Color.Blue)) {
-                                    append("upload new Logo")
+                                    append(stringResource(R.string.upload_new_logo))
                                 }
                             },
                             onClick = { offset ->
-                                // Iniciar a atividade de escolha de imagem da galeria
                                 pickImageLauncher.launch(
                                     Intent(
                                         Intent.ACTION_PICK,
@@ -197,15 +196,12 @@ fun EditCategory(
                                     )
                                 )
                             },
-                            modifier = Modifier.clickable {
-                                // por aqui a foto que deu upload
-                            }
                         )
                     }
                 }
 
                 GradientButton(
-                    _text = "Save",
+                    _text = stringResource(R.string.save),
                     _gradient = Brush.horizontalGradient(
                         colors = listOf(
                             Color(0xFF0B374B),
@@ -214,14 +210,8 @@ fun EditCategory(
                     )
                 ){
                     newCategoryFormState.logoUri?.let { uri ->
-                    // Quando o botão de registro é clicado, faz o upload da imagem
                     viewModelFB.uploadImage(uri) { imageUrl ->
-                        // Após o upload bem-sucedido, atualiza o estado com a URL da imagem
                         newCategoryFormState = newCategoryFormState.copy(logo = imageUrl)
-
-                        // Agora você pode salvar os dados do formulário no Firestore
-                        Log.d("VEERRRRR->>>>>>", "newCategoryFormState: $newCategoryFormState")
-                        Log.d("VEERRRRR->>>>>>", "oldCategoryFormState: $oldCategoryFormState")
                     }
                 }
 
@@ -232,7 +222,7 @@ fun EditCategory(
                         image = newCategoryFormState.logo
                     )
 
-                    Toast.makeText(context, viewModelFB.error.value ?: "Update Succeed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, viewModelFB.error.value ?: context.getString(R.string.update_succeed), Toast.LENGTH_LONG).show()
                     navController.popBackStack()
                 }
             }

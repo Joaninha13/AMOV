@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -73,10 +74,7 @@ fun EditLocation(
     val pickImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                //Log.d("VERRR------>", "result: $result") // passa aqui
                 result.data?.data?.let { uri ->
-                    // Aqui você tem a URI da imagem selecionada
-                    // Agora você pode fazer o upload para o Firestore ou atualizar o estado conforme necessário
                     newLocationFormState.imageUri = uri
                 }
             }
@@ -118,7 +116,7 @@ fun EditLocation(
                         modifier = Modifier
                             .width(248.dp)
                             .height(29.dp),
-                        text = "Edit Location",
+                        text = stringResource(R.string.edit_location),
                         style = TextStyle(
                             fontSize = 24.sp,
                             //fontFamily = FontFamily(Font(R.font.inter)), esta linha da erro porque nao tem o ficheiro inter
@@ -156,7 +154,6 @@ fun EditLocation(
                 ) {
 
                     viewModelFB.getLocations(nameToEdit){ desc ->
-                        Log.d("VEERRRRR----->>>>>>", "desc: $desc")
                         oldLocationFormState.country = desc[2]
                         oldLocationFormState.region = desc[5]
                         oldLocationFormState.description = desc[3]
@@ -175,7 +172,6 @@ fun EditLocation(
                         }
 
                     }
-
 
                     //First inputs
                     TextInputsEdit(newLocationFormState, oldLocationFormState) { updatedState ->
@@ -203,7 +199,7 @@ fun EditLocation(
                         ClickableText(
                             text = buildAnnotatedString {
                                 withStyle(style = SpanStyle(color = Color.Blue)) {
-                                    append("Upload Image")
+                                    append(stringResource(R.string.upload_image))
                                 }
                             },
                             onClick = { offset ->
@@ -224,7 +220,7 @@ fun EditLocation(
                 }
 
                 GradientButton(
-                    _text = "Save",
+                    _text = stringResource(R.string.save),
                     _gradient = Brush.horizontalGradient(
                         colors = listOf(
                             Color(0xFF0B374B),
@@ -236,16 +232,16 @@ fun EditLocation(
                         newLocationFormState.coordinates = GeoPoint(newLocationFormState.latitude.toDouble(), newLocationFormState.longitude.toDouble())
                     }catch (e: NumberFormatException) {
                         // Se o usuário não inserir um número válido, aparece uma mensagem em cima a dizer coordenada inválidas
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Exception) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Error) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Throwable) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }
                     newLocationFormState.imageUri?.let { uri ->
@@ -265,7 +261,7 @@ fun EditLocation(
                         newLocationFormState.image
                     )
 
-                    Toast.makeText(context, viewModelFB.error.value ?: "Update Succeed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, viewModelFB.error.value ?: context.getString(R.string.update_succeed), Toast.LENGTH_LONG).show()
                     navController.popBackStack()
                 }
             }

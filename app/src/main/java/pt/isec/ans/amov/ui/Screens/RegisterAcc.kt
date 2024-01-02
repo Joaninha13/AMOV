@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -129,7 +130,7 @@ fun RegisterAcc(navController: NavHostController, viewModel: FireBaseViewModel) 
                             modifier = Modifier
                                 .width(179.dp)
                                 .height(16.dp),
-                            text = "Create a brand new account",
+                            text = stringResource(R.string.create_a_brand_new_account),
                             style = TextStyle(
                                 fontSize = 13.sp,
                                 fontFamily = FontFamily(Font(R.font.inter)),
@@ -178,7 +179,7 @@ fun RegisterAcc(navController: NavHostController, viewModel: FireBaseViewModel) 
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     GradientButton(
-                        _text = "Submit",
+                        _text = stringResource(R.string.submit),
                         _gradient = Brush.horizontalGradient(
                             colors = listOf(
                                 Color(0xFF0B374B),
@@ -198,15 +199,10 @@ fun RegisterAcc(navController: NavHostController, viewModel: FireBaseViewModel) 
                                         registerAccFormState.profileImageUrl
                                     )
                                 } else {
-                                    Toast.makeText(context, "Passwords don't match", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context, context.getString(R.string.passwords_don_t_match), Toast.LENGTH_LONG).show()
                                     return@uploadImage
                                 }
-                                Toast.makeText(context, viewModel.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
-
-                                /*viewModel.addUser(
-                                    registerAccFormState.name,
-                                    registerAccFormState.profileImageUrl
-                                )*/
+                                Toast.makeText(context, viewModel.error.value ?: context.getText(R.string.add_succeed), Toast.LENGTH_LONG).show()
 
                                 navController.navigate(Screen.LoginScreen.route)
                             }
@@ -243,7 +239,7 @@ fun TextInputs(registerAccFormState: RegisterAccFormState, onRegisterAccFormStat
 
             OutlinedInput(
                 _value = registerAccFormState.name,
-                _label = "Name",
+                _label = stringResource(R.string.name),
                 _iconName = R.drawable.nameicon,
                 onValueChange = { newValue ->
                     registerAccFormState.name = newValue
@@ -313,8 +309,6 @@ fun TextInputs(registerAccFormState: RegisterAccFormState, onRegisterAccFormStat
             rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     result.data?.data?.let { uri ->
-                        // Aqui você tem a URI da imagem selecionada
-                        // Agora você pode fazer o upload para o Firestore ou atualizar o estado conforme necessário
                         onImageSelected(uri)
                     }
                 }
@@ -339,9 +333,7 @@ fun TextInputs(registerAccFormState: RegisterAccFormState, onRegisterAccFormStat
         ) {
             ClickableText(
                 text = buildAnnotatedString {
-                    //withStyle(style = SpanStyle(color = Color.Blue)) {
-                    append("Upload Profile Image")
-                    //}
+                    append(stringResource(R.string.upload_profile_image))
                 },
                 style = TextStyle(
                     brush = Brush.linearGradient(

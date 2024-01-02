@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -65,7 +66,7 @@ fun DescriptionButtonWithPopUp(
         PopUpBase(
             showDialog = showPopup,
             showActionButton = false,
-            title = "Description",
+            title = stringResource(R.string.description),
             buttonText = "",
             onDismiss = { showPopup = false },
             onConfirm = { showPopup = false },
@@ -83,7 +84,7 @@ fun DescriptionButtonWithPopUp(
                         )
                     )
                     Text(
-                        text = "Created by $author",
+                        text = "Created by: $author",
                         style = TextStyle(
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.inter_medium)),

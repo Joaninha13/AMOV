@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -86,9 +87,6 @@ fun ViewAccount(
          UserName = name
          Photo = photo
     }
-
-    Log.d("ViewAccount", "ViewAccount: $UserName")
-    Log.d("ViewAccount", "ViewAccount: $Photo")
 
     // Buscar categorias quando o Composable for iniciado
     DisposableEffect(viewModel) {
@@ -199,7 +197,7 @@ fun ViewAccount(
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = "Contributions",
+                    text = stringResource(R.string.contributions),
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.inter_semibold)),
@@ -226,7 +224,7 @@ fun ViewAccount(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 Text(
-                                    text = "Attractions",
+                                    text = stringResource(R.string.attractions),
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         textAlign = TextAlign.Center,
@@ -246,7 +244,7 @@ fun ViewAccount(
                             }
                         }
 
-                        SecButton(_text = "Add More", onClick = {
+                        SecButton(_text = stringResource(R.string.add_more), onClick = {
                             navController.navigate(Screen.AddAttractions.route)
                         })
                     }
@@ -264,7 +262,7 @@ fun ViewAccount(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 Text(
-                                    text = "Locations",
+                                    text = stringResource(R.string.locations),
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         textAlign = TextAlign.Center,
@@ -284,7 +282,7 @@ fun ViewAccount(
                             }
                         }
 
-                        SecButton(_text = "Add More", onClick = {
+                        SecButton(_text = stringResource(R.string.add_more), onClick = {
                             navController.navigate(Screen.AddLocations.route)
                         })
                     }
@@ -302,7 +300,7 @@ fun ViewAccount(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 Text(
-                                    text = "Categories",
+                                    text = stringResource(R.string.categories),
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         textAlign = TextAlign.Center,
@@ -322,7 +320,7 @@ fun ViewAccount(
                             }
                         }
 
-                        SecButton(_text = "Add More", onClick = {
+                        SecButton(_text = stringResource(R.string.add_more), onClick = {
                             navController.navigate(Screen.AddCategories.route)
                         })
                     }
@@ -360,7 +358,6 @@ fun ViewAccount(
                         )
                     }
                     SortButtonWithPopUp(sortOptions) { selectedOption ->
-                        // Update the selected sort criteria here
                         selectedSortCriteria = selectedOption
                     }
                 }
@@ -385,8 +382,6 @@ fun ViewAccount(
                         }
                     }
                 }
-
-
             }
 
 

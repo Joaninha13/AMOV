@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -124,7 +125,7 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                         modifier = Modifier
                             .width(248.dp)
                             .height(29.dp),
-                        text = "Contribute Location",
+                        text = stringResource(R.string.contribute_location),
                         style = TextStyle(
                             fontSize = 24.sp,
                             //fontFamily = FontFamily(Font(R.font.inter)), esta linha da erro porque nao tem o ficheiro inter
@@ -187,7 +188,7 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                         ClickableText(
                             text = buildAnnotatedString {
                                 //withStyle(style = SpanStyle(color = Color.Blue)) {
-                                append("Upload Image")
+                                append(stringResource(R.string.upload_image))
                                 //}
                             },
                             style = TextStyle(
@@ -218,7 +219,7 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                 }
 
                 GradientButton(
-                    _text = "Submit",
+                    _text = stringResource(R.string.submit),
                     _gradient = Brush.horizontalGradient(
                         colors = listOf(
                             Color(0xFF0B374B),
@@ -230,16 +231,16 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                         locationFormState.coordinates = GeoPoint(locationFormState.latitude.toDouble(), locationFormState.longitude.toDouble())
                     } catch (e: NumberFormatException) {
                         // Se o usuário não inserir um número válido, aparece uma mensagem em cima a dizer coordenada inválidas
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Exception) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Error) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }catch (e: Throwable) {
-                        Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.invalid_coordinates), Toast.LENGTH_SHORT).show()
                         return@GradientButton
                     }
 
@@ -259,7 +260,7 @@ fun AddLocation(navController: NavHostController,viewModelL: LocationViewModel, 
                                 locationFormState.image)
                         }
                     }
-                    Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, viewModelFB.error.value ?: context.getString(R.string.add_succeed), Toast.LENGTH_LONG).show()
                     navController.popBackStack()
 
                 }
@@ -294,7 +295,7 @@ fun TextInputs(locationFormState: LocationFormState, viewModelL: LocationViewMod
 
                 OutlinedInput(
                     _value = locationFormState.country,
-                    _label = "Country",
+                    _label = stringResource(R.string.country),
                     _iconName = R.drawable.nameicon,
                     onValueChange = { newValue ->
                         locationFormState.country = newValue
@@ -313,7 +314,7 @@ fun TextInputs(locationFormState: LocationFormState, viewModelL: LocationViewMod
 
             OutlinedInput(
                 _value = locationFormState.region,
-                _label = "Region",
+                _label = stringResource(R.string.region),
                 _iconName = R.drawable.nameicon,
                 onValueChange = { newValue ->
                     locationFormState.region = newValue
@@ -332,7 +333,7 @@ fun TextInputs(locationFormState: LocationFormState, viewModelL: LocationViewMod
 
             OutlinedInput(
                 _value = locationFormState.description,
-                _label = "Description",
+                _label = stringResource(R.string.description),
                 _iconName = R.drawable.descicon,
                 onValueChange = { newValue ->
                     locationFormState.description = newValue

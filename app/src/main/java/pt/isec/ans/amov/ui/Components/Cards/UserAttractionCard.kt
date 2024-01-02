@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -149,13 +150,13 @@ fun UserAttractionCard(
                     horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    SecButton(_text = "Go to Page", onClick = {navController.navigate(Screen.InfoAttraction.createRoute(attraction))})
+                    SecButton(_text = stringResource(R.string.go_to_page), onClick = {navController.navigate(Screen.InfoAttraction.createRoute(attraction))})
                     DangerRoundIconButton(drawableId = R.drawable.trash, onClick = {
 
                         if (numApproved < 3) {
                             viewModel.deleteAttraction(attraction)
 
-                            Toast.makeText(navController.context, viewModel.error.value ?: "Attraction deleted", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(navController.context, viewModel.error.value ?: navController.context.getString(R.string.attraction_deleted), Toast.LENGTH_SHORT).show()
 
                             return@DangerRoundIconButton
                         }
@@ -166,7 +167,7 @@ fun UserAttractionCard(
                                 viewModel.switchAttractionToDelete(attraction) {
                                     Toast.makeText(
                                         navController.context,
-                                        "Delete attraction request sent, After 3 Approved to delete the attraction will be deleted",
+                                        navController.context.getString(R.string.delete_attraction_request_sent_after_3_approved_to_delete_the_attraction_will_be_deleted),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     return@switchAttractionToDelete
@@ -175,7 +176,7 @@ fun UserAttractionCard(
                             else{
                                 Toast.makeText(
                                     navController.context,
-                                    "Can't delete attractions, not approvedYet",
+                                    navController.context.getString(R.string.can_t_delete_attractions_not_approvedyet),
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 return@DangerRoundIconButton
@@ -184,7 +185,7 @@ fun UserAttractionCard(
                         else{
                             viewModel.deleteAttraction(attraction)
 
-                            Toast.makeText(navController.context, viewModel.error.value ?: "Attraction deleted", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(navController.context, viewModel.error.value ?: navController.context.getText(R.string.attraction_deleted), Toast.LENGTH_SHORT).show()
 
                         }
                     })

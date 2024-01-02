@@ -23,11 +23,6 @@ import pt.isec.ans.amov.ui.theme.ComposeTheme
 
 class Application : Application() {
 
-    /*val locationHandler : LocationHandler by lazy {
-        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-        LocationManagerHandler(locationManager)
-    }*/
-
     val locationHandler: LocationHandler by lazy {
         val locationProvider = LocationServices.getFusedLocationProviderClient(this)
         FusedLocationHandler(locationProvider)

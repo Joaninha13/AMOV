@@ -24,41 +24,6 @@ import java.util.concurrent.CountDownLatch
 import kotlin.math.*
 
 class StorageUtil {
-
-    //forma de ir a conteudo de referencias
-    /*val db = Firebase.firestore
-    db.collection("Scores")
-    .get()
-    .addOnSuccessListener { result ->
-        for (document in result) {
-            val userReference = document.getDocumentReference("First")
-            if (userReference != null) {
-                userReference.get().addOnSuccessListener { userDocument ->
-                    val name = userDocument.getString("firstfirstone")
-                    Log.i(TAG, "$name")
-                }
-
-            }
-        }
-    }.addOnFailureListener { e ->
-        // Tratando falhas na leitura das categorias
-    }*/
-
-
-    //saber se uma tabela existe ja ou nao com dados. se nao existir cria e mete os dados
-    /*val doc = db.collection("Scores").document("Level1")
-
-    doc.get().addOnSuccessListener { result ->
-        if (result.exists()) {
-            Log.i(ContentValues.TAG, "DocumentSnapshot data: ${result.data}")
-        } else {
-            Log.i(ContentValues.TAG, "No such document")
-            doc.set(scores)
-        }
-    }.addOnFailureListener { exception ->
-        Log.i(ContentValues.TAG, "get failed with ", exception)
-    }*/
-
     companion object {
 
         //ver depois de testar o createUserWithEmail
@@ -142,7 +107,6 @@ class StorageUtil {
 
             imagesRef.putFile(imageUri)
                 .addOnSuccessListener { taskSnapshot ->
-                    // Imagem enviada com sucesso, obter a URL da imagem
                     imagesRef.downloadUrl.addOnSuccessListener { uri ->
                         onSuccess(uri.toString())
                     }
@@ -161,7 +125,6 @@ class StorageUtil {
                 val imagesRef: StorageReference = storageRef.child("images/${UUID.randomUUID()}")
                 imagesRef.putFile(imageUri)
                     .addOnSuccessListener { taskSnapshot ->
-                        // Imagem enviada com sucesso, obter a URL da imagem
                         imagesRef.downloadUrl.addOnSuccessListener { uri ->
                             imagesList.add(uri.toString())
                             completedCount++
@@ -198,13 +161,11 @@ class StorageUtil {
                                 onResult(e)
                             }
                     } else {
-                        // Categoria com esse nome já existe
                         val error = Throwable("Category with name '$name' already exists.")
                         onResult(error)
                     }
                 }
                 .addOnFailureListener { e ->
-                    // Falha ao obter o documento
                     onResult(e)
                 }
         }
@@ -244,7 +205,6 @@ class StorageUtil {
                                     categoryDetailsList.add(categoryDetails)
 
                                     if (categoryDetailsList.size == result.size()) {
-                                        Log.d("VERRRR->>>>>>>>>>>>>" , categoryDetailsList.toString())
                                         onResult(categoryDetailsList, null)
                                     }
                                 }
@@ -252,7 +212,6 @@ class StorageUtil {
                                     onResult(emptyList(), e)
                                 }
                         }
-
                         Tasks.whenAllComplete(attractionsCountPromises)
                     }
                     .addOnFailureListener { e ->
@@ -295,7 +254,6 @@ class StorageUtil {
 
             val db = Firebase.firestore
 
-            // Attempt to fetch the single location document based on country and region
             val doc = db.collection("Category").document(name)
             doc.get().addOnSuccessListener { document ->
                 if (document.exists()) {
@@ -323,18 +281,16 @@ class StorageUtil {
                         onResult(category)
                     }
                 } else {
-                    onResult(null)  // Handle case where the document does not exist
+                    onResult(null)
                 }
             }.addOnFailureListener {
-                onResult(null)  // Handle failure case
+                onResult(null)
             }
         }
 
         fun getCategoryDetails(name: String, onResult: (Category?) -> Unit) {
 
             val db = Firebase.firestore
-
-            Log.d("NAME ->>>>>", name)
 
             // Attempt to fetch the single location document based on country and region
             val doc = db.collection("Category").document(name)
@@ -359,9 +315,7 @@ class StorageUtil {
                             numApproved = numApproved.toInt(),
                             numAttractions = 0
                         )
-
                         onResult(category)
-
                     }
 
                     userRef?.get()?.addOnSuccessListener { userDocument ->
@@ -381,10 +335,10 @@ class StorageUtil {
                         onResult(category)
                     }
                 } else {
-                    onResult(null)  // Handle case where the document does not exist
+                    onResult(null)
                 }
             }.addOnFailureListener {
-                onResult(null)  // Handle failure case
+                onResult(null)
             }
         }
 
@@ -394,7 +348,7 @@ class StorageUtil {
             val v = db.collection("Category").document(categoryName)
             val userId = AuthUtil.currentUser!!.uid
 
-            // Verifica se o usuário atual é o mesmo que criou a localização
+            // Verifica se o user atual é o mesmo que criou a localização
             db.collection("Category").document(categoryName).get()
                 .addOnSuccessListener { documentSnapshot ->
                     val creatorUserId = documentSnapshot.getDocumentReference("User")?.id
@@ -402,7 +356,7 @@ class StorageUtil {
                     Log.d("creatorUserId ->>>>>>>>", creatorUserId.toString())
 
                     if (creatorUserId == userId) {
-                        // O usuário atual é o criador, pode continuar com a edição
+                        // A categoria pertence ao user, pode editar
                         if (categoryName != name) {
                             addCategory(name, desc, logo) {}
                             deleteCategory(categoryName) {}
@@ -425,7 +379,7 @@ class StorageUtil {
                             }
                         }
                     } else {
-                        // O usuário atual não é o criador, rejeita a operação
+                        // A categoria nao pertence ao User nao pode editar
                         onResult(SecurityException("User does not have permission to edit this category"))
                     }
                 }
@@ -455,8 +409,6 @@ class StorageUtil {
             }
         }
         fun deleteCategory(name: String, onResult: (Throwable?) -> Unit) {
-
-            //As categorias e as localizações podem ser eliminadas pelos seus autores, desde que não possuam qualquer local de interesse.
 
             val db = Firebase.firestore
 
@@ -616,7 +568,6 @@ class StorageUtil {
 
                     userRef?.get()?.addOnSuccessListener { userDocument ->
                         userName = userDocument.getString("Name") ?: "Unknown"
-                        // Agora você pode usar "userName" como necessário
 
                         val distanceInKmFromCurrent = calculateDistance(userGeo, geoPoint)
                         getAttractionsByLocation(location = name, userGeo = userGeo) { linkedAttractions ->
@@ -639,14 +590,12 @@ class StorageUtil {
                         onResult(null)
                     }
                 } else {
-                    onResult(null)  // Handle case where the document does not exist
+                    onResult(null)
                 }
             }.addOnFailureListener {
-                onResult(null)  // Handle failure case
+                onResult(null)
             }
         }
-
-
 
         //esta funcao serve para ir buscar os details da locations dado um GeoPoint -> overload
         fun getLocationDetails(userGeo: GeoPoint, locationGeoPoint: GeoPoint, onResult: (Location?) -> Unit) {
@@ -672,7 +621,6 @@ class StorageUtil {
                         val country = result.documents[0].getString("Country") ?: "Unknown"
                         val region = result.documents[0].getString("Region") ?: "Unknown"
                         val numAttractions = result.documents[0].getLong("NumAttractions")?.toInt() ?: 0
-                        //val distanceInKmFromCurrent = result.documents[0].getDouble("DistanceInKmFromCurrent")?.toFloat() ?: 0.0f
                         val description = result.documents[0].getString("Description") ?: "Unknown"
                         val coordinates = result.documents[0].getGeoPoint("Coordinates") ?: GeoPoint(0.0, 0.0)
                         val imageUrl = result.documents[0].getString("Image") ?: ""
@@ -693,7 +641,7 @@ class StorageUtil {
                     }
                 }
                 .addOnFailureListener {
-                    onResult(null)  // Handle failure case
+                    onResult(null)
                 }
         }
         fun updateLocation(locationName: String,country: String, region : String, desc: String, coordinates: GeoPoint, image : String, onResult : (Throwable?) -> Unit) {
@@ -703,7 +651,7 @@ class StorageUtil {
             val v = db.collection("Location").document("${country}_${region}")
             val userId = AuthUtil.currentUser!!.uid
 
-            // Verifica se o usuário atual é o mesmo que criou a localização
+            // Verifica se o user atual é o mesmo que criou a localização
             db.collection("Location").document(locationName).get()
                 .addOnSuccessListener { documentSnapshot ->
                     val creatorUserId = documentSnapshot.getDocumentReference("User")?.id
@@ -711,7 +659,7 @@ class StorageUtil {
                     Log.d("creatorUserId ->>>>>>>>", creatorUserId.toString())
 
                     if (creatorUserId == userId) {
-                        // O usuário atual é o criador, pode continuar com a edição
+                        // A localização pertence ao User, pode editar
                         if (locationName != "${country}_${region}") {
                             addLocation(country, region, desc, coordinates, image) {}
                             deleteLocation(locationName) {}
@@ -735,7 +683,7 @@ class StorageUtil {
                             }
                         }
                     } else {
-                        // O usuário atual não é o criador, rejeita a operação
+                        // A localização nao pertence ao User, nao pode editar
                         onResult(SecurityException("User does not have permission to edit this location"))
                     }
                 }
@@ -764,8 +712,6 @@ class StorageUtil {
             }
         }
         fun deleteLocation(nameToDelete: String, onResult : (Throwable?) -> Unit) {
-
-            //As categorias e as localizações podem ser eliminadas pelos seus autores, desde que não possuam qualquer local de interesse.
 
             val db = Firebase.firestore
 
@@ -828,9 +774,6 @@ class StorageUtil {
 
             val db = Firebase.firestore
 
-            Log.d("name ->>>>>>>>", name)
-
-            // Attempt to fetch the single location document based on country and region
             val doc = db.collection("Attractions").document(name)
             doc.get().addOnSuccessListener { document ->
                 if (document.exists()) {
@@ -843,14 +786,12 @@ class StorageUtil {
 
                     val list = listOf(Name, Description, Category, Location, images.toString(), coordinates.toString())
 
-                    Log.d("list ->>>>>>>>", list.toString())
-
                     onResult(list)
                 } else {
-                    onResult(emptyList())  // Handle case where the document does not exist
+                    onResult(emptyList())
                 }
             }.addOnFailureListener {
-                onResult(emptyList())  // Handle failure case
+                onResult(emptyList())
             }
         }
 
@@ -860,7 +801,7 @@ class StorageUtil {
             val v = db.collection("Attractions").document(attractionName)
             val userId = AuthUtil.currentUser!!.uid
 
-            // Verifica se o usuário atual é o mesmo que criou a localização
+            // Ve se a attraction pertence ao user atual
             db.collection("Attractions").document(attractionName).get()
                 .addOnSuccessListener { documentSnapshot ->
                     val creatorUserId = documentSnapshot.getDocumentReference("User")?.id
@@ -868,7 +809,7 @@ class StorageUtil {
                     Log.d("creatorUserId ->>>>>>>>", creatorUserId.toString())
 
                     if (creatorUserId == userId) {
-                        // O usuário atual é o criador, pode continuar com a edição
+                        // A attraction pertence ao user atual, pode editar
                         if (attractionName != name) {
                             addAttraction(name, desc, coordinates, category, Location, images) {}
                             deleteAttractionFromEdit(attractionName, 3) {}
@@ -894,7 +835,7 @@ class StorageUtil {
                             }
                         }
                     } else {
-                        // O usuário atual não é o criador, rejeita a operação
+                        // A attraction nao pertence ao user atual, nao pode editar
                         onResult(SecurityException("User does not have permission to edit this attraction"))
                     }
                 }
@@ -968,7 +909,6 @@ class StorageUtil {
                         val categoryRef = result.documents[0].get("Category") as? DocumentReference
                         val imageUrlList = result.documents[0].get("Images") as? List<String> ?: emptyList()
 
-                        // Se a categoria for uma referência, você pode buscar os detalhes da categoria
                         categoryRef?.get()?.addOnSuccessListener { categorySnapshot ->
                             val categoryName = categorySnapshot.getString("Name") ?: "Unknown"
 
@@ -989,7 +929,7 @@ class StorageUtil {
                     }
                 }
                 .addOnFailureListener {
-                    onResult(null)  // Handle failure case
+                    onResult(null)
                 }
         }
 
@@ -1264,7 +1204,6 @@ class StorageUtil {
 
                     userRef?.get()?.addOnSuccessListener { userDocument ->
                         val userName = userDocument.getString("Name") ?: "Unknown"
-                        // Agora você pode usar "userName" como necessário
 
                     getReviewsByAttraction(name) { linkedReviews ->
                         val attractionDetails = Attraction(
@@ -1290,10 +1229,10 @@ class StorageUtil {
                     }
 
                 } else {
-                    onResult(null)  // Handle case where the document does not exist
+                    onResult(null)
                 }
             }.addOnFailureListener {
-                onResult(null)  // Handle failure case
+                onResult(null)
             }
         }
 
@@ -1402,10 +1341,10 @@ class StorageUtil {
 
                     onResult(review)
                 } else {
-                    onResult(null)  // Handle case where the document does not exist
+                    onResult(null)
                 }
             }.addOnFailureListener {
-                onResult(null)  // Handle failure case
+                onResult(null)
             }
         }
 
@@ -1484,11 +1423,13 @@ class StorageUtil {
 
                         val aux = result.get("AttractionsApproved") as? List<String>
 
-                        for (i in aux!!) {
-                            if (i == AttractionName) {
-                                val error = Throwable("Attraction already approved.")
-                                onResult(error)
-                                return@addOnSuccessListener
+                        if (aux != null) {
+                            for (i in aux) {
+                                if (i == AttractionName) {
+                                    val error = Throwable("Attraction already approved.")
+                                    onResult(error)
+                                    return@addOnSuccessListener
+                                }
                             }
                         }
 

@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -63,7 +64,7 @@ fun InfoAttraction(
 ) {
     val location = viewModelL.currentLocation.observeAsState()
 
-    val sortOptions = listOf("Ascendant", "Descendant")
+    val sortOptions = listOf(stringResource(R.string.ascendant), stringResource(R.string.descendant))
     var selectedSortCriteria by remember { mutableStateOf("") }
 
     var visible by remember { mutableStateOf(true) }
@@ -105,8 +106,8 @@ fun InfoAttraction(
         sortedReviewsList.clear()
         sortedReviewsList.addAll(
             when (selectedSortCriteria) {
-                "Ascendant" -> reviewsList.sortedBy { it.title }
-                "Descendant" -> reviewsList.sortedByDescending { it.title }
+                navController.context.getString(R.string.ascendant) -> reviewsList.sortedBy { it.title }
+                navController.context.getString(R.string.descendant) -> reviewsList.sortedByDescending { it.title }
                 else -> reviewsList
             }
         )
@@ -215,7 +216,13 @@ fun InfoAttraction(
                                     .clickable {
                                         //TODO: add the logic to disprove the attraction
                                         viewModelFB.addApprovedToDeleteAttraction(attractionId) {
-                                            Toast.makeText(navController.context, viewModelFB.error.value, Toast.LENGTH_SHORT).show()
+                                            Toast
+                                                .makeText(
+                                                    navController.context,
+                                                    viewModelFB.error.value,
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                .show()
                                         }
                                     },
                                 contentAlignment = Alignment.Center
@@ -233,18 +240,6 @@ fun InfoAttraction(
                     }
 
                 }
-                //TODO: Meter Category(agora esta em referencia, tinhamos de passar para nome)
-//                formState?.let {
-//                    Text(
-//                        text = it.category,
-//                        style = TextStyle(
-//                            fontSize = 12.sp,
-//                            fontFamily = FontFamily(Font(R.font.inter)),
-//                            fontWeight = FontWeight(600),
-//                            color = BlueSoft,
-//                        )
-//                    )
-//                }
             }
 
             Row(
@@ -253,15 +248,6 @@ fun InfoAttraction(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-//                Text(
-//                    text = "${formState.name}, ${formState.region}",
-//                    style = TextStyle(
-//                        fontSize = 12.sp,
-//                        fontFamily = FontFamily(Font(R.font.inter)),
-//                        fontWeight = FontWeight(600),
-//                        color = BlueSoft,
-//                    )
-//                )
                 Text(
                     text = getDMSFormattedText(formState?.coordinates?.latitude?.toDouble(), formState?.coordinates?.longitude?.toDouble()),
                     style = TextStyle(
@@ -271,8 +257,6 @@ fun InfoAttraction(
                     )
                 )
             }
-
-
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -346,7 +330,7 @@ fun InfoAttraction(
                     }
 
                     //TODO: Add Review
-                    SecButton("Contribute Review", onClick = {
+                    SecButton(stringResource(R.string.contribute_review), onClick = {
                         navController.navigate(
                             Screen.Review.createRoute(formState?.name!!)
                         )

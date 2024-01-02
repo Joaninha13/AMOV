@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -241,15 +242,6 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             ) {
-                /*Button(
-                    onClick = {viewModel.signInWithEmail(email.value, password.value)},
-                    modifier = Modifier
-                        .width(120.dp)
-                ) {
-                        Text(text = "Login")
-
-                    // Child views row.
-                }*/
                 GradientButton(
                     _text = "Login",
                     _gradient = Brush.horizontalGradient(
@@ -277,7 +269,7 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
                     .height(24.dp)
             ) {
                 Text(
-                    text = "Don’t have an account? ",
+                    text = stringResource(R.string.don_t_have_an_account),
                     style = TextStyle(
                         fontSize = 13.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -316,7 +308,7 @@ fun LoginScreen(navController: NavController, viewModel: FireBaseViewModel, onSu
             ) {
                 Text(
                     modifier = Modifier,
-                    text = "Project Credits - ",
+                    text = stringResource(R.string.project_credits),
                     style = TextStyle(
                         fontSize = 13.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),

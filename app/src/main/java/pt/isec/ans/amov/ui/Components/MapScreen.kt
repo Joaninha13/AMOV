@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -357,7 +358,7 @@ fun ShowPopUpBase(
     if (showPopUp) {
         PopUpBase(
             showDialog = true,
-            title = "Add Attraction",
+            title = stringResource(R.string.add_attraction),
             content = {
                 //First inputs
                 Column(
@@ -378,7 +379,7 @@ fun ShowPopUpBase(
 
                         OutlinedInput(
                             _value = attractionFormState.name,
-                            _label = "Name",
+                            _label = stringResource(R.string.name),
                             _iconName = R.drawable.nameicon,
                             onValueChange = { newValue ->
                                 attractionFormState.name = newValue
@@ -397,7 +398,7 @@ fun ShowPopUpBase(
 
                         OutlinedInput(
                             _value = attractionFormState.description,
-                            _label = "Region",
+                            _label = stringResource(R.string.description),
                             _iconName = R.drawable.descicon,
                             onValueChange = { newValue ->
                                 attractionFormState.description = newValue
@@ -462,7 +463,7 @@ fun ShowPopUpBase(
                         ClickableText(
                             text = buildAnnotatedString {
                                 withStyle(style = SpanStyle(color = Color.Blue)) {
-                                    append("Upload Image")
+                                    append(stringResource(R.string.upload_image))
                                 }
                             },
                             onClick = { offset ->
@@ -476,7 +477,7 @@ fun ShowPopUpBase(
                     }
                 }
                       },
-            buttonText = "Add",
+            buttonText = stringResource(R.string.submit),
             onConfirm = {
                 attractionFormState.coordinates = com.google.firebase.firestore.GeoPoint(
                     attractionGeoPoint.latitude,
@@ -497,7 +498,8 @@ fun ShowPopUpBase(
                             attractionFormState.image,
                         ) { e ->
                             if (e == null) {
-                                Toast.makeText(context, "Attraction added", Toast.LENGTH_SHORT)
+                                Toast.makeText(context,
+                                    context.getString(R.string.attraction_added), Toast.LENGTH_SHORT)
                                     .show()
                             } else {
                                 Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT)
@@ -507,7 +509,7 @@ fun ShowPopUpBase(
                     }
                 }
 
-                Toast.makeText(context, viewModelFB.error.value ?: "Add Succeed", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, viewModelFB.error.value ?: context.getString(R.string.add_succeed), Toast.LENGTH_LONG).show()
                 onDismiss()
             },
             onDismiss = onDismiss
