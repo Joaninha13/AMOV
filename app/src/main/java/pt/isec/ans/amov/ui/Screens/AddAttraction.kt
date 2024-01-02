@@ -164,7 +164,7 @@ fun AddAttraction( navController: NavHostController,viewModelL: LocationViewMode
                 }
 
                 GradientButton(
-                    _text = stringResource(R.string.add_succeed),
+                    _text = stringResource(R.string.submit),
                     _gradient = Brush.horizontalGradient(
                         colors = listOf(
                             Color(0xFF0B374B),
